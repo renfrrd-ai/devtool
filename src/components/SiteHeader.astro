@@ -1,0 +1,110 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+
+const links = [
+  { label: 'Tools', href: '#tools' },
+  { label: 'Approach', href: '#approach' },
+];
+---
+
+<header class="header">
+  <div class="container header__inner">
+    <a class="wordmark" href="/">
+      devtool<span class="wordmark__tld">.fyi</span>
+    </a>
+
+    <nav class="header__nav" aria-label="Sections">
+      {links.map((link) => <a class="header__link" href={link.href}>{link.label}</a>)}
+    </nav>
+
+    <div class="header__actions">
+      <ThemeToggle />
+      <a class="header__cta" href="#tools">Browse tools</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    width: 100%;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg) 95%, transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.125rem;
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .wordmark__tld {
+    color: var(--text-faint);
+  }
+
+  .header__nav {
+    display: none;
+    align-items: center;
+    gap: 2rem;
+    margin-right: auto;
+    margin-left: 1.5rem;
+  }
+
+  .header__link {
+    font-size: var(--text-ui);
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: color 150ms ease;
+  }
+
+  .header__link:hover {
+    color: var(--text);
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .header__cta {
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--bg);
+    padding: 0.625rem 1.25rem;
+    font-size: var(--text-ui);
+    font-weight: 600;
+    line-height: 1;
+    transition: background-color 150ms ease;
+  }
+
+  .header__cta:hover {
+    background: var(--fill-hover);
+  }
+
+  /* The CTA is a scroll shortcut, not the only way down — drop it before the
+     toggle and wordmark start competing for space. */
+  @media (max-width: 420px) {
+    .header__cta {
+      display: none;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .header__nav {
+      display: flex;
+    }
+  }
+</style>

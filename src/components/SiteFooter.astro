@@ -1,0 +1,131 @@
+---
+import { sortedTools } from '../data/tools';
+
+const year = new Date().getFullYear();
+const toolLinks = sortedTools();
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <a class="wordmark" href="/">devtool<span class="wordmark__tld">.fyi</span></a>
+      <p class="footer__blurb">
+        Developer tools built and maintained by Renfred Alonge.
+      </p>
+    </div>
+
+    <nav class="footer__col" aria-label="Tools">
+      <h2 class="footer__heading">Tools</h2>
+      <ul class="footer__list">
+        {
+          toolLinks.map((tool) => (
+            <li>
+              <a class="footer__link" href={tool.url} rel="noopener">
+                {tool.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Elsewhere">
+      <h2 class="footer__heading">Elsewhere</h2>
+      <ul class="footer__list">
+        <li>
+          <a class="footer__link" href="https://github.com/renfrrd-ai" rel="noopener">
+            GitHub
+          </a>
+        </li>
+        <li>
+          <a class="footer__link" href="mailto:hello@devtool.fyi">Email</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="container footer__bottom">
+    <p class="footer__fine">&copy; {year} Renfred Alonge</p>
+    <p class="footer__fine">Built as a static page. No trackers, no cookies.</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--border);
+    padding-block: 4rem 2.5rem;
+  }
+
+  .footer__inner {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .wordmark__tld {
+    color: var(--text-faint);
+  }
+
+  .footer__blurb {
+    margin-top: 0.75rem;
+    max-width: 26ch;
+    font-size: var(--text-ui);
+    color: var(--text-muted);
+  }
+
+  .footer__heading {
+    font-family: var(--font-sans);
+    font-size: var(--text-label);
+    font-weight: 600;
+    color: var(--text-faint);
+  }
+
+  .footer__list {
+    margin-top: 1.25rem;
+    display: grid;
+    gap: 0.875rem;
+  }
+
+  .footer__link {
+    font-size: var(--text-ui);
+    color: var(--text-muted);
+    transition: color 150ms ease;
+  }
+
+  .footer__link:hover {
+    color: var(--text);
+  }
+
+  .footer__bottom {
+    margin-top: 3.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer__fine {
+    font-size: var(--text-ui);
+    color: var(--text-faint);
+  }
+
+  @media (min-width: 640px) {
+    .footer__inner {
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+    }
+
+    .footer__bottom {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+</style>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Clueline">
+  <rect width="32" height="32" rx="7" fill="#0084ff"/>
+  <!--
+    The wordmark's glyph from src/components/ui/Logo.jsx, scaled to fill a
+    32px tile. The stroke is heavier and the trace less transparent than in
+    the logo: at 16px the original 2.3/0.55 pair all but disappears.
+  -->
+  <g transform="translate(2.86 3.48) scale(1.043)" fill="none" stroke="#fff" stroke-linecap="round">
+    <path d="M2.6 17.4c3.3 0 4.4-8.8 7.6-8.8s4.3 8.8 7.6 8.8" stroke-width="3.2" opacity=".85"/>
+    <circle cx="20.8" cy="8.4" r="3.3" fill="#fff" stroke="none"/>
+  </g>
+</svg>

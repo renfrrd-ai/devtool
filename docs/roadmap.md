@@ -5,30 +5,34 @@
 Ship a single static page listing the three known tools, live at devtool.fyi, with
 backlinks in place.
 
-**Milestone 1 — Scaffold**
-- Astro project initialized, building to `dist/`
-- `Base` layout, `global.css` with the design tokens from [design.md](design.md#color)
-- Deploy pipeline wired up, previews working on PRs
+**Milestone 1 — Scaffold** ✅
+- [x] Astro project initialized, building to `dist/`
+- [x] `Base` layout, `global.css` with the design tokens from [design.md](design.md#color)
+- [ ] Deploy pipeline wired up, previews working on PRs
 
-**Milestone 2 — The cards**
-- `Tool` type and `tools.ts` per the [content model](content-model.md)
-- `ToolCard` and `StatusBadge` components
-- `index.astro` renders the sorted list; hero copy written
-- Responsive down to 320px, dark mode via tokens
+**Milestone 2 — The list** ✅
+- [x] `Tool` type and `tools.ts` per the [content model](content-model.md)
+- [x] `ToolCard` and `StatusBadge` components
+- [x] `index.astro` renders the sorted list; hero copy written
+- [x] Responsive down to 320px, dark mode via tokens, theme toggle
 
-**Milestone 3 — Content**
-- Real taglines for all three tools — this is the blocker, not the code
-  (see [open questions](decisions.md#open-questions))
-- Logos in `public/logos/`, favicon, OG image
+**Milestone 3 — Content** ✅ (one caveat)
+- [x] Real taglines for Clueline and HQBase, taken from their own homepages
+- [ ] trueluk still carries placeholder copy —
+      [Q2](decisions.md#q2--what-should-truelukcom-become)
+- [x] Tool icons vendored into `public/logos/`, favicon, social images, app icons
 
 **Milestone 4 — Launch**
-- Meta tags, JSON-LD, `robots.txt`, `sitemap.xml`
-- Analytics on
-- Backlinks added to clueline.dev, hqbase.io, trueluk.com
-- Run the [launch checklist](deployment.md#launch-checklist)
+- [x] Meta tags, JSON-LD, `robots.txt`, `sitemap-index.xml`
+- [x] Security headers and cache policy in `public/_headers`
+- [ ] Cloudflare Pages project connected and domain pointed —
+      [setup steps](deployment.md#hosting-cloudflare-pages)
+- [ ] Analytics on
+- [ ] Backlinks added to clueline.dev, hqbase.io, trueluk.com
+- [ ] Run the [launch checklist](deployment.md#launch-checklist)
 
-The content milestone is the one that will actually hold this up. The code is a day; the
-hqbase and trueluk one-liners are a decision.
+The code is done. What's left is a deploy, three backlinks in three other repos, and one
+sentence about trueluk — and that last one is a decision, not a task.
 
 ## Deliberately not in v1
 
@@ -38,7 +42,7 @@ From the PRD's out-of-scope list, plus a few things that will be tempting:
 - Per-tool detail pages — the tool's own domain is the detail page
 - A blog or changelog section
 - User accounts, newsletter signup, contact forms
-- Any client-side JavaScript
+- Any client-side JavaScript beyond the theme toggle
 
 ## Later, if the portfolio earns it
 

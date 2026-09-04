@@ -1,0 +1,162 @@
+---
+import { tools, countByStatus } from '../data/tools';
+
+const inProgress =
+  countByStatus('beta') + countByStatus('coming-soon') + countByStatus('idea');
+
+const stats = [
+  { value: String(tools.length), label: 'Tools' },
+  { value: String(countByStatus('live')), label: 'Live today' },
+  { value: String(inProgress), label: 'In the works' },
+  { value: '1', label: 'Person behind them' },
+];
+---
+
+<section class="hero">
+  <!-- Grid rules faded out by a radial mask — the page's only ornament. -->
+  <div class="hero__grid" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="hero__intro">
+      <p class="eyebrow">Independent developer tools</p>
+      <h1 class="hero__title">Small tools,<br />built to last.</h1>
+      <p class="hero__lead">
+        A handful of developer tools made and maintained by Renfred Alonge. Each one lives on
+        its own domain — this is the page that keeps track of them.
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#tools">
+          Browse the tools
+          <svg
+            class="arrow"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6"></path>
+          </svg>
+        </a>
+        <a class="btn btn--secondary" href="#approach">How this works</a>
+      </div>
+    </div>
+
+    <dl class="hero__stats">
+      {
+        stats.map((stat) => (
+          <div class="stat">
+            <dt class="stat__label">{stat.label}</dt>
+            <dd class="stat__value">{stat.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: 5rem 4rem;
+  }
+
+  .hero__grid {
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 6rem 6rem;
+    -webkit-mask-image: radial-gradient(
+      ellipse 70% 60% at 50% 30%,
+      #000 40%,
+      transparent 95%
+    );
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 40%, transparent 95%);
+  }
+
+  .hero__intro {
+    max-width: 56rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .hero__title {
+    margin-top: 1.5rem;
+    font-size: var(--text-display);
+    line-height: var(--text-display-lh);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .hero__lead {
+    margin-top: 2rem;
+    margin-inline: auto;
+    max-width: 40rem;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  .hero__actions {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .hero__stats {
+    margin: 5rem 0 0;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem 3rem;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .stat__value {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .stat__label {
+    font-size: var(--text-label);
+    font-weight: 500;
+    color: var(--text-faint);
+  }
+
+  @media (min-width: 640px) {
+    .hero {
+      padding-block: 7rem 5rem;
+    }
+
+    .hero__stats {
+      margin-top: 6rem;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 2.5rem 5rem;
+    }
+
+    .stat__value {
+      font-size: 3rem;
+    }
+  }
+</style>

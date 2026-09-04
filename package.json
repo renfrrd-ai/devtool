@@ -1,0 +1,25 @@
+{
+  "name": "devtool-fyi",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The front door for developer tools built and maintained by Renfred Alonge",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "images": "node scripts/build-images.mjs",
+    "logos": "node scripts/fetch-favicons.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/sitemap": "^3.6.0",
+    "@fontsource/funnel-display": "^5.3.0",
+    "@fontsource/funnel-sans": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "astro": "^7.3.1",
+    "typescript": "^5.9.2"
+  }
+}
