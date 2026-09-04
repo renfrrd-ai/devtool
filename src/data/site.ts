@@ -20,7 +20,7 @@ export const SITE = {
    * PUBLIC_CF_BEACON_TOKEN overrides this at build time if you would rather
    * measure production only. See docs/analytics.md.
    */
-  analyticsToken: '',
+  analyticsToken: 'cd8d13da408540dc8187e74c7cf80616',
   author: {
     name: 'Renfred Alonge',
     github: 'https://github.com/renfrrd-ai',
