@@ -1,6 +1,30 @@
 # Roadmap
 
-## v1 — the directory
+> **Scope note.** v1 below was written against the original PRD — a three-tool portfolio.
+> The site has since become a curated directory ([D0](decisions.md#d0--the-site-is-a-curated-directory-not-a-portfolio-supersedes-the-prds-premise)).
+> v1's milestones all shipped; v2 is the directory, and is where the current work is.
+
+## v2 — the directory
+
+**Shipped**
+- [x] Nine categories, 49 tools, with taglines and descriptions that say where the catch is
+- [x] Three page types — home, category, tool — with `getStaticPaths` for both dynamic routes
+- [x] Richer rows: stack, pricing, licence, open-source status, "Built here" tag
+- [x] Own tools listed both in Built here and on their category shelves
+- [x] Alternatives block on every tool page, falling back to same-shelf tools
+- [x] Icons for 48 of 49 entries, vendored at build time
+- [x] Breadcrumbs, per-page structured data (`CollectionPage`, `ItemList`, `SoftwareApplication`, `BreadcrumbList`)
+
+**Next**
+- [ ] Deploy — the Cloudflare Pages project is still not connected
+- [ ] A second pass on descriptions: they are accurate, but a few are drier than they need to be
+- [ ] Decide trueluk's fate — [Q2](decisions.md#q2--what-should-truelukcom-become)
+- [ ] Backlinks from clueline.dev and hqbase.io
+
+**Deliberately not doing** — search, pricing filters, a `/tools` index page. Reasoning in
+[information architecture](information-architecture.md#where-it-stops).
+
+## v1 — the portfolio *(shipped, superseded)*
 
 Ship a single static page listing the three known tools, live at devtool.fyi, with
 backlinks in place.

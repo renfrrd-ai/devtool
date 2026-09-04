@@ -1,33 +1,38 @@
 # devtool.fyi
 
-The front door for the developer tools built and maintained by Renfred Alonge.
+A curated directory of developer tools — auth, payments, email, UI, databases, hosting,
+monitoring, analytics and AI. Every entry says what the tool is actually for and where the
+catch is, rather than repeating its marketing copy.
 
-Each tool lives on its own domain. devtool.fyi is the one page that says they all come
-from the same place — a fast, static directory of every tool with a one-liner, a status
-badge, and a link out.
+It is also the front door for the tools built and maintained by Renfred Alonge, which get
+their own section and sit on their category shelves alongside everything else.
 
-## The tools
+## Structure
 
-| Tool | Domain | Status |
-| --- | --- | --- |
-| Clueline | [clueline.dev](https://clueline.dev) | Live |
-| HQBase | [hqbase.io](https://hqbase.io) | Live |
-| trueluk | [trueluk.com](https://trueluk.com) | Idea |
+```
+/                          the map    — categories, and what's built here
+  └─ /categories/<slug>    the shelf  — every tool in one category
+       └─ /tools/<slug>    the entry  — one tool, in depth
+```
 
-That table is a snapshot for readers. The site's source of truth is
-[`src/data/tools.ts`](src/data/tools.ts) — one entry per tool, rendered into rows.
+59 static pages: 1 home, 9 categories, 49 tools. The home page deliberately does *not*
+list the tools — that would be a wall nobody reads. Reasoning in
+[docs/information-architecture.md](docs/information-architecture.md).
 
-## Status
+## Built here
 
-Built and building clean; not yet deployed. Connect the Cloudflare Pages project and point
-the domain to go live — see [deployment](docs/deployment.md#hosting-cloudflare-pages) for
-the steps and the [roadmap](docs/roadmap.md) for what's left.
+| Tool | Domain | Category | Status |
+| --- | --- | --- | --- |
+| HQBase | [hqbase.io](https://hqbase.io) | Email & SMTP | Live |
+| Clueline | [clueline.dev](https://clueline.dev) | Monitoring & Errors | Live |
+| trueluk | [trueluk.com](https://trueluk.com) | — | Idea |
 
 ## Stack
 
-Astro building to fully static output. No framework runtime, no server, no database. The
-page ships HTML, one stylesheet, self-hosted fonts, and two small scripts for the theme
-toggle.
+Astro building to fully static output. No framework runtime, no server, no database, no
+tracking. Each page ships HTML, one shared stylesheet, self-hosted font subsets, and two
+small scripts for the theme toggle — 23 KB of HTML for the home page, 16 KB for a tool
+page.
 
 ## Getting started
 
@@ -48,26 +53,31 @@ npm run images   # social cards and app icons into public/
 ## Adding a tool
 
 Under 15 minutes, and it touches one file. Full walkthrough in
-[docs/content-model.md](docs/content-model.md); the short version:
+[docs/content-model.md](docs/content-model.md):
 
-1. Add an entry to [`src/data/tools.ts`](src/data/tools.ts).
+1. Add an entry to [`src/data/tools.ts`](src/data/tools.ts) — including a real
+   `description` saying where the catch is.
 2. Run `npm run logos` to pull in its icon.
-3. Open a PR. The row, the hero stats, the footer, the sitemap and the structured data all
-   update themselves.
+3. Open a PR.
+
+Its row, its own page, the category counts, the hero statistics, the footer, the sitemap
+and the structured data all follow from step 1.
 
 ## Docs
 
 | Doc | What's in it |
 | --- | --- |
-| [PRD](docs/prd.md) | Problem, solution, scope, success criteria |
+| [Information architecture](docs/information-architecture.md) | The three page types and what derives from what |
+| [Content model](docs/content-model.md) | The tool and category schemas, and how to add one |
 | [Architecture](docs/architecture.md) | Stack rationale, project layout, SEO and social metadata |
-| [Content model](docs/content-model.md) | The tool entry schema, icons, and how to add a tool |
 | [Design](docs/design.md) | Visual system, type, color, dark mode, components |
 | [Deployment](docs/deployment.md) | Cloudflare Pages setup, DNS, headers, launch checklist |
-| [Roadmap](docs/roadmap.md) | v1 milestones and what comes after |
-| [Decisions](docs/decisions.md) | Choices made and why, plus the open questions |
+| [Decisions](docs/decisions.md) | Choices made and why, plus open questions |
+| [Roadmap](docs/roadmap.md) | What's shipped and what's next |
+| [PRD](docs/prd.md) | The original brief — historical, since superseded |
 
 ## License
 
-Content and branding are © Renfred Alonge. Licensing for the site source is TBD —
+Content and editorial judgements are © Renfred Alonge. Third-party names and logos belong
+to their owners. Licensing for the site source is TBD —
 [Q4](docs/decisions.md#q4--source-licensing).

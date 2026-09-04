@@ -48,16 +48,22 @@ devtool/
 │   │   ├── SiteHeader.astro # sticky bar, wordmark + anchors + toggle
 │   │   ├── ThemeToggle.astro
 │   │   ├── Hero.astro       # masked grid, headline, stat row
-│   │   ├── ToolCard.astro   # one row in the tool list
-│   │   ├── StatusBadge.astro
+│   │   ├── CategoryCard.astro
+│   │   ├── ToolRow.astro    # one row, used on every page type
+│   │   ├── Tag.astro        # the one small-label component
 │   │   └── SiteFooter.astro
 │   ├── data/
 │   │   ├── tools.ts         # SOURCE OF TRUTH — see content-model.md
+│   │   ├── categories.ts    # the shelves
 │   │   └── site.ts          # name, URL, author, social image alt text
+│   ├── lib/
+│   │   └── directory.ts     # every derived view: grouping, counts, sorting
 │   ├── layouts/
 │   │   └── Base.astro       # <head>, fonts, meta tags, JSON-LD
 │   ├── pages/
-│   │   └── index.astro      # the only route
+│   │   ├── index.astro           # /
+│   │   ├── categories/[slug].astro  # /categories/auth
+│   │   └── tools/[slug].astro       # /tools/stripe
 │   └── styles/
 │       └── global.css       # design tokens + base styles
 ├── astro.config.mjs
@@ -65,8 +71,9 @@ devtool/
 └── tsconfig.json
 ```
 
-`ToolCard` keeps its name from the PRD's "tool cards," but it renders a full-width list
-row rather than a card in a grid — see [design.md](design.md#layout) for why.
+The two dynamic routes are generated with `getStaticPaths` at build time — 59 static HTML
+files, no server. How the three page types divide the work is in
+[information-architecture.md](information-architecture.md).
 
 Component styles live in each `.astro` file's scoped `<style>` block; `global.css` holds
 only tokens, base element styles, and the handful of shared utilities (`.container`,
@@ -75,15 +82,15 @@ only tokens, base element styles, and the handful of shared utilities (`.contain
 ## Data flow
 
 ```
-src/data/tools.ts  ──►  index.astro  ──►  ToolCard × N  ──►  dist/index.html
-     (typed)            (sorts,           (renders name,        (static,
-                         filters)          badge, link)          no JS)
+src/data/tools.ts ─┐
+                   ├─► src/lib/directory.ts ─┬─► index.astro          ─► /
+src/data/categories.ts ┘   (groups, counts,  ├─► categories/[slug]    ─► 9 pages
+                            sorts, relates)  └─► tools/[slug]         ─► 49 pages
 ```
 
-`index.astro` imports the array, sorts it for display order (see
-[content model](content-model.md#ordering)), and maps over it. `ToolCard` owns the markup
-for one entry. `StatusBadge` maps a status string to its label and color. That's the whole
-render path.
+No page template imports `tools.ts` to filter it inline. Everything goes through
+`directory.ts`, which is what keeps "add a tool" to one edit — full dependency map in
+[information-architecture.md](information-architecture.md#what-derives-from-what).
 
 ## Constraints worth keeping
 
@@ -106,11 +113,17 @@ render path.
 These follow from the architecture rather than requiring special effort, but they're
 worth stating so a regression is visible:
 
-- Page weight under 100 KB on first load, logos included.
+- **HTML under 25 KB per page.** Currently 23 KB for the home page, 22 KB for a category
+  page, 16 KB for a tool page. This is the number the page structure protects: a single
+  fifty-row list would roughly triple the home page, which is the whole reason the tools
+  are not on it.
+- Under 150 KB on a cold first load including the stylesheet and font subsets; near-zero
+  on subsequent pages, since both are cached and every route shares them.
 - Lighthouse performance ≥ 95 on mobile.
-- No render-blocking resources beyond the single stylesheet.
-- Logos served as SVG where the tool has one; otherwise optimized PNG/WebP with explicit
-  `width`/`height` so nothing shifts during load.
+- No render-blocking resources beyond the single stylesheet and the inline theme script.
+- Logos served as SVG where the tool has one, otherwise a 128px PNG, with explicit
+  `width`/`height` so nothing shifts during load. Only the logos on the current page load,
+  which is why the home page shows categories rather than fifty rows of icons.
 
 ## Accessibility and semantics
 

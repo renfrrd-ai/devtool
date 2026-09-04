@@ -25,7 +25,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import sharp from 'sharp';
 
-import { sortedTools } from '../src/data/tools.ts';
+import { tools } from '../src/data/tools.ts';
+import { categories } from '../src/data/categories.ts';
 
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 
@@ -36,9 +37,21 @@ const INK = '#171717';
 const MUTED = '#525252';
 const FAINT = '#737373';
 
-const domains = sortedTools()
-  .map((tool) => tool.domain)
-  .join('   ·   ');
+/** SVG is XML — an unescaped & in a category name kills the whole parse. */
+const esc = (text) =>
+  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/*
+ * The shelves, not the tools — fifty domains would not fit and would say less.
+ * Only the head of each name ("Email" from "Email & SMTP"), because the full
+ * set runs wider than the card at any readable size.
+ */
+const shelfNames = categories.map((category) =>
+  category.name.split(' & ')[0].toLowerCase(),
+);
+const shelves = esc(shelfNames.join('  ·  '));
+const shelvesShort = esc(shelfNames.slice(0, 5).join('  ·  '));
+const count = `${tools.length} tools`;
 
 /** The "d" mark, drawn at an arbitrary size. `rounding` of 0 gives a full bleed square. */
 function mark(size, rounding = 0.25) {
@@ -71,13 +84,13 @@ const landscape = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="
   <g transform="translate(80, 78)">${mark(56, 0.25)}</g>
   <text x="156" y="118" font-family="${SANS}" font-size="30" font-weight="800"
         letter-spacing="-1" fill="${INK}">devtool<tspan fill="${FAINT}">.fyi</tspan></text>
-  <text x="80" y="316" font-family="${SANS}" font-size="86" font-weight="800"
-        letter-spacing="-3.5" fill="${INK}">Small tools,</text>
-  <text x="80" y="410" font-family="${SANS}" font-size="86" font-weight="800"
-        letter-spacing="-3.5" fill="${INK}">built to last.</text>
-  <text x="80" y="486" font-family="${SANS}" font-size="26" fill="${MUTED}">Developer tools by Renfred Alonge</text>
+  <text x="80" y="310" font-family="${SANS}" font-size="82" font-weight="800"
+        letter-spacing="-3.4" fill="${INK}">Developer tools,</text>
+  <text x="80" y="400" font-family="${SANS}" font-size="82" font-weight="800"
+        letter-spacing="-3.4" fill="${INK}">worth the shelf space.</text>
+  <text x="80" y="478" font-family="${SANS}" font-size="26" fill="${MUTED}">A curated directory · ${count}</text>
   <line x1="80" y1="536" x2="1120" y2="536" stroke="#e5e5e5" stroke-width="1"/>
-  <text x="80" y="576" font-family="${MONO}" font-size="20" fill="${FAINT}">${domains}</text>
+  <text x="80" y="576" font-family="${MONO}" font-size="18" fill="${FAINT}">${shelves}</text>
 </svg>`;
 
 const square = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
@@ -85,13 +98,15 @@ const square = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="120
   <g transform="translate(100, 180)">${mark(96, 0.25)}</g>
   <text x="220" y="248" font-family="${SANS}" font-size="46" font-weight="800"
         letter-spacing="-1.6" fill="${INK}">devtool<tspan fill="${FAINT}">.fyi</tspan></text>
-  <text x="100" y="520" font-family="${SANS}" font-size="112" font-weight="800"
-        letter-spacing="-4.5" fill="${INK}">Small tools,</text>
-  <text x="100" y="640" font-family="${SANS}" font-size="112" font-weight="800"
-        letter-spacing="-4.5" fill="${INK}">built to last.</text>
-  <text x="100" y="736" font-family="${SANS}" font-size="34" fill="${MUTED}">Developer tools by Renfred Alonge</text>
-  <line x1="100" y1="860" x2="1100" y2="860" stroke="#e5e5e5" stroke-width="1"/>
-  <text x="100" y="916" font-family="${MONO}" font-size="26" fill="${FAINT}">${domains}</text>
+  <text x="100" y="500" font-family="${SANS}" font-size="104" font-weight="800"
+        letter-spacing="-4.2" fill="${INK}">Developer</text>
+  <text x="100" y="614" font-family="${SANS}" font-size="104" font-weight="800"
+        letter-spacing="-4.2" fill="${INK}">tools, worth</text>
+  <text x="100" y="728" font-family="${SANS}" font-size="104" font-weight="800"
+        letter-spacing="-4.2" fill="${INK}">the shelf space.</text>
+  <text x="100" y="812" font-family="${SANS}" font-size="34" fill="${MUTED}">A curated directory · ${count}</text>
+  <line x1="100" y1="880" x2="1100" y2="880" stroke="#e5e5e5" stroke-width="1"/>
+  <text x="100" y="936" font-family="${MONO}" font-size="26" fill="${FAINT}">${shelvesShort}</text>
 </svg>`;
 
 const icon = (size, rounding) =>

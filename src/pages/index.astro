@@ -2,48 +2,70 @@
 import Base from '../layouts/Base.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import Hero from '../components/Hero.astro';
-import ToolCard from '../components/ToolCard.astro';
+import CategoryCard from '../components/CategoryCard.astro';
+import ToolRow from '../components/ToolRow.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { sortedTools } from '../data/tools';
 import { SITE } from '../data/site';
+import { populatedCategories, sortedMadeHere, stats } from '../lib/directory';
 
-const tools = sortedTools();
+const cats = populatedCategories();
+const mine = sortedMadeHere();
 
-const principles = [
+/*
+ * The home page lists categories, not tools. Fifty rows here would bury the
+ * thing that makes the site usable — the shelves — under the thing that makes
+ * it long.
+ */
+const schema = [
   {
-    number: '01',
-    title: 'One front door',
-    body: 'Every tool keeps its own domain and its own identity. This page exists so none of them has to be discovered by accident.',
-  },
-  {
-    number: '02',
-    title: 'Honest status',
-    body: 'A badge on each entry says exactly what you will find: something you can use today, something half-built, or an idea with a domain attached.',
-  },
-  {
-    number: '03',
-    title: 'Built to stay small',
-    body: 'Static HTML, no tracking, no framework doing work it does not need to. Adding the next tool takes one entry in one file.',
+    '@type': 'CollectionPage',
+    '@id': `${SITE.url}/#collection`,
+    name: SITE.title,
+    description: SITE.description,
+    isPartOf: { '@id': `${SITE.url}/#website` },
+    about: cats.map((category) => ({
+      '@type': 'Thing',
+      name: category.name,
+      url: `${SITE.url}/categories/${category.id}`,
+    })),
   },
 ];
 ---
 
-<Base title={SITE.title} description={SITE.description}>
+<Base title={SITE.title} description={SITE.description} schema={schema}>
   <SiteHeader />
 
-  <main>
+  <main id="main">
     <Hero />
 
-    <section id="tools" class="section tools">
-      <div class="container container--reading">
-        <p class="eyebrow">The directory</p>
-        <h2 class="h2 tools__title">Everything, in one place.</h2>
-        <p class="lead tools__lead">
-          Each entry links straight out to the tool&rsquo;s own site. Live things come first.
+    <section id="categories" class="section">
+      <div class="container container--wide">
+        <p class="eyebrow">Browse</p>
+        <h2 class="h2 section__title">Nine shelves, {stats.tools} tools.</h2>
+        <p class="lead section__lead">
+          Each shelf is a page with the full list, what every tool runs on, and what it
+          costs. Nothing here is ranked — a directory that pretends to rank is worse than
+          one that admits it does not.
         </p>
 
-        <ul class="tools__list">
-          {tools.map((tool) => <ToolCard tool={tool} />)}
+        <div class="cats">
+          {cats.map((category) => <CategoryCard {...category} />)}
+        </div>
+      </div>
+    </section>
+
+    <section id="built-here" class="section built">
+      <div class="container container--reading">
+        <p class="eyebrow">Built here</p>
+        <h2 class="h2 section__title">Tools from this side of the site.</h2>
+        <p class="lead section__lead">
+          The reason devtool.fyi exists. These are made and maintained by
+          {SITE.author.name}, and they sit in the categories above alongside everything
+          else — no special treatment beyond this section.
+        </p>
+
+        <ul class="built__list">
+          {mine.map((tool) => <ToolRow tool={tool} />)}
         </ul>
       </div>
     </section>
@@ -51,19 +73,38 @@ const principles = [
     <section id="approach" class="section approach">
       <div class="container container--reading">
         <p class="eyebrow">Approach</p>
-        <h2 class="h2 approach__title">Why this page exists.</h2>
+        <h2 class="h2 section__title">How this list works.</h2>
 
         <div class="approach__grid">
-          {
-            principles.map((item) => (
-              <div class="principle">
-                <span class="principle__number">{item.number}</span>
-                <span class="principle__rule" aria-hidden="true" />
-                <h3 class="principle__title">{item.title}</h3>
-                <p class="principle__body">{item.body}</p>
-              </div>
-            ))
-          }
+          <div class="principle">
+            <span class="principle__number">01</span>
+            <span class="principle__rule" aria-hidden="true"></span>
+            <h3 class="principle__title">Opinions, not listings</h3>
+            <p class="principle__body">
+              Every entry says what the tool is actually for and where the catch is. A
+              directory that only repeats marketing copy saves nobody any time.
+            </p>
+          </div>
+
+          <div class="principle">
+            <span class="principle__number">02</span>
+            <span class="principle__rule" aria-hidden="true"></span>
+            <h3 class="principle__title">Small enough to trust</h3>
+            <p class="principle__body">
+              A curated set, not everything that exists. Shelves get added when there are
+              enough good tools to fill one, not to pad the count.
+            </p>
+          </div>
+
+          <div class="principle">
+            <span class="principle__number">03</span>
+            <span class="principle__rule" aria-hidden="true"></span>
+            <h3 class="principle__title">Built to stay small</h3>
+            <p class="principle__body">
+              Static HTML, no tracking, no framework doing work it does not need to.
+              Adding the next tool takes one entry in one file.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -73,17 +114,27 @@ const principles = [
 </Base>
 
 <style>
-  .tools__title,
-  .approach__title {
+  .section__title {
     margin-top: 1.25rem;
   }
 
-  .tools__lead {
+  .section__lead {
     margin-top: 1.5rem;
   }
 
-  .tools__list {
+  .cats {
     margin-top: 3.5rem;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  }
+
+  .built {
+    border-top: 1px solid var(--border);
+  }
+
+  .built__list {
+    margin-top: 2.5rem;
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
   }
@@ -133,7 +184,6 @@ const principles = [
   @media (min-width: 640px) {
     .approach__grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 3rem;
     }
 
     .principle__number {

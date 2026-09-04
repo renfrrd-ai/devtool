@@ -1,0 +1,71 @@
+---
+/*
+ * The one small-label component. Variants differ by weight and fill only —
+ * there is no accent hue on this site, so emphasis is inversion, not colour.
+ * Every variant carries its own text, so none of them depend on being seen.
+ */
+
+interface Props {
+  variant?: 'default' | 'solid' | 'outline' | 'dashed' | 'muted';
+  /** A leading dot, for "this is live right now". */
+  dot?: boolean;
+}
+
+const { variant = 'default', dot = false } = Astro.props;
+---
+
+<span class:list={['tag', `tag--${variant}`]}>
+  {dot && <span class="tag__dot" aria-hidden="true"></span>}
+  <slot />
+</span>
+
+<style>
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-shrink: 0;
+    border-radius: 999px;
+    padding: 0.1875rem 0.625rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+
+  .tag--default {
+    background: var(--chip-bg);
+    color: var(--text-muted);
+  }
+
+  .tag--solid {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .tag--outline {
+    color: var(--text);
+    border-color: var(--border-strong);
+  }
+
+  .tag--dashed {
+    color: var(--text-faint);
+    border-color: var(--border-strong);
+    border-style: dashed;
+  }
+
+  .tag--muted {
+    color: var(--text-faint);
+    padding-inline: 0;
+  }
+
+  .tag__dot {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 999px;
+    background: currentColor;
+  }
+</style>

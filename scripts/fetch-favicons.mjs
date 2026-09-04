@@ -9,11 +9,15 @@
  * privacy claim in the footer true), and a tool site going down doesn't take its
  * row's icon with it.
  *
- * Preference order is SVG, then apple-touch-icon, then any raster <link> icon.
- * Rasters are normalized to a 128px PNG. Bare favicon.ico is skipped — sharp has
- * no ICO decoder, and every site here offers something better.
+ * Preference order is SVG, then apple-touch-icon, then any raster <link> icon,
+ * then a rendered PNG from Google's favicon service. Rasters are normalized to a
+ * 128px PNG.
  *
- * A tool with no usable icon is left alone; ToolCard falls back to a monogram.
+ * The last fallback exists because plenty of sites still ship only favicon.ico,
+ * which sharp has no decoder for. That lookup happens here at build time and the
+ * result is committed, so the deployed page still makes no third-party requests.
+ *
+ * A tool with no usable icon is left alone; the row falls back to a monogram.
  */
 
 import { writeFileSync, mkdirSync } from 'node:fs';
@@ -51,35 +55,61 @@ function findIcons(html, baseUrl) {
   return candidates.sort((a, b) => a.rank - b.rank);
 }
 
+/** Last resort for sites that publish only a favicon.ico. */
+async function renderedFallback(tool) {
+  const url = `https://www.google.com/s2/favicons?sz=128&domain=${encodeURIComponent(tool.domain)}`;
+  const res = await fetch(url, { headers: { 'User-Agent': UA } });
+  if (!res.ok) return null;
+
+  const buffer = Buffer.from(await res.arrayBuffer());
+  // The service returns a tiny generic globe when it has nothing; skip those.
+  if (buffer.length < 300) return null;
+
+  const png = await sharp(buffer).resize(128, 128, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } }).png({ compressionLevel: 9 }).toBuffer();
+  writeFileSync(join(OUT_DIR, `${tool.id}.png`), png);
+  return { file: `${tool.id}.png`, bytes: png.length, from: 'favicon service' };
+}
+
 async function fetchIcon(tool) {
-  const page = await fetch(tool.url, { headers: { 'User-Agent': UA } });
-  if (!page.ok) throw new Error(`${page.status} fetching ${tool.url}`);
+  let candidates = [];
 
-  const html = await page.text();
-  const candidates = findIcons(html, page.url);
-
-  for (const candidate of candidates) {
-    const res = await fetch(candidate.url, { headers: { 'User-Agent': UA } });
-    if (!res.ok) continue;
-
-    const buffer = Buffer.from(await res.arrayBuffer());
-    if (buffer.length === 0) continue;
-
-    if (candidate.isSvg) {
-      // Keep vectors as vectors — they stay crisp at any tile size.
-      writeFileSync(join(OUT_DIR, `${tool.id}.svg`), buffer);
-      return { file: `${tool.id}.svg`, bytes: buffer.length, from: candidate.url };
+  try {
+    const page = await fetch(tool.url, { headers: { 'User-Agent': UA } });
+    if (page.ok) {
+      candidates = findIcons(await page.text(), page.url);
     }
-
-    const png = await sharp(buffer)
-      .resize(128, 128, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-      .png({ compressionLevel: 9 })
-      .toBuffer();
-    writeFileSync(join(OUT_DIR, `${tool.id}.png`), png);
-    return { file: `${tool.id}.png`, bytes: png.length, from: candidate.url };
+  } catch {
+    // Unreachable site — the fallback below may still know its icon.
   }
 
-  return null;
+  for (const candidate of candidates) {
+    // Each candidate has to fail on its own, or one undecodable icon costs the
+    // tool its fallback too.
+    try {
+      const res = await fetch(candidate.url, { headers: { 'User-Agent': UA } });
+      if (!res.ok) continue;
+
+      const buffer = Buffer.from(await res.arrayBuffer());
+      if (buffer.length === 0) continue;
+
+      if (candidate.isSvg) {
+        // Keep vectors as vectors — they stay crisp at any tile size.
+        writeFileSync(join(OUT_DIR, `${tool.id}.svg`), buffer);
+        return { file: `${tool.id}.svg`, bytes: buffer.length, from: candidate.url };
+      }
+
+      const png = await sharp(buffer)
+        .resize(128, 128, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+        .png({ compressionLevel: 9 })
+        .toBuffer();
+      writeFileSync(join(OUT_DIR, `${tool.id}.png`), png);
+      return { file: `${tool.id}.png`, bytes: png.length, from: candidate.url };
+    } catch {
+      // Try the next candidate, then the rendered fallback.
+    }
+  }
+
+  return renderedFallback(tool);
 }
 
 for (const tool of tools) {

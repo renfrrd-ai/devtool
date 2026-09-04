@@ -2,25 +2,25 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Tool } from '../data/tools';
-import StatusBadge from './StatusBadge.astro';
+import Tag from './Tag.astro';
 
 interface Props {
   tool: Tool;
+  /** Hide the stack tags where the row is already carrying enough. */
+  compact?: boolean;
 }
 
-const { tool } = Astro.props;
+const { tool, compact = false } = Astro.props;
 const monogram = tool.name.charAt(0).toUpperCase();
 
 /*
  * An explicit `logo` wins; otherwise we pick up whatever `npm run logos`
- * vendored for this tool. Resolved at build time, so a missing icon costs the
- * page nothing and quietly falls back to a monogram.
+ * vendored. Resolved at build time against the project root — import.meta.url
+ * points into the Vite output here, not at this source file.
  */
 function resolveLogo(): string | undefined {
   if (tool.logo) return tool.logo;
   for (const ext of ['svg', 'png']) {
-    // Resolved against the project root — import.meta.url points into the Vite
-    // build output here, not at this source file.
     if (existsSync(join(process.cwd(), 'public', 'logos', `${tool.id}.${ext}`))) {
       return `/logos/${tool.id}.${ext}`;
     }
@@ -29,14 +29,31 @@ function resolveLogo(): string | undefined {
 }
 
 const logo = resolveLogo();
+
+const STATUS_LABELS: Record<string, string> = {
+  live: 'Live',
+  beta: 'Beta',
+  'coming-soon': 'Coming Soon',
+  idea: 'Idea',
+};
+
+const PRICING_LABELS: Record<string, string> = {
+  free: 'Free',
+  freemium: 'Freemium',
+  paid: 'Paid',
+};
+
+// Three tags is the readable limit on a row; the rest are on the tool page.
+const stack = (tool.stack ?? []).slice(0, 3);
+const overflow = (tool.stack?.length ?? 0) - stack.length;
 ---
 
 <li class="row">
-  <a class="row__link" href={tool.url} rel="noopener" id={tool.id}>
+  <a class="row__link" href={`/tools/${tool.id}`}>
     <span class:list={['row__mark', logo && 'row__mark--logo']} aria-hidden="true">
       {
         logo ? (
-          <img class="row__logo" src={logo} alt="" width="48" height="48" loading="lazy" />
+          <img class="row__logo" src={logo} alt="" width="44" height="44" loading="lazy" />
         ) : (
           <span class="row__monogram">{monogram}</span>
         )
@@ -46,12 +63,45 @@ const logo = resolveLogo();
     <span class="row__body">
       <span class="row__head">
         <span class="row__name">{tool.name}</span>
-        <StatusBadge status={tool.status} />
+        {tool.madeHere && <Tag variant="solid">Built here</Tag>}
+        {
+          tool.madeHere && tool.status && tool.status !== 'live' && (
+            <Tag variant="dashed">{STATUS_LABELS[tool.status]}</Tag>
+          )
+        }
       </span>
+
       <span class="row__tagline">{tool.tagline}</span>
+
+      {
+        !compact && (
+          <span class="row__meta">
+            <span class="row__pricing">{PRICING_LABELS[tool.pricing]}</span>
+            {tool.openSource && (
+              <>
+                <span class="row__sep" aria-hidden="true">
+                  ·
+                </span>
+                <span class="row__oss">{tool.licence ?? 'Open source'}</span>
+              </>
+            )}
+            {stack.length > 0 && (
+              <>
+                <span class="row__sep" aria-hidden="true">
+                  ·
+                </span>
+                <span class="row__stack">
+                  {stack.join(', ')}
+                  {overflow > 0 && ` +${overflow}`}
+                </span>
+              </>
+            )}
+          </span>
+        )
+      }
     </span>
 
-    <span class="row__meta">
+    <span class="row__end">
       <span class="row__domain">{tool.domain}</span>
       <svg
         class="row__arrow"
@@ -63,7 +113,7 @@ const logo = resolveLogo();
         stroke-linejoin="round"
         aria-hidden="true"
       >
-        <path d="M7 17 17 7M7 7h10v10"></path>
+        <path d="M9 6l6 6-6 6"></path>
       </svg>
     </span>
   </a>
@@ -79,7 +129,7 @@ const logo = resolveLogo();
     grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: 1.25rem;
-    padding: 1.5rem 0.75rem;
+    padding: 1.25rem 0.75rem;
     margin-inline: -0.75rem;
     border-radius: var(--radius-sm);
     transition: background-color 150ms ease;
@@ -89,23 +139,20 @@ const logo = resolveLogo();
     background: var(--bg-subtle);
   }
 
-  /* The tool's own favicon, or a monogram tile when it has no mark. */
   .row__mark {
     display: grid;
     place-items: center;
-    width: 3rem;
-    height: 3rem;
+    width: 2.75rem;
+    height: 2.75rem;
     flex-shrink: 0;
     border: 1px solid var(--border);
-    border-radius: 0.75rem;
+    border-radius: 0.625rem;
     background: var(--surface);
     overflow: hidden;
   }
 
-  /*
-   * Real marks arrive with their own ground and their own corner radius, so the
-   * chrome comes off — a bordered tile around a tile reads as a mistake.
-   */
+  /* Real marks bring their own ground and corner radius — a bordered tile
+     around a tile reads as a mistake. */
   .row__mark--logo {
     border-color: transparent;
     background: none;
@@ -119,7 +166,7 @@ const logo = resolveLogo();
 
   .row__monogram {
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 600;
     color: var(--text-faint);
   }
@@ -128,39 +175,56 @@ const logo = resolveLogo();
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.375rem;
+    gap: 0.3125rem;
   }
 
   .row__head {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.625rem;
     flex-wrap: wrap;
   }
 
   .row__name {
     font-family: var(--font-display);
-    font-size: 1.75rem;
+    font-size: 1.375rem;
     font-weight: 600;
-    line-height: 1.15;
-    letter-spacing: -0.025em;
-    transition: transform 300ms ease;
-  }
-
-  .row__link:hover .row__name {
-    transform: translateX(3px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
 
   .row__tagline {
     color: var(--text-muted);
+    font-size: 0.9375rem;
     line-height: 1.5;
-    max-width: 58ch;
+    max-width: 62ch;
   }
 
+  /* The detail line: pricing, licence, stack — one quiet mono row, not chips.
+     Fifty rows of chips is a wall; this reads as a caption. */
   .row__meta {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.125rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-faint);
+  }
+
+  .row__pricing {
+    color: var(--text-muted);
+  }
+
+  .row__sep {
+    opacity: 0.5;
+  }
+
+  .row__end {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     flex-shrink: 0;
   }
 
@@ -176,8 +240,8 @@ const logo = resolveLogo();
   }
 
   .row__arrow {
-    width: 1.375rem;
-    height: 1.375rem;
+    width: 1.125rem;
+    height: 1.125rem;
     color: var(--neutral-400);
     transition:
       transform 150ms ease,
@@ -186,41 +250,30 @@ const logo = resolveLogo();
 
   .row__link:hover .row__arrow {
     color: var(--text);
-    transform: translate(2px, -2px);
+    transform: translateX(2px);
   }
 
-  @media (min-width: 768px) {
-    .row__name {
-      font-size: 2.25rem;
-    }
-
-    .row__link {
-      padding-block: 2rem;
-    }
-  }
-
-  /* The domain moves under the name on narrow screens; the arrow stays put. */
-  @media (max-width: 640px) {
+  @media (max-width: 720px) {
     .row__link {
       grid-template-columns: auto 1fr;
-      gap: 1rem;
+      gap: 0.875rem;
       align-items: start;
     }
 
     .row__mark {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 0.625rem;
+      width: 2.25rem;
+      height: 2.25rem;
     }
 
     .row__name {
-      font-size: 1.5rem;
+      font-size: 1.125rem;
     }
 
-    .row__meta {
+    .row__end {
       grid-column: 2;
       justify-content: space-between;
       width: 100%;
+      margin-top: 0.25rem;
     }
   }
 </style>

@@ -1,135 +1,161 @@
 # Content model
 
-Every tool on devtool.fyi is one entry in `src/data/tools.ts`. That file is the source of
-truth: the cards, their order, and their badges are all derived from it. Nothing about a
-tool is written directly into markup.
+Two data files, and everything else derives from them:
 
-## The schema
+- **`src/data/tools.ts`** — every entry in the directory. The one file you edit to add a
+  tool.
+- **`src/data/categories.ts`** — the shelves. Changed rarely and deliberately.
+
+Derived views (grouping, counts, sorting, alternatives) live in `src/lib/directory.ts`, so
+no page template ever contains a hard-coded tool name.
+
+## The tool schema
 
 ```ts
+export type Pricing = 'free' | 'freemium' | 'paid';
 export type ToolStatus = 'live' | 'beta' | 'coming-soon' | 'idea';
 
 export interface Tool {
-  /** Stable identifier. Lowercase, no spaces. Used as a React-style key and anchor. */
+  /** URL slug: /tools/<id>. Lowercase, no spaces. Also the logo filename. */
   id: string;
-
-  /** Display name, cased the way the tool brands itself. */
   name: string;
-
-  /** Canonical URL, including protocol. */
   url: string;
-
-  /** Domain as shown on the card, without protocol — e.g. "clueline.dev". */
+  /** Shown on the row, without protocol. */
   domain: string;
 
-  /**
-   * One line: what it does and who it's for. Aim for under 100 characters so it
-   * fits on two lines on mobile. No trailing period.
-   */
+  /** One line, under ~95 characters, no trailing period. */
   tagline: string;
+  /** Two or three sentences for the tool page. */
+  description: string;
 
-  /** Drives the badge and the display ordering. */
-  status: ToolStatus;
+  /** Primary category first — it decides the breadcrumb and the tool page header. */
+  categories: string[];
 
-  /**
-   * Path under public/, e.g. "/logos/clueline.svg". Usually omitted — see
-   * "Icons" below, which finds one automatically.
-   */
+  pricing: Pricing;
+  openSource?: boolean;
+  /** SPDX-ish identifier. Only when `openSource`. */
+  licence?: string;
+  /** What it runs on or is built with. Three or four at most. */
+  stack?: string[];
+
+  /** Other entries worth comparing against. Tool ids. */
+  alternatives?: string[];
+
+  /** Built and maintained by Renfred — surfaces it in the Built here section. */
+  madeHere?: boolean;
+  /** Only set for `madeHere` tools. */
+  status?: ToolStatus;
+
+  /** Path under public/. Usually omitted; `npm run logos` fills this in. */
   logo?: string;
-
-  /** ISO date the entry was added. Used to break ties in ordering. */
   addedAt: string;
 }
 ```
 
-## Statuses
+## Writing the copy
 
-The four statuses come straight from the PRD. They are a promise to the visitor about
-what they'll find if they click, so keep the meanings tight:
+The two text fields do different jobs, and an entry where they say the same thing twice is
+worse than one with only a tagline.
 
-| Status | Badge | Means |
-| --- | --- | --- |
-| `live` | **Live** | Publicly usable today. Someone can sign up or start using it now. |
-| `beta` | **Beta** | Usable but rough or invite-gated. Expect sharp edges. |
-| `coming-soon` | **Coming Soon** | Being actively built. There's something at the domain — at minimum a landing page. |
-| `idea` | **Idea** | A domain and a direction, nothing built. The link may go nowhere useful. |
+**`tagline`** — what it does and who it is for, in one line. It has to survive being read
+against five others on the same page, so keep them within about twenty characters of each
+other in length. No marketing intensifiers: every tool in the directory is "powerful" and
+"modern," so the words carry no information.
 
-Don't invent a fifth status without a reason that survives a week. Every added status is
-another color, another label, and another thing a visitor has to interpret.
+> `Merchant of record for software — it owns the global tax problem`
 
-## Ordering
+**`description`** — two or three sentences saying something the tagline cannot: the
+trade-off, the catch, who it is genuinely not for. This is the whole reason a tool page
+exists. If it just restates the tagline at greater length, cut it and write a real one.
 
-Cards render in status order — `live`, then `beta`, then `coming-soon`, then `idea` — and
-within a status, most recently added first. The rule is deliberate: the visitor's
-attention should land on things they can actually use, and the newest work is the most
-interesting of what's left.
+> `Paddle is the seller of record, which means it registers for and remits sales tax and
+> VAT worldwide instead of you. You pay a higher percentage than a raw processor and
+> accept less control over checkout; for a small team selling internationally that is
+> usually the right trade.`
 
-Ordering lives in `index.astro`, not in the data file, so nobody has to hand-maintain a
-`sortOrder` field.
+**`stack`** — what the tool runs on or is built with, not its feature list. `Cloudflare
+Workers, R2, Self-hosted` is a stack; `Shared inboxes, Team access` is a feature list and
+belongs in the description.
 
-## Example entry
+## Pricing and licence are separate fields
+
+`pricing` describes what you pay; `openSource` describes the licence. They are orthogonal
+and conflating them gets tools wrong in both directions — Plausible is open source *and*
+paid to use hosted; Better Auth is open source and free; Sentry is source-available under
+BSL and mostly paid.
+
+| `pricing` | Means |
+| --- | --- |
+| `free` | No cost for normal use |
+| `freemium` | Usable free tier, paid tiers beyond it |
+| `paid` | You pay to use it in any real capacity |
+
+## Status is only for tools built here
+
+Third-party entries are all shipping, so a status badge on them would be noise. `status`
+exists to say where *our own* tools stand, and only `madeHere` entries set it. It renders
+as a badge only when it is not `live` — a "Live" badge on every one of our tools tells the
+reader nothing.
+
+| Status | Means |
+| --- | --- |
+| `live` | Publicly usable today |
+| `beta` | Usable but rough or invite-gated |
+| `coming-soon` | Being actively built; something exists at the domain |
+| `idea` | A domain and a direction, nothing built |
+
+## Categories
 
 ```ts
-{
-  id: 'hqbase',
-  name: 'HQBase',
-  url: 'https://hqbase.io',
-  domain: 'hqbase.io',
-  tagline: "Your team's email on your own Cloudflare infrastructure — shared mailboxes, unlimited seats, open source",
-  status: 'live',
-  addedAt: '2026-09-04',
+export interface Category {
+  id: string;          // URL slug: /categories/<id>
+  name: string;
+  tagline: string;     // one line for the card on the home page
+  description: string; // a short paragraph for the category page header
 }
 ```
 
-No `logo` field: `npm run logos` vendored `public/logos/hqbase.svg` from the site's own
-favicon, and `ToolCard` picks it up by `id`.
+The set is fixed and curated, not a free-form tag cloud. Adding a category is a deliberate
+act: it creates a page that has to earn its place, and a shelf with two tools on it looks
+broken. **Six entries is roughly the floor.**
 
-The taglines for Clueline and HQBase are written from each product's own homepage copy
-rather than invented. trueluk's is still a placeholder, tracked as
-[Q2](decisions.md#q2--what-should-truelukcom-become).
+A category's `description` should name the trade-off that actually distinguishes the tools
+on that shelf — for payments, whether the provider is a merchant of record; for databases,
+the operational shape around Postgres. A description that restates the category name is
+wasted space at the top of every one of those pages.
+
+A tool can belong to several categories; the first is primary and decides its breadcrumb.
+Categories with no tools never render — see
+[information architecture](information-architecture.md#empty-shelves-never-render).
 
 ## Icons
 
 `npm run logos` reads the tool list, fetches each site's favicon, and writes it to
-`public/logos/<id>.svg` (or `.png` for rasters, normalized to 128px). `ToolCard` looks for
-that file at build time and falls back to a monogram tile when there isn't one.
+`public/logos/<id>.svg` (or `.png` for rasters, normalized to 128px). Rows and tool pages
+look for that file at build time and fall back to a monogram tile when there isn't one.
 
-So in the normal case you write no logo config at all. The `logo` field is an override for
-when a tool's favicon is a poor tile — too detailed at 48px, or cropped oddly — and you
-want to hand-place a different file.
+Preference order is SVG, then apple-touch-icon, then any raster icon link, then a rendered
+PNG from Google's favicon service — that last one exists because plenty of sites still
+publish only a `favicon.ico`, which sharp cannot decode. All of it happens at build time
+and the result is committed, so the deployed page still makes no third-party requests.
 
-The icons are committed rather than hotlinked, deliberately:
-[D10](decisions.md#d10--tool-icons-are-vendored-not-hotlinked).
+Currently 48 of 49 entries resolve an icon; trueluk has no site to fetch one from.
+
+The `logo` field overrides all of this, for when a tool's favicon makes a poor 44px tile.
 
 ## Adding a tool
 
-The PRD's success criterion is that this takes under 15 minutes. Here's the whole
-procedure:
+Under 15 minutes, and it touches one file:
 
-1. **Add the entry.** Append an object to the `tools` array in `src/data/tools.ts`.
-   TypeScript will tell you if you've missed a field or mistyped a status.
-2. **Write the tagline.** One line, what it does and who it's for, under 100 characters.
-   This is the only part that takes real thought — the rest is mechanical.
-3. **Grab the icon.** `npm run logos`. If it reports no usable icon, either drop a file at
-   `public/logos/<id>.svg` yourself or let the monogram stand.
-4. **Check it locally.** `npm run dev`, look at the row on a narrow viewport as well as a
-   wide one, and in both themes.
-5. **Add the backlink.** The new tool's own site should link to devtool.fyi. This is part
-   of the PRD's success criteria and is easy to forget because it lives in a different
-   repo.
-6. **Ship it.** Open a PR; the deploy preview renders the new row. Merge.
+1. **Add the entry** to the `tools` array in `src/data/tools.ts`. TypeScript catches a
+   missing field or a mistyped status.
+2. **Write the tagline and the description.** The only part that takes real thought.
+3. **Set `categories`,** primary first. If nothing fits, that is a signal you may need a
+   new shelf — see the floor rule above.
+4. **Run `npm run logos`.** It fetches only what is missing.
+5. **Check it** with `npm run dev`: the row on a narrow viewport, the tool page, and both
+   themes.
+6. **Ship it.** Open a PR; the deploy preview renders it.
 
-Steps 1–3 are about five minutes. The stat row in the hero, the footer list, the sitemap,
-and the JSON-LD `ItemList` all derive from the same array, so none of them need touching.
-
-## Writing taglines
-
-The tagline is the entire pitch. Some guidance that keeps the grid readable:
-
-- Lead with what it does, not what it is. "Translates stack traces into plain English"
-  beats "A developer productivity platform."
-- Name the audience when it isn't obvious from the verb.
-- Skip the marketing intensifiers. Every tool on the page is "powerful" and "modern," so
-  the words carry no information.
-- Keep them within about 20 characters of one another in length. Wildly uneven taglines
-  make the grid look broken even when the CSS is fine.
+The category counts, sample names, hero statistics, footer lists, the tool's own page, the
+sitemap and the structured data all follow from step 1. None of them need touching.

@@ -1,0 +1,186 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import ToolRow from '../../components/ToolRow.astro';
+import { categories } from '../../data/categories';
+import { SITE } from '../../data/site';
+import { toolsInCategory, populatedCategories } from '../../lib/directory';
+
+export function getStaticPaths() {
+  return categories
+    .filter((category) => toolsInCategory(category.id).length > 0)
+    .map((category) => ({ params: { slug: category.id }, props: { category } }));
+}
+
+const { category } = Astro.props;
+const tools = toolsInCategory(category.id);
+const others = populatedCategories().filter((other) => other.id !== category.id);
+
+const title = `${category.name} — devtool.fyi`;
+const description = `${tools.length} ${category.name.toLowerCase()} tools for developers: ${tools
+  .map((tool) => tool.name)
+  .slice(0, 6)
+  .join(', ')}. What each is for, what it runs on, and what it costs.`;
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: category.name, href: `/categories/${category.id}` },
+];
+
+const schema = [
+  {
+    '@type': 'CollectionPage',
+    name: title,
+    description: category.description,
+    isPartOf: { '@id': `${SITE.url}/#website` },
+    mainEntity: {
+      '@type': 'ItemList',
+      name: category.name,
+      numberOfItems: tools.length,
+      itemListElement: tools.map((tool, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: tool.name,
+        description: tool.tagline,
+        url: `${SITE.url}/tools/${tool.id}`,
+      })),
+    },
+  },
+];
+---
+
+<Base title={title} description={description} schema={schema} crumbs={crumbs}>
+  <SiteHeader />
+
+  <main id="main">
+    <header class="head">
+      <div class="container container--reading">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{category.name}</span>
+        </nav>
+
+        <h1 class="head__title">{category.name}</h1>
+        <p class="head__lead">{category.description}</p>
+        <p class="head__count">
+          {tools.length}
+          {tools.length === 1 ? 'tool' : 'tools'}
+        </p>
+      </div>
+    </header>
+
+    <section class="list-section">
+      <div class="container container--reading">
+        <ul class="list">
+          {tools.map((tool) => <ToolRow tool={tool} />)}
+        </ul>
+      </div>
+    </section>
+
+    <section class="more">
+      <div class="container container--reading">
+        <p class="eyebrow">Other shelves</p>
+        <ul class="more__list">
+          {
+            others.map((other) => (
+              <li>
+                <a class="more__link" href={`/categories/${other.id}`}>
+                  {other.name}
+                  <span class="more__count">{other.count}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+</Base>
+
+<style>
+  .head {
+    padding-block: 3rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .crumbs a:hover {
+    color: var(--text);
+  }
+
+  .head__title {
+    margin-top: 1.25rem;
+    font-size: var(--text-h2);
+    line-height: var(--text-h2-lh);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .head__lead {
+    margin-top: 1.25rem;
+    max-width: 62ch;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  .head__count {
+    margin-top: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .list-section {
+    padding-block: 1rem 4rem;
+  }
+
+  .more {
+    padding-block: 3rem 5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-subtle);
+  }
+
+  .more__list {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+  }
+
+  .more__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    padding: 0.5rem 1rem;
+    font-size: var(--text-ui);
+    font-weight: 500;
+    transition: border-color 150ms ease;
+  }
+
+  .more__link:hover {
+    border-color: var(--text);
+  }
+
+  .more__count {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+</style>

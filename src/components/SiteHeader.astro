@@ -1,9 +1,16 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 
+/*
+ * Anchors only work on the home page, so on every other route they point back
+ * to it — a nav link that silently does nothing is worse than one that navigates.
+ */
+const onHome = Astro.url.pathname === '/';
+const base = onHome ? '' : '/';
+
 const links = [
-  { label: 'Tools', href: '#tools' },
-  { label: 'Approach', href: '#approach' },
+  { label: 'Categories', href: `${base}#categories` },
+  { label: 'Built here', href: `${base}#built-here` },
 ];
 ---
 
@@ -19,7 +26,7 @@ const links = [
 
     <div class="header__actions">
       <ThemeToggle />
-      <a class="header__cta" href="#tools">Browse tools</a>
+      <a class="header__cta" href={`${base}#categories`}>Browse</a>
     </div>
   </div>
 </header>

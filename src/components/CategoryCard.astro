@@ -1,0 +1,82 @@
+---
+import { sampleNames } from '../lib/directory';
+
+interface Props {
+  id: string;
+  name: string;
+  tagline: string;
+  count: number;
+}
+
+const { id, name, tagline, count } = Astro.props;
+const names = sampleNames(id, 4);
+---
+
+<a class="cat" href={`/categories/${id}`}>
+  <span class="cat__head">
+    <span class="cat__name">{name}</span>
+    <span class="cat__count">{count}</span>
+  </span>
+
+  <span class="cat__tagline">{tagline}</span>
+
+  {/* Naming actual tools is what makes the card worth clicking. */}
+  <span class="cat__names">{names.join(' · ')}</span>
+</a>
+
+<style>
+  .cat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .cat:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-subtle);
+  }
+
+  .cat__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .cat__name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .cat__count {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cat__tagline {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .cat__names {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-faint);
+    line-height: 1.6;
+  }
+</style>

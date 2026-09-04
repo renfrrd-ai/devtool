@@ -1,0 +1,442 @@
+---
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import ToolRow from '../../components/ToolRow.astro';
+import Tag from '../../components/Tag.astro';
+import { tools } from '../../data/tools';
+import { SITE } from '../../data/site';
+import { alternativesFor, categoriesOf, primaryCategory } from '../../lib/directory';
+
+export function getStaticPaths() {
+  return tools.map((tool) => ({ params: { slug: tool.id }, props: { tool } }));
+}
+
+const { tool } = Astro.props;
+
+const cats = categoriesOf(tool);
+const primary = primaryCategory(tool);
+const alternatives = alternativesFor(tool);
+
+function resolveLogo(): string | undefined {
+  if (tool.logo) return tool.logo;
+  for (const ext of ['svg', 'png']) {
+    if (existsSync(join(process.cwd(), 'public', 'logos', `${tool.id}.${ext}`))) {
+      return `/logos/${tool.id}.${ext}`;
+    }
+  }
+  return undefined;
+}
+
+const logo = resolveLogo();
+const monogram = tool.name.charAt(0).toUpperCase();
+
+const PRICING_LABELS = { free: 'Free', freemium: 'Freemium', paid: 'Paid' } as const;
+const STATUS_LABELS: Record<string, string> = {
+  live: 'Live',
+  beta: 'Beta',
+  'coming-soon': 'Coming Soon',
+  idea: 'Idea',
+};
+
+const title = `${tool.name} — ${primary?.name ?? 'Tools'} — devtool.fyi`;
+const description = tool.tagline;
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  ...(primary ? [{ name: primary.name, href: `/categories/${primary.id}` }] : []),
+  { name: tool.name, href: `/tools/${tool.id}` },
+];
+
+const schema = [
+  {
+    '@type': 'SoftwareApplication',
+    name: tool.name,
+    url: tool.url,
+    description: tool.description,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Web',
+    ...(tool.madeHere ? { author: { '@id': `${SITE.url}/#person` } } : {}),
+    offers: {
+      '@type': 'Offer',
+      price: tool.pricing === 'paid' ? undefined : '0',
+      priceCurrency: 'USD',
+      description: PRICING_LABELS[tool.pricing],
+    },
+  },
+];
+
+// Facts worth a row each. Anything that would be blank is dropped rather than
+// rendered as an em dash — a table of empty cells reads as a broken page.
+const facts = [
+  { label: 'Website', value: tool.domain, href: tool.url },
+  { label: 'Pricing', value: PRICING_LABELS[tool.pricing] },
+  tool.openSource ? { label: 'Licence', value: tool.licence ?? 'Open source' } : null,
+  tool.stack?.length ? { label: 'Built on', value: tool.stack.join(', ') } : null,
+  tool.madeHere && tool.status
+    ? { label: 'Status', value: STATUS_LABELS[tool.status] }
+    : null,
+].filter((fact): fact is { label: string; value: string; href?: string } =>
+  Boolean(fact),
+);
+---
+
+<Base title={title} description={description} schema={schema} crumbs={crumbs}>
+  <SiteHeader />
+
+  <main id="main">
+    <article>
+      <header class="head">
+        <div class="container container--reading">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            {
+              primary && (
+                <>
+                  <span aria-hidden="true">/</span>
+                  <a href={`/categories/${primary.id}`}>{primary.name}</a>
+                </>
+              )
+            }
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{tool.name}</span>
+          </nav>
+
+          <div class="head__main">
+            <span class:list={['mark', logo && 'mark--logo']} aria-hidden="true">
+              {
+                logo ? (
+                  <img class="mark__img" src={logo} alt="" width="64" height="64" />
+                ) : (
+                  <span class="mark__monogram">{monogram}</span>
+                )
+              }
+            </span>
+
+            <div class="head__text">
+              <div class="head__badges">
+                {tool.madeHere && <Tag variant="solid">Built here</Tag>}
+                {
+                  tool.madeHere && tool.status && (
+                    <Tag variant={tool.status === 'live' ? 'outline' : 'dashed'} dot={tool.status === 'live'}>
+                      {STATUS_LABELS[tool.status]}
+                    </Tag>
+                  )
+                }
+                {tool.openSource && <Tag variant="outline">{tool.licence ?? 'Open source'}</Tag>}
+                <Tag>{PRICING_LABELS[tool.pricing]}</Tag>
+              </div>
+
+              <h1 class="head__title">{tool.name}</h1>
+              <p class="head__tagline">{tool.tagline}</p>
+            </div>
+          </div>
+
+          <div class="head__actions">
+            <a class="btn btn--primary" href={tool.url} rel="noopener">
+              Visit {tool.domain}
+              <svg
+                class="arrow"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M7 17 17 7M7 7h10v10"></path>
+              </svg>
+            </a>
+            {
+              primary && (
+                <a class="btn btn--secondary" href={`/categories/${primary.id}`}>
+                  More {primary.name.toLowerCase()} tools
+                </a>
+              )
+            }
+          </div>
+        </div>
+      </header>
+
+      <div class="body">
+        <div class="container container--reading">
+          <div class="grid">
+            <div class="prose">
+              <h2 class="sub">What it is</h2>
+              <p class="prose__body">{tool.description}</p>
+
+              {
+                cats.length > 0 && (
+                  <>
+                    <h2 class="sub sub--spaced">Categories</h2>
+                    <ul class="cats">
+                      {cats.map((category) => (
+                        <li>
+                          <a class="cats__link" href={`/categories/${category.id}`}>
+                            {category.name}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )
+              }
+            </div>
+
+            <aside class="facts" aria-label="At a glance">
+              <dl class="facts__list">
+                {
+                  facts.map((fact) => (
+                    <div class="fact">
+                      <dt class="fact__label">{fact.label}</dt>
+                      <dd class="fact__value">
+                        {fact.href ? (
+                          <a href={fact.href} rel="noopener">
+                            {fact.value}
+                          </a>
+                        ) : (
+                          fact.value
+                        )}
+                      </dd>
+                    </div>
+                  ))
+                }
+              </dl>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      {
+        alternatives.length > 0 && (
+          <section class="alts">
+            <div class="container container--reading">
+              <p class="eyebrow">Compare with</p>
+              <h2 class="alts__title">Others worth looking at</h2>
+              <ul class="alts__list">
+                {alternatives.map((other) => (
+                  <ToolRow tool={other} compact />
+                ))}
+              </ul>
+            </div>
+          </section>
+        )
+      }
+    </article>
+  </main>
+
+  <SiteFooter />
+</Base>
+
+<style>
+  .head {
+    padding-block: 3rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .crumbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .crumbs a:hover {
+    color: var(--text);
+  }
+
+  .head__main {
+    margin-top: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .mark {
+    display: grid;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .mark--logo {
+    border-color: transparent;
+    background: none;
+  }
+
+  .mark__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .mark__monogram {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-faint);
+  }
+
+  .head__text {
+    min-width: 0;
+  }
+
+  .head__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .head__title {
+    margin-top: 0.75rem;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+  }
+
+  .head__tagline {
+    margin-top: 0.875rem;
+    max-width: 52ch;
+    font-size: var(--text-lead);
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  .head__actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .body {
+    padding-block: 3.5rem;
+  }
+
+  .grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .sub {
+    font-family: var(--font-sans);
+    font-size: var(--text-label);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .sub--spaced {
+    margin-top: 2.5rem;
+  }
+
+  .prose__body {
+    margin-top: 1rem;
+    max-width: 65ch;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  .cats {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .cats__link {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.375rem 0.875rem;
+    font-size: var(--text-ui);
+    font-weight: 500;
+    transition: border-color 150ms ease;
+  }
+
+  .cats__link:hover {
+    border-color: var(--text);
+  }
+
+  .facts__list {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--bg-subtle);
+    padding: 0.5rem 1.25rem;
+  }
+
+  .fact {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.75rem;
+  }
+
+  .fact + .fact {
+    border-top: 1px solid var(--border);
+  }
+
+  .fact__label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-faint);
+    white-space: nowrap;
+  }
+
+  .fact__value {
+    margin: 0;
+    font-size: var(--text-ui);
+    text-align: right;
+    color: var(--text);
+  }
+
+  .fact__value a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .alts {
+    padding-block: 3.5rem 5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-subtle);
+  }
+
+  .alts__title {
+    margin-top: 0.75rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .alts__list {
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (min-width: 860px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      gap: 4rem;
+    }
+  }
+</style>

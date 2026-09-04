@@ -1,14 +1,11 @@
 ---
-import { tools, countByStatus } from '../data/tools';
+import { stats } from '../lib/directory';
 
-const inProgress =
-  countByStatus('beta') + countByStatus('coming-soon') + countByStatus('idea');
-
-const stats = [
-  { value: String(tools.length), label: 'Tools' },
-  { value: String(countByStatus('live')), label: 'Live today' },
-  { value: String(inProgress), label: 'In the works' },
-  { value: '1', label: 'Person behind them' },
+const figures = [
+  { value: String(stats.tools), label: 'Tools listed' },
+  { value: String(stats.categories), label: 'Categories' },
+  { value: String(stats.openSource), label: 'Open source' },
+  { value: String(stats.madeHere), label: 'Built here' },
 ];
 ---
 
@@ -18,16 +15,16 @@ const stats = [
 
   <div class="container">
     <div class="hero__intro">
-      <p class="eyebrow">Independent developer tools</p>
-      <h1 class="hero__title">Small tools,<br />built to last.</h1>
+      <p class="eyebrow">A curated directory</p>
+      <h1 class="hero__title">Developer tools,<br />worth the shelf space.</h1>
       <p class="hero__lead">
-        A handful of developer tools made and maintained by Renfred Alonge. Each one lives on
-        its own domain — this is the page that keeps track of them.
+        Auth, payments, email, UI, databases, hosting, monitoring, analytics and AI —
+        hand-picked, with what each tool is actually for and where the catch is.
       </p>
 
       <div class="hero__actions">
-        <a class="btn btn--primary" href="#tools">
-          Browse the tools
+        <a class="btn btn--primary" href="#categories">
+          Browse by category
           <svg
             class="arrow"
             width="16"
@@ -43,16 +40,16 @@ const stats = [
             <path d="M5 12h14M13 6l6 6-6 6"></path>
           </svg>
         </a>
-        <a class="btn btn--secondary" href="#approach">How this works</a>
+        <a class="btn btn--secondary" href="#built-here">Tools built here</a>
       </div>
     </div>
 
     <dl class="hero__stats">
       {
-        stats.map((stat) => (
+        figures.map((figure) => (
           <div class="stat">
-            <dt class="stat__label">{stat.label}</dt>
-            <dd class="stat__value">{stat.value}</dd>
+            <dt class="stat__label">{figure.label}</dt>
+            <dd class="stat__value">{figure.value}</dd>
           </div>
         ))
       }
@@ -64,7 +61,7 @@ const stats = [
   .hero {
     position: relative;
     overflow: hidden;
-    padding-block: 5rem 4rem;
+    padding-block: 4.5rem 3.5rem;
   }
 
   .hero__grid {
@@ -95,12 +92,13 @@ const stats = [
     line-height: var(--text-display-lh);
     font-weight: 800;
     letter-spacing: -0.04em;
+    text-wrap: balance;
   }
 
   .hero__lead {
     margin-top: 2rem;
     margin-inline: auto;
-    max-width: 40rem;
+    max-width: 42rem;
     font-size: var(--text-lead);
     line-height: 1.55;
     color: var(--text-muted);
@@ -115,7 +113,7 @@ const stats = [
   }
 
   .hero__stats {
-    margin: 5rem 0 0;
+    margin: 4.5rem 0 0;
     padding-top: 2.5rem;
     border-top: 1px solid var(--border);
     display: grid;
@@ -136,6 +134,7 @@ const stats = [
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
   }
 
   .stat__label {
@@ -146,11 +145,11 @@ const stats = [
 
   @media (min-width: 640px) {
     .hero {
-      padding-block: 7rem 5rem;
+      padding-block: 6rem 4rem;
     }
 
     .hero__stats {
-      margin-top: 6rem;
+      margin-top: 5.5rem;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 2.5rem 5rem;
     }

@@ -7,11 +7,10 @@ export const SITE = {
   name: 'devtool.fyi',
   domain: 'devtool.fyi',
   url: 'https://devtool.fyi',
-  title: 'devtool.fyi — Developer tools by Renfred Alonge',
+  title: 'devtool.fyi — A curated directory of developer tools',
   description:
-    'A directory of the developer tools built and maintained by Renfred Alonge — Clueline, HQBase, and whatever comes next.',
-  imageAlt:
-    'devtool.fyi — Small tools, built to last. Developer tools by Renfred Alonge.',
+    'Hand-picked developer tools by category — auth, payments, email, UI, databases, hosting, monitoring, analytics and AI. What each one is for, what it runs on, and what it costs.',
+  imageAlt: 'devtool.fyi — a curated directory of developer tools, by category.',
   author: {
     name: 'Renfred Alonge',
     github: 'https://github.com/renfrrd-ai',

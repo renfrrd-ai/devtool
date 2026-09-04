@@ -185,9 +185,14 @@ svg {
   padding-inline: var(--gutter);
 }
 
-/* The tool list wants a narrower measure than the full 88rem shell. */
+/* Lists and prose want a narrower measure than the full 88rem shell. */
 .container--reading {
   max-width: 64rem;
+}
+
+/* The category grid, which wants room for three or four columns. */
+.container--wide {
+  max-width: 76rem;
 }
 
 .section {

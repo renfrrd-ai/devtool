@@ -1,8 +1,10 @@
 ---
-import { sortedTools } from '../data/tools';
+import { SITE } from '../data/site';
+import { populatedCategories, sortedMadeHere } from '../lib/directory';
 
 const year = new Date().getFullYear();
-const toolLinks = sortedTools();
+const cats = populatedCategories();
+const mine = sortedMadeHere();
 ---
 
 <footer class="footer">
@@ -10,18 +12,18 @@ const toolLinks = sortedTools();
     <div class="footer__brand">
       <a class="wordmark" href="/">devtool<span class="wordmark__tld">.fyi</span></a>
       <p class="footer__blurb">
-        Developer tools built and maintained by Renfred Alonge.
+        A curated directory of developer tools, kept deliberately small.
       </p>
     </div>
 
-    <nav class="footer__col" aria-label="Tools">
-      <h2 class="footer__heading">Tools</h2>
-      <ul class="footer__list">
+    <nav class="footer__col footer__col--wide" aria-label="Categories">
+      <h2 class="footer__heading">Categories</h2>
+      <ul class="footer__list footer__list--split">
         {
-          toolLinks.map((tool) => (
+          cats.map((category) => (
             <li>
-              <a class="footer__link" href={tool.url} rel="noopener">
-                {tool.name}
+              <a class="footer__link" href={`/categories/${category.id}`}>
+                {category.name}
               </a>
             </li>
           ))
@@ -29,24 +31,35 @@ const toolLinks = sortedTools();
       </ul>
     </nav>
 
-    <nav class="footer__col" aria-label="Elsewhere">
-      <h2 class="footer__heading">Elsewhere</h2>
+    <nav class="footer__col" aria-label="Built here">
+      <h2 class="footer__heading">Built here</h2>
+      <ul class="footer__list">
+        {
+          mine.map((tool) => (
+            <li>
+              <a class="footer__link" href={`/tools/${tool.id}`}>
+                {tool.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h2 class="footer__heading footer__heading--spaced">Elsewhere</h2>
       <ul class="footer__list">
         <li>
-          <a class="footer__link" href="https://github.com/renfrrd-ai" rel="noopener">
-            GitHub
-          </a>
+          <a class="footer__link" href={SITE.author.github} rel="noopener">GitHub</a>
         </li>
         <li>
-          <a class="footer__link" href="mailto:hello@devtool.fyi">Email</a>
+          <a class="footer__link" href={`mailto:${SITE.author.email}`}>Email</a>
         </li>
       </ul>
     </nav>
   </div>
 
   <div class="container footer__bottom">
-    <p class="footer__fine">&copy; {year} Renfred Alonge</p>
-    <p class="footer__fine">Built as a static page. No trackers, no cookies.</p>
+    <p class="footer__fine">&copy; {year} {SITE.author.name}</p>
+    <p class="footer__fine">Static pages. No trackers, no cookies.</p>
   </div>
 </footer>
 
@@ -74,7 +87,7 @@ const toolLinks = sortedTools();
 
   .footer__blurb {
     margin-top: 0.75rem;
-    max-width: 26ch;
+    max-width: 28ch;
     font-size: var(--text-ui);
     color: var(--text-muted);
   }
@@ -84,6 +97,10 @@ const toolLinks = sortedTools();
     font-size: var(--text-label);
     font-weight: 600;
     color: var(--text-faint);
+  }
+
+  .footer__heading--spaced {
+    margin-top: 2rem;
   }
 
   .footer__list {
@@ -118,8 +135,13 @@ const toolLinks = sortedTools();
 
   @media (min-width: 640px) {
     .footer__inner {
-      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-columns: 1.5fr 2fr 1fr;
       gap: 3rem;
+    }
+
+    /* Nine categories in one column is a tall stack; two keeps the footer short. */
+    .footer__list--split {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .footer__bottom {

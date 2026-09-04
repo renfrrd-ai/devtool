@@ -6,6 +6,39 @@ from the reasoning rather than from scratch.
 
 ## Decisions
 
+### D0 — The site is a curated directory, not a portfolio *(supersedes the PRD's premise)*
+
+The [PRD](prd.md) scopes devtool.fyi to "developer tools built and maintained by Renfred
+Alonge" — three entries, one page. It is now a curated directory of developer tools
+generally, organised into nine categories, with Renfred's own tools in a Built here
+section and also listed on their category shelves.
+
+Renfred's call, made after the first build shipped. The reasoning behind it is sound:
+three entries is not a destination, and nobody returns to a page listing three things they
+have already seen. A directory people actually use is a far better vehicle for the PRD's
+real goal — credibility and discovery for the tools built here — than a portfolio page
+is, because it gives someone a reason to arrive in the first place.
+
+What survives from the PRD intact: the tools built here still get a shared home and a
+credibility signal, adding a tool still takes one entry in one file, and the site is still
+static, small and untracked.
+
+What changed: the scope, the page count (1 → 59), and the emphasis. The PRD is kept as the
+historical document rather than rewritten.
+
+### D0a — Own tools appear on their category shelves, not only in Built here
+
+When asked, the choice was "curated third-party tools, with your own in a highlighted
+section." We do that *and* list HQBase under Email, Clueline under Monitoring, next to
+their competitors and carrying a "Built here" tag.
+
+Segregating them entirely would have been worse in both directions: someone browsing email
+tools would not find HQBase, and a section of tools that appear nowhere else reads as an
+advert rather than a recommendation. Standing them next to Resend and Postmark is a
+stronger claim than a roped-off section is.
+
+Flagging it because it is a small liberty taken with the answer given.
+
 ### D1 — Astro, static output, no client JS
 
 The PRD calls for a static site with no heavy framework. Astro is the smallest thing that
@@ -101,6 +134,35 @@ trackers" claim in the footer, and it would blank the icon whenever a tool site 
 
 Tools with no usable icon keep the monogram tile. `ToolCard` resolves this at build time,
 so dropping a file into `public/logos/<id>.svg` is all it takes.
+
+### D12 — Three page types: map, shelf, entry
+
+The home page lists categories, not tools. Shelves list tools. Tool pages hold the depth.
+
+The alternative — everything on one page — is the failure mode this whole structure
+exists to avoid: fifty rows is a wall, and adding the stack, pricing and licence fields
+would have made each of those rows heavier. Splitting by page type let the rows get richer
+*and* the pages get shorter at the same time.
+
+Full reasoning in [information-architecture.md](information-architecture.md).
+
+### D13 — Tools within a category are ordered alphabetically
+
+Any other order implies a ranking this directory has not earned. Alphabetical is visibly
+arbitrary, which is the honest signal to a reader. Built here is the one exception, sorted
+by status, because there it is answering "what can I use right now."
+
+### D14 — No search, no filtering
+
+Nine shelves is browsable, and the facts you would filter on are already on the row.
+Search earns its place somewhere north of twenty categories; until then it costs
+client-side JavaScript the site does not otherwise ship, for a problem nobody has.
+
+### D15 — `pricing` and `openSource` are separate fields
+
+Conflating them gets tools wrong in both directions: Plausible is open source and paid to
+use hosted, Sentry is source-available and mostly paid, Better Auth is open source and
+free. One enum could not have said any of that correctly.
 
 ### D11 — Self-hosted fonts, latin subsets only
 

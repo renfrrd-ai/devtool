@@ -10,79 +10,75 @@ import '@fontsource/jetbrains-mono/latin-400.css';
 import '@fontsource/jetbrains-mono/latin-500.css';
 import '../styles/global.css';
 
-import { sortedTools } from '../data/tools';
 import { SITE } from '../data/site';
+
+export interface Crumb {
+  name: string;
+  href: string;
+}
 
 interface Props {
   title: string;
   description: string;
   /** Overrides the site-wide social image. Path under public/. */
   image?: string;
+  /** Page-specific structured data, merged into the site-wide graph. */
+  schema?: Record<string, unknown>[];
+  /** Rendered as a BreadcrumbList; the page itself is the last crumb. */
+  crumbs?: Crumb[];
 }
 
-const { title, description, image = '/og-image.png' } = Astro.props;
+const {
+  title,
+  description,
+  image = '/og-image.png',
+  schema = [],
+  crumbs = [],
+} = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const socialImage = new URL(image, Astro.site).href;
 const squareImage = new URL('/og-square.png', Astro.site).href;
 
-const tools = sortedTools();
-
 /*
- * Three graphs, each doing a distinct job:
- *
- *   WebSite  — names the site itself, so search engines have something to
- *              attach a sitelinks box to.
- *   Person   — the credibility claim the PRD is actually about: one maintainer,
- *              these tools.
- *   ItemList — the directory as ordered data, which is what lets a crawler read
- *              this page as a list of products rather than prose.
+ * The site-wide nodes every page carries, plus whatever the page adds. WebSite
+ * names the site so a sitelinks box has something to attach to; Person is the
+ * maintainer claim behind the Built here section.
  */
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'WebSite',
-      '@id': `${SITE.url}/#website`,
-      url: `${SITE.url}/`,
-      name: SITE.name,
-      description: SITE.description,
-      inLanguage: 'en',
-      publisher: { '@id': `${SITE.url}/#person` },
-    },
-    {
-      '@type': 'Person',
-      '@id': `${SITE.url}/#person`,
-      name: SITE.author.name,
-      url: `${SITE.url}/`,
-      sameAs: [SITE.author.github],
-      jobTitle: 'Software developer',
-      owns: tools.map((tool) => ({
-        '@type': 'SoftwareApplication',
-        name: tool.name,
-        url: tool.url,
-        description: tool.tagline,
-        applicationCategory: 'DeveloperApplication',
-        operatingSystem: 'Web',
-        author: { '@id': `${SITE.url}/#person` },
-      })),
-    },
-    {
-      '@type': 'ItemList',
-      '@id': `${SITE.url}/#tools`,
-      name: 'Developer tools by Renfred Alonge',
-      numberOfItems: tools.length,
-      itemListOrder: 'https://schema.org/ItemListOrderDescending',
-      itemListElement: tools.map((tool, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        name: tool.name,
-        description: tool.tagline,
-        url: tool.url,
-      })),
-    },
-  ],
-};
+const graph: Record<string, unknown>[] = [
+  {
+    '@type': 'WebSite',
+    '@id': `${SITE.url}/#website`,
+    url: `${SITE.url}/`,
+    name: SITE.name,
+    description: SITE.description,
+    inLanguage: 'en',
+    publisher: { '@id': `${SITE.url}/#person` },
+  },
+  {
+    '@type': 'Person',
+    '@id': `${SITE.url}/#person`,
+    name: SITE.author.name,
+    url: `${SITE.url}/`,
+    sameAs: [SITE.author.github],
+    jobTitle: 'Software developer',
+  },
+  ...schema,
+];
+
+if (crumbs.length > 0) {
+  graph.push({
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((crumb, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: crumb.name,
+      item: new URL(crumb.href, SITE.url).href,
+    })),
+  });
+}
+
+const jsonLd = { '@context': 'https://schema.org', '@graph': graph };
 ---
 
 <html lang="en">
@@ -151,7 +147,7 @@ const jsonLd = {
     </script>
   </head>
   <body>
-    <a class="skip-link" href="#tools">Skip to the tools</a>
+    <a class="skip-link" href="#main">Skip to content</a>
     <slot />
   </body>
 </html>

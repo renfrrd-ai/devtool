@@ -100,18 +100,35 @@ It appears once, in the hero. Repeating it in other sections would spend the eff
 above a hairline. The stats are computed from the data file, so they can't drift from the
 list below them.
 
+**Category grid** (home) — cards on `auto-fill, minmax(20rem, 1fr)`, so the column count
+follows the viewport rather than a breakpoint guess. Each card: name, count, one line, and
+a hairline rule above four real tool names. Naming actual tools is what makes a card worth
+clicking; a category card that only says "Payments" says nothing the heading did not.
+
+Cards are the one place on the site that get a border, a radius and a fill — they are
+genuinely separate objects you pick between. Rows are not, and do not.
+
 **The tool list** — not a card grid. A `divide-y` list of full-width rows, each a single
-link: a 3rem monogram or logo tile, the tool name at display 2.25rem, its badge, the
-tagline, then the domain in mono and an outbound arrow. On hover the row tints, the name
-slides 3px right, and the arrow lifts up-and-right.
+link to that tool's page: a 2.75rem logo or monogram tile, the name at 1.375rem, any
+badges, the tagline, then a quiet mono caption of pricing, licence and stack, with the
+domain and a chevron at the end. On hover the row tints, the domain darkens, the chevron
+nudges right.
 
-The list beats a grid here for a reason worth keeping: a directory's job is comparison,
-and rows put every tagline on the same left edge where they can be read against each
-other. A grid at three entries also leaves an awkward hole; a list at three entries looks
-finished, and still looks finished at twelve.
+The list beats a grid for a reason worth keeping: a directory's job is comparison, and rows
+put every tagline on the same left edge where they can be read against each other.
 
-Below 640px the row collapses to two columns — the mark stays left, and the domain and
-arrow drop under the tagline as their own baseline.
+**The caption is a caption, not chips.** Pricing, licence and stack sit on one mono line at
+0.6875rem, separated by middots. Rendered as tags they would be visually louder than the
+tool name, and six rows of chips is a wall of pills — the exact bloat this layout exists to
+avoid. Stack is capped at three entries with a `+N` overflow; the rest is on the tool page.
+
+Below 720px the row collapses to two columns — the mark stays left, and the domain and
+chevron drop under the tagline as their own baseline.
+
+**Tool page** — a two-column body at 860px and up: prose on the left at a 65ch measure, an
+at-a-glance facts panel on the right. The panel is the one boxed element on the page, which
+is what makes it read as a reference rather than more prose. Facts that would be blank are
+dropped rather than rendered as an em dash; a table of empty cells reads as a broken page.
 
 **Approach** — three numbered columns on `--bg-subtle`. The numbering is honest here:
 these are three points read in order, not a ranked list.
@@ -122,18 +139,23 @@ these are three points read in order, not a ranked list.
 `--border-strong` outline on `--surface` that darkens to `--text` on hover. Both carry an
 arrow that nudges 2px on hover.
 
-**Status badges** are mono micro-pills at 0.6875rem, differentiated by weight and fill
-rather than hue:
+**Tags** are mono micro-pills at 0.6875rem. One component, `Tag.astro`, with variants that
+differ by weight and fill rather than hue:
 
-| Status | Treatment |
-| --- | --- |
-| Live | Solid `--text` fill, `--bg` text, with a dot |
-| Beta | Outlined, full-strength text |
-| Coming Soon | `--neutral-100` fill, muted text |
-| Idea | Dashed outline, faint text |
+| Variant | Treatment | Used for |
+| --- | --- | --- |
+| `solid` | `--text` fill, `--bg` text | "Built here" — the one thing worth shouting |
+| `outline` | Border, full-strength text | Licence, and a live status with a dot |
+| `default` | `--chip-bg` fill, muted text | Pricing |
+| `dashed` | Dashed border, faint text | Beta, Coming Soon, Idea |
 
-Every badge carries a text label, so none of this depends on color — the a11y requirement
+Every tag carries a text label, so none of this depends on color — the a11y requirement
 falls out of the monochrome constraint for free.
+
+**Badges are rationed.** Rows show a status badge only for our own tools, and only when
+the status is *not* live: a "Live" tag on every entry tells the reader nothing and turns
+the list into noise. The full set — pricing, licence, status — appears on the tool page,
+where there is one tool to describe and room to describe it.
 
 ## Dark mode
 
