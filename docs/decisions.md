@@ -188,7 +188,27 @@ a loop to inflate their favourite tool, and bot filtering to go with it — all 
 freshness nobody refreshes a directory to watch. Daily is indistinguishable from live
 here.
 
-Full design in [analytics.md](analytics.md#most-viewed-the-path-when-theres-traffic).
+Full design in [analytics.md](analytics.md#most-viewed).
+
+### D18 — The most-viewed section hides itself until there is data
+
+I argued for not building it yet, on the grounds that a top-10 on a site with no traffic
+renders a chart of zeros. Renfred asked for it built anyway, which resolved better than
+either position: it is built in full, and renders *nothing* while the snapshot is empty.
+The section appears on its own the first time the cron finds data — no chart of zeros, and
+no switch anyone has to remember to flip.
+
+Worth keeping as a pattern. A feature that depends on data it does not have yet should
+render nothing, not a shell full of placeholder values.
+
+### D19 — The snapshot stores share, never counts
+
+`popular.json` holds each tool's share of the top entry, not its view count. The repository
+is public, so committing raw numbers would publish the site's traffic figures — the exact
+thing "rank only, no raw numbers" was chosen to avoid. Putting them in a JSON file rather
+than on the page would have been the same disclosure with an extra step.
+
+Share is also all the bar chart needs, so nothing was given up.
 
 ### D13 — Tools within a category are ordered alphabetically
 

@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import Hero from '../components/Hero.astro';
 import CategoryCard from '../components/CategoryCard.astro';
+import PopularTools from '../components/PopularTools.astro';
 import ToolRow from '../components/ToolRow.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { SITE } from '../data/site';
@@ -53,6 +54,9 @@ const schema = [
         </div>
       </div>
     </section>
+
+    {/* Renders nothing until the analytics snapshot has real data in it. */}
+    <PopularTools />
 
     <section id="built-here" class="section built">
       <div class="container container--reading">

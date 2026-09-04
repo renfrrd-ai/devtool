@@ -18,6 +18,8 @@
 
 - [x] Cookieless analytics wired, inert until a token is set
 - [x] Outbound click counting via `/go/` redirect pages
+- [x] Most-viewed section: ranked bar chart, show-more, daily cron snapshot —
+      renders nothing until there is real traffic
 
 **Next** — in this order, because each one depends on the last
 
@@ -25,11 +27,11 @@
        possible until this is done, and it is the only step that needs your Cloudflare
        account rather than a commit.
 2. [ ] Set `PUBLIC_CF_BEACON_TOKEN` — [setup](analytics.md#setting-it-up)
-3. [ ] Collect a few weeks of real traffic
-4. [ ] **Then** build the most-viewed section — top 10, rank only, build-time SVG chart,
-       `<details>` for show-more. Design already settled in
-       [analytics.md](analytics.md#most-viewed-the-path-when-theres-traffic); building it
-       before there is traffic renders a chart of zeros.
+3. [ ] Add the `CF_*` repository secrets and run the refresh workflow by hand once, to
+       confirm the GraphQL query against a live account —
+       [details](analytics.md#secrets-it-needs)
+4. [ ] Collect traffic. The most-viewed section appears by itself once the cron finds
+       data; nothing to build or switch on.
 
 **Also next**
 - [ ] A second pass on descriptions: they are accurate, but a few are drier than they need to be

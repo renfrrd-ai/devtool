@@ -11,6 +11,7 @@
     "preview": "astro preview",
     "images": "node scripts/build-images.mjs",
     "logos": "node scripts/fetch-favicons.mjs",
+    "popular": "node scripts/fetch-popular.mjs",
     "astro": "astro"
   },
   "dependencies": {

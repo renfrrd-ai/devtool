@@ -1,0 +1,230 @@
+---
+/*
+ * Most-viewed tools, as a ranked horizontal bar chart.
+ *
+ * Form: magnitude across ranked identities, so horizontal bars — one row per
+ * tool, sorted, name as the row label. A single series, so there is no
+ * categorical palette and no legend: the bars take `--text` like everything
+ * else on this site, which has no accent hue by design.
+ *
+ * No tooltips. The usual reason for one is to reveal a value the mark only
+ * implies, and there is deliberately no value to reveal here — the snapshot
+ * stores share, never counts. The row is a link instead, which is a stronger
+ * interaction than a tooltip would have been.
+ *
+ * Rank and name are plain text, so the ranking never depends on reading a bar
+ * length. The bar is redundant encoding, which is what makes it safe to ship
+ * without numeric labels.
+ *
+ * Renders nothing at all when the snapshot is empty, so it stays invisible
+ * until there is real traffic and appears on its own once there is.
+ */
+import { popular } from '../lib/popular';
+import { getTool } from '../lib/directory';
+import type { Tool } from '../data/tools';
+
+const VISIBLE = 10;
+
+/* A slug that no longer matches a listed tool is dropped, not ranked. */
+const entries = popular.entries
+  .map((entry) => ({ share: entry.share, tool: getTool(entry.id) }))
+  .filter((entry): entry is { share: number; tool: Tool } => Boolean(entry.tool));
+
+const top = entries.slice(0, VISIBLE);
+const rest = entries.slice(VISIBLE);
+
+const basisLabel =
+  popular.basis === 'clicks' ? 'clicks through to the tool' : 'page views';
+
+const updated = popular.generatedAt
+  ? new Date(popular.generatedAt).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  : null;
+
+/** Keeps the smallest bars visible rather than collapsing them to a sliver. */
+const width = (share: number) => `${Math.max(share * 100, 3).toFixed(1)}%`;
+---
+
+{
+  entries.length > 0 && (
+    <section id="popular" class="popular">
+      <div class="container container--reading">
+        <p class="eyebrow">Most viewed</p>
+        <h2 class="h2 popular__title">What people actually read.</h2>
+        <p class="lead popular__note">
+          Ranked by {basisLabel} over the last {popular.window.replace('d', ' days')}. Bar
+          length is share relative to the most-viewed tool — the underlying figures aren't
+          published.
+        </p>
+
+        <ol class="chart">
+          {top.map((entry, index) => (
+            <li class="chart__row">
+              <a class="chart__link" href={`/tools/${entry.tool.id}`}>
+                <span class="chart__rank">{index + 1}</span>
+                <span class="chart__name">{entry.tool.name}</span>
+                <span class="chart__track">
+                  <span class="chart__bar" style={`width: ${width(entry.share)}`} />
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+
+        {rest.length > 0 && (
+          <details class="more">
+            <summary class="more__summary">
+              Show the other {rest.length}
+            </summary>
+            <ol class="chart chart--rest" start={VISIBLE + 1}>
+              {rest.map((entry, index) => (
+                <li class="chart__row">
+                  <a class="chart__link" href={`/tools/${entry.tool.id}`}>
+                    <span class="chart__rank">{VISIBLE + index + 1}</span>
+                    <span class="chart__name">{entry.tool.name}</span>
+                    <span class="chart__track">
+                      <span class="chart__bar" style={`width: ${width(entry.share)}`} />
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </details>
+        )}
+
+        {updated && <p class="popular__stamp">Updated {updated}</p>}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .popular {
+    border-top: 1px solid var(--border);
+    padding-block: 5rem;
+  }
+
+  @media (min-width: 640px) {
+    .popular {
+      padding-block: 7rem;
+    }
+  }
+
+  .popular__title {
+    margin-top: 1.25rem;
+  }
+
+  .popular__note {
+    margin-top: 1.5rem;
+  }
+
+  .chart {
+    margin: 3rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    /* A 2px surface gap between adjacent bars, per the mark spec. */
+    gap: 2px;
+  }
+
+  .chart__link {
+    display: grid;
+    grid-template-columns: 1.75rem minmax(6rem, 11rem) 1fr;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0.75rem;
+    margin-inline: -0.75rem;
+    border-radius: var(--radius-sm);
+    transition: background-color 150ms ease;
+  }
+
+  .chart__link:hover {
+    background: var(--bg-subtle);
+  }
+
+  .chart__rank {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .chart__name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* The track is the 100% reference, so the bars are readable as shares. */
+  .chart__track {
+    height: 0.625rem;
+    border-radius: 0 4px 4px 0;
+    background: var(--chip-bg);
+  }
+
+  .chart__bar {
+    display: block;
+    height: 100%;
+    background: var(--text);
+    /* Square at the baseline, rounded at the data end. */
+    border-radius: 0 4px 4px 0;
+  }
+
+  .more {
+    margin-top: 1.25rem;
+  }
+
+  .more__summary {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    font-size: var(--text-ui);
+    font-weight: 600;
+    list-style: none;
+    transition: border-color 150ms ease;
+  }
+
+  .more__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .more__summary:hover {
+    border-color: var(--text);
+  }
+
+  .more[open] .more__summary {
+    margin-bottom: 1.5rem;
+  }
+
+  .chart--rest {
+    margin-top: 0;
+  }
+
+  .popular__stamp {
+    margin-top: 2rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 560px) {
+    .chart__link {
+      grid-template-columns: 1.5rem 1fr;
+      gap: 0.625rem 0.75rem;
+    }
+
+    .chart__track {
+      grid-column: 2;
+    }
+  }
+</style>

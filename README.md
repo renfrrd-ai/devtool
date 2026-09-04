@@ -44,12 +44,16 @@ npm run build    # astro check, then static output to dist/
 npm run preview  # serve the built output
 ```
 
-Two generators, run only when their inputs change:
+Generators, run only when their inputs change:
 
 ```bash
 npm run logos    # vendor each tool's favicon into public/logos/
 npm run images   # social cards and app icons into public/
+npm run popular  # refresh the most-viewed snapshot (needs CF_* env vars)
 ```
+
+`popular` normally runs itself on a daily GitHub Action, not by hand — see
+[docs/analytics.md](docs/analytics.md).
 
 ## Adding a tool
 

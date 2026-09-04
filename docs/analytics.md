@@ -64,41 +64,92 @@ The claim is accurate for Cloudflare Web Analytics: no cookies, no localStorage,
 cross-site identifier, no per-person profile. **If the vendor ever changes, this line has
 to be re-checked.** PostHog with session replay, for example, would make it a lie.
 
-## Most viewed: the path, when there's traffic
+## Most viewed
 
-Not built yet, deliberately — a top-10 on a site with no traffic renders a chart of
-zeros, which looks worse than having no section at all. Give it a few weeks of real
-visits first.
+Built, and **invisible until there is real traffic**. `src/data/popular.json` ships with an
+empty `entries` array and `PopularTools.astro` renders nothing at all in that state, so the
+section appears on its own the first time the cron finds data. No chart of zeros, and no
+switch to remember to flip.
 
-When it's time, the design that keeps the site static:
+### How the data gets there
 
 ```
-GitHub Action, daily cron
-  → query the Cloudflare GraphQL Analytics API for top /tools/ pages
-  → write src/data/popular.json
-  → commit if changed → push → Pages rebuilds
+GitHub Action, daily cron at 04:15 UTC
+  → scripts/fetch-popular.mjs queries the Cloudflare GraphQL Analytics API
+  → writes src/data/popular.json
+  → commits only if the ranking changed → push → Pages rebuilds
 ```
 
-The important property is that **the build never calls the network**. The numbers live in
-git as a committed snapshot, so a build can't fail because an analytics API was down, and
-yesterday's ranking simply stands until the next run.
+The important property: **the build never calls the network.** The ranking lives in git as
+a committed snapshot, so a deploy can't fail because an analytics API was down, and
+yesterday's ranking simply stands until the next successful run.
 
-Then a `PopularTools` component reads that JSON, renders the top 10 with a
-build-time inline SVG bar chart, and a "Show more" that reveals the rest —
-`<details>`/`<summary>`, no JavaScript.
+The commit check ignores the timestamp, so an unchanged ranking doesn't produce a commit
+every single day.
 
-Two decisions already taken, so they don't need relitigating:
+### Secrets it needs
 
-- **Rank only, no raw numbers.** "#1 most viewed" is true whether that's 40 visits or
-  40,000; "12 views" just advertises how quiet the site is. The bar chart shows relative
-  share, which conveys the shape without publishing the absolute figures.
-- **No live counters.** That would mean Workers plus D1 or KV, a public write endpoint
-  anyone can curl in a loop to inflate their favourite tool, and bot filtering to go with
-  it — all to buy freshness nobody refreshes a directory to see.
+Set these as **repository secrets** (Settings → Secrets and variables → Actions):
 
-Ranking by `/go/` clicks rather than `/tools/` views is worth considering at that point:
-it measures tools people went to *use*, not ones they glanced at. Both datasets will be
-sitting in the same report.
+| Secret | Where it comes from |
+| --- | --- |
+| `CF_API_TOKEN` | My Profile → API Tokens → Create Token, with **Account Analytics: Read** |
+| `CF_ACCOUNT_ID` | Cloudflare dashboard sidebar, or the URL of any account page |
+| `CF_SITE_TAG` | Web Analytics → your site → the site tag. **Not** the beacon token |
+
+Trigger the first run by hand from the Actions tab — the workflow has
+`workflow_dispatch` for exactly that.
+
+> **Verify the GraphQL query on the first run.** It targets
+> `rumPageloadEventsAdaptiveGroups` filtered by `siteTag`, which is the right dataset for
+> Web Analytics, but Cloudflare has renamed RUM fields before and this has not been run
+> against a live account. If the first manual run fails, the error body will name the bad
+> field.
+
+### What is stored, and why so little
+
+Only each tool's **share relative to the most-viewed one**, rounded to two decimals:
+
+```json
+{ "id": "stripe", "share": 1 },
+{ "id": "supabase", "share": 0.87 }
+```
+
+No absolute counts, ever. This repository is public, so committing raw view numbers would
+publish the site's traffic figures — which is precisely what "rank only, no raw numbers"
+was chosen to avoid. Putting them in a JSON file instead of on the page would have been
+the same disclosure with an extra step. Share is all the bar chart needs.
+
+### The chart
+
+Magnitude across ranked identities, so horizontal bars: one row per tool, ordered, the
+name as the row label. A **single series**, so there is no categorical palette, no legend,
+and nothing for a palette validator to check — the bars take `--text`, like everything else
+on a site that has no accent hue by design.
+
+- **Rank and name are plain text.** The ranking never depends on reading a bar length; the
+  bar is redundant encoding. That is what makes it safe to ship with no numeric labels.
+- **No tooltips.** A tooltip exists to reveal a value the mark only implies, and there is
+  deliberately no value to reveal. The row is a link to the tool page instead, which is a
+  stronger interaction than a tooltip would have been.
+- **Show more** is `<details>`/`<summary>` — no JavaScript.
+- Bars floor at 3% width so a very small share stays visible rather than collapsing to a
+  sliver.
+- The caption states that bar length is share relative to the top entry, so the encoding
+  is legible without published figures.
+
+### Switching to clicks
+
+`node scripts/fetch-popular.mjs --basis=clicks` ranks on `/go/` hits instead of `/tools/`
+views, and the section's caption follows automatically. Worth considering once there is
+data: clicks measure tools people went to *use*, views measure ones they glanced at. Both
+datasets sit in the same report, so it is a one-word change in the workflow.
+
+### Rejected: live counters
+
+Workers plus D1 or KV, a public write endpoint anyone can curl in a loop to inflate their
+favourite tool, and bot filtering to go with it — all to buy freshness nobody refreshes a
+directory to watch. Daily is indistinguishable from live here.
 
 ## Reading the numbers
 
