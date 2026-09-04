@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import ToolRow from '../../components/ToolRow.astro';
+import ComparisonTable from '../../components/ComparisonTable.astro';
 import { categories } from '../../data/categories';
 import { SITE } from '../../data/site';
 import { toolsInCategory, populatedCategories } from '../../lib/directory';
@@ -78,6 +79,12 @@ const schema = [
         </ul>
       </div>
     </section>
+
+    {
+      category.comparison && (
+        <ComparisonTable comparison={category.comparison} categoryName={category.name} />
+      )
+    }
 
     <section class="more">
       <div class="container container--reading">

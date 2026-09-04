@@ -128,6 +128,53 @@ A tool can belong to several categories; the first is primary and decides its br
 Categories with no tools never render — see
 [information architecture](information-architecture.md#empty-shelves-never-render).
 
+## The comparison table
+
+Each category ends with a head-to-head table. It is optional — a category without a
+`comparison` block simply doesn't render one.
+
+```ts
+export interface Comparison {
+  /** One line naming the axis the table compares on. */
+  note: string;
+  columns: string[];
+  /** Keyed by tool id; values are positional against `columns`. */
+  rows: Record<string, string[]>;
+}
+```
+
+**Pick columns that decide something.** The rows above the table already carry pricing,
+licence and stack, so repeating those is filler. Good columns are the axis a reader is
+actually choosing along, and they differ per shelf:
+
+| Category | Columns |
+| --- | --- |
+| Payments | Merchant of record · Global tax · Checkout control · Best for |
+| Databases | Engine · Scales to zero · Branching · Notable for |
+| Hosting | Runs · Where · Long-running processes · Free tier |
+| Analytics | Cookie-free · Consent banner · Self-host · Depth |
+
+Four columns plus the tool name is the practical ceiling; past that the table scrolls on a
+laptop, not just a phone.
+
+**Values should be short and parallel.** A column is only scannable if every cell in it
+answers the same question the same way — `Yes` / `No` / `Add-on, you still file`, not a
+sentence in one row and a word in the next.
+
+**Use the `note` to head off a bad comparison.** Some shelves hold tools that are not
+substitutes: the AI table mixes providers, a router, an SDK and a local runtime, and the
+databases table includes two ORMs. The note says so, rather than letting the table imply
+they compete.
+
+**This is the one place adding a tool touches a second file.** A tool with no row is left
+out of the table and still appears in the list above, so nothing breaks — but a new entry
+worth listing is usually worth a row too. The columns are category-owned editorial, which
+is why they live in `categories.ts`; putting them on the tool would mean every tool
+carrying fields that only mean anything on one shelf.
+
+Rows are keyed by tool id and resolved at build time, so a typo produces a missing row
+rather than a broken page, and short rows are padded rather than collapsing the table.
+
 ## Icons
 
 `npm run logos` reads the tool list, fetches each site's favicon, and writes it to

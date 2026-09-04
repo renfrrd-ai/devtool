@@ -125,6 +125,15 @@ avoid. Stack is capped at three entries with a `+N` overflow; the rest is on the
 Below 720px the row collapses to two columns — the mark stays left, and the domain and
 chevron drop under the tagline as their own baseline.
 
+**Comparison table** (category pages) — the one real table on the site, so it gets the
+treatment tables need: mono uppercase column heads on `--bg-subtle`, hairline row rules,
+the tool name as a `<th scope="row">` in the display face because it anchors the row, and
+the first data column at full `--text` strength since it usually carries the deciding fact.
+
+It sits in its own `overflow-x: auto` container with a `min-width: 44rem` table inside.
+Below that width the columns wrap into unreadable slivers, so it scrolls within its box —
+the page body never scrolls sideways.
+
 **Tool page** — a two-column body at 860px and up: prose on the left at a 65ch measure, an
 at-a-glance facts panel on the right. The panel is the one boxed element on the page, which
 is what makes it read as a reference rather than more prose. Facts that would be blank are

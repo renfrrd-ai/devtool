@@ -146,6 +146,22 @@ would have made each of those rows heavier. Splitting by page type let the rows 
 
 Full reasoning in [information-architecture.md](information-architecture.md).
 
+### D12a — Comparison tables compare on category-specific axes
+
+Each category page ends with a head-to-head table. Its columns are defined per category —
+merchant-of-record for payments, scale-to-zero for databases, what actually runs for
+hosting — rather than being a fixed set across the site.
+
+The alternative was a uniform table of pricing, licence and stack. That was rejected
+because every one of those facts is already on the row above it: the table would have been
+a second rendering of the same data, which is bloat wearing a table's clothes.
+
+The cost is that the columns live in `categories.ts` rather than on the tool, so adding a
+tool to a shelf that has a table means an optional second edit. Accepted because
+"Merchant of record" is not a property of Stripe in general — it is a property of Stripe
+*as a payments choice*, and it means nothing on any other shelf. Tools without a row are
+omitted from the table and still appear in the list.
+
 ### D13 — Tools within a category are ordered alphabetically
 
 Any other order implies a ranking this directory has not earned. Alphabetical is visibly

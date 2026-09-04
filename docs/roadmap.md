@@ -14,6 +14,7 @@
 - [x] Alternatives block on every tool page, falling back to same-shelf tools
 - [x] Icons for 48 of 49 entries, vendored at build time
 - [x] Breadcrumbs, per-page structured data (`CollectionPage`, `ItemList`, `SoftwareApplication`, `BreadcrumbList`)
+- [x] A head-to-head comparison table on every category page, on category-specific axes
 
 **Next**
 - [ ] Deploy — the Cloudflare Pages project is still not connected

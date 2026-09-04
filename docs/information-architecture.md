@@ -26,8 +26,19 @@ categories under it.
 
 **`/categories/<slug>` — the shelf.** The full list for one category, as rows. A header
 with the category's description — the trade-off that actually distinguishes the tools on
-this shelf, not a restatement of the name — then the rows, then links to the other
-shelves. Typically five or six entries, so the page stays scannable.
+this shelf, not a restatement of the name — then the rows, then a head-to-head comparison
+table, then links to the other shelves. Typically five or six entries, so the page stays
+scannable.
+
+The table earns its place by comparing on *category-specific* axes rather than repeating
+the rows above it. Payments compares on merchant-of-record, global tax and checkout
+control; databases on engine, scale-to-zero and branching; hosting on what actually runs
+and where. A table restating pricing and stack — already on every row — would be filler,
+and filler is exactly what this structure exists to avoid.
+
+The columns therefore live on the category, not the tool: "Merchant of record" is
+meaningless outside payments. See
+[content-model.md](content-model.md#the-comparison-table).
 
 **`/tools/<slug>` — the entry.** One tool: what it is, an at-a-glance facts panel, the
 categories it belongs to, and three alternatives to compare against. This is where the

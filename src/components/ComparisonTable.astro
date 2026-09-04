@@ -1,0 +1,159 @@
+---
+import type { Comparison } from '../data/categories';
+import { getTool } from '../lib/directory';
+
+interface Props {
+  comparison: Comparison;
+  categoryName: string;
+}
+
+const { comparison, categoryName } = Astro.props;
+
+/*
+ * Rows are keyed by tool id, so a typo in the data becomes a missing row rather
+ * than a broken page. Values are positional against `columns` and padded here,
+ * so a short row renders an empty cell instead of collapsing the table.
+ */
+const rows = Object.entries(comparison.rows)
+  .map(([id, values]) => {
+    const tool = getTool(id);
+    if (!tool) return null;
+    const cells = comparison.columns.map((_, index) => values[index] ?? '—');
+    return { tool, cells };
+  })
+  .filter((row): row is NonNullable<typeof row> => row !== null)
+  .sort((a, b) => a.tool.name.localeCompare(b.tool.name));
+---
+
+{
+  rows.length > 0 && (
+    <section class="compare">
+      <div class="container container--reading">
+        <p class="eyebrow">Head to head</p>
+        <h2 class="compare__title">{categoryName}, compared</h2>
+        <p class="compare__note">{comparison.note}</p>
+
+        <div class="compare__scroll">
+          <table class="table">
+            <caption class="sr-only">
+              {categoryName} tools compared by {comparison.columns.join(', ')}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Tool</th>
+                {comparison.columns.map((column) => (
+                  <th scope="col">{column}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ tool, cells }) => (
+                <tr>
+                  <th scope="row">
+                    <a href={`/tools/${tool.id}`}>{tool.name}</a>
+                  </th>
+                  {cells.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .compare {
+    padding-block: 3.5rem 4rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .compare__title {
+    margin-top: 0.75rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .compare__note {
+    margin-top: 0.75rem;
+    max-width: 62ch;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  /* A wide table scrolls inside its own box; the page body never does. */
+  .compare__scroll {
+    margin-top: 1.75rem;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    /* Below this the columns wrap into unreadable slivers — scroll instead. */
+    min-width: 44rem;
+  }
+
+  .table th,
+  .table td {
+    text-align: left;
+    padding: 0.875rem 1rem;
+    vertical-align: top;
+  }
+
+  .table thead th {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-subtle);
+  }
+
+  .table tbody tr + tr th,
+  .table tbody tr + tr td {
+    border-top: 1px solid var(--border);
+  }
+
+  .table tbody tr:hover th,
+  .table tbody tr:hover td {
+    background: var(--bg-subtle);
+  }
+
+  /* The tool name is the row header — it anchors the row, so it gets the weight. */
+  .table tbody th {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  .table tbody th a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .table td {
+    color: var(--text-muted);
+  }
+
+  /* The first data column carries the deciding fact on most shelves. */
+  .table td:first-of-type {
+    color: var(--text);
+    font-weight: 500;
+  }
+</style>

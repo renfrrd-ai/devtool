@@ -11,7 +11,8 @@ their own section and sit on their category shelves alongside everything else.
 
 ```
 /                          the map    — categories, and what's built here
-  └─ /categories/<slug>    the shelf  — every tool in one category
+  └─ /categories/<slug>    the shelf  — every tool in one category, plus a
+                                        head-to-head comparison table
        └─ /tools/<slug>    the entry  — one tool, in depth
 ```
 
