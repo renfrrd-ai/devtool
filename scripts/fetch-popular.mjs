@@ -102,18 +102,53 @@ const groups =
 const known = new Set(tools.map((tool) => tool.id));
 const counts = new Map();
 
+const unmatched = [];
+
 for (const group of groups) {
-  const path = group.dimensions?.requestPath ?? '';
+  // Strip any query string and normalise the trailing slash. The site serves
+  // /tools/stripe/ with a slash; older links and manual visits may not have one.
+  const path = (group.dimensions?.requestPath ?? '').split('?')[0];
   if (!path.startsWith(PREFIX)) continue;
 
   const id = path.slice(PREFIX.length).replace(/\/$/, '');
-  if (!known.has(id)) continue;
+  if (!known.has(id)) {
+    unmatched.push(path);
+    continue;
+  }
 
   counts.set(id, (counts.get(id) ?? 0) + group.count);
 }
 
+// A slug that no longer exists is usually a renamed or removed tool, and worth
+// knowing about — it means inbound links are landing on a 404.
+if (unmatched.length > 0) {
+  console.log(`Ignored ${unmatched.length} path(s) with no matching tool:`);
+  console.log(unmatched.slice(0, 10).map((p) => `  ${p}`).join('\n'));
+}
+
+/*
+ * "Nothing to rank" has two very different causes and they need different
+ * fixes, so say which one it is. Silently reporting "no traffic" when the API
+ * actually returned hundreds of rows that failed to match the prefix would
+ * hide a real bug for as long as the site stayed quiet.
+ */
 if (counts.size === 0) {
-  console.log('No matching traffic yet. Leaving the snapshot empty.');
+  if (groups.length === 0) {
+    console.log('The API returned no pageviews at all for this window.');
+    console.log('Expected on a new site. Check the beacon is live:');
+    console.log('  curl -s https://devtool.fyi | grep beacon');
+    process.exit(0);
+  }
+
+  const sample = groups
+    .slice(0, 10)
+    .map((g) => `  ${String(g.count).padStart(6)}  ${g.dimensions?.requestPath}`)
+    .join('\n');
+
+  console.log(`The API returned ${groups.length} paths, but none started with ${PREFIX}.`);
+  console.log('If any of these look like tool pages, the prefix or the slug');
+  console.log('matching below it needs adjusting:');
+  console.log(sample);
   process.exit(0);
 }
 
