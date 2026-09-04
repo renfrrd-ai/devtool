@@ -93,8 +93,14 @@ after deploy.
 
 ## Analytics
 
-Cloudflare Web Analytics, enabled by setting `PUBLIC_CF_BEACON_TOKEN` in the Pages
-project's environment variables. Without that variable no script is emitted at all.
+Cloudflare Web Analytics, enabled by pasting the beacon token into `analyticsToken` in
+[`src/data/site.ts`](../src/data/site.ts). The token is not a secret — it is rendered into
+every page — so it is committed rather than injected. With it empty, no script is emitted
+at all.
+
+Note it is a **build**-time value, not a runtime binding: a static deployment has no
+runtime to bind variables to, which is what the dashboard means if it refuses to add
+variables to a static-assets Worker.
 
 Outbound clicks are counted through the `/go/` redirect pages rather than an event script,
 since Cloudflare Web Analytics has no custom-event API.
@@ -135,7 +141,7 @@ Still to do, on the host:
       (Twitter's card validator, and a message to yourself in Slack and WhatsApp, which
       pick the landscape and square crops respectively)
 - [ ] Site submitted to Search Console
-- [ ] `PUBLIC_CF_BEACON_TOKEN` set in Pages, analytics recording page views
+- [ ] `analyticsToken` filled in and committed, analytics recording page views
 - [ ] A `/go/` link forwards correctly and shows up in the top-pages report
 - [ ] Backlinks live on each tool's site
 - [ ] trueluk's entry says something real, or comes off the page — see

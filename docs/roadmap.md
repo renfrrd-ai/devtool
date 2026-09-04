@@ -26,7 +26,8 @@
 1. [ ] **Deploy.** The Cloudflare Pages project is still not connected. Nothing below is
        possible until this is done, and it is the only step that needs your Cloudflare
        account rather than a commit.
-2. [ ] Set `PUBLIC_CF_BEACON_TOKEN` — [setup](analytics.md#setting-it-up)
+2. [ ] Paste the beacon token into `analyticsToken` in `src/data/site.ts` and commit —
+       [setup](analytics.md#setting-it-up)
 3. [ ] Add the `CF_*` repository secrets and run the refresh workflow by hand once, to
        confirm the GraphQL query against a live account —
        [details](analytics.md#secrets-it-needs)

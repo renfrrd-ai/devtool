@@ -18,17 +18,42 @@ and preview deploys stay completely clean.
 
 1. **Cloudflare dashboard → Analytics & Logs → Web Analytics → Add a site**, and enter
    `devtool.fyi`.
-2. Copy the token out of the snippet it shows you. You want the token only, not the
-   `<script>` tag — the tag is already in
+2. Copy the **token** out of the snippet it shows you — the token only, not the `<script>`
+   tag. The tag is already in
    [`src/components/Analytics.astro`](../src/components/Analytics.astro).
-3. **Pages project → Settings → Environment variables**, add
-   `PUBLIC_CF_BEACON_TOKEN` with that value. Set it on **Production** only if you would
-   rather preview deploys stayed unmeasured — otherwise your own PR previews pollute the
-   numbers.
-4. Redeploy. Confirm the beacon is live: `curl -s https://devtool.fyi | grep beacon`.
+3. Paste it into `analyticsToken` in [`src/data/site.ts`](../src/data/site.ts) and commit.
+4. Confirm it is live: `curl -s https://devtool.fyi | grep beacon`.
 
-Locally, `PUBLIC_CF_BEACON_TOKEN=... npm run build` renders the beacon if you ever need to
-check it. Without the variable nothing is emitted at all.
+### The token is not a secret
+
+It is rendered into the HTML of every page, so anyone can read it with view-source. It
+identifies the site to Cloudflare and grants nothing — no API access, no account access.
+Committing it is fine, and it is simpler than the alternatives.
+
+### Why not an environment variable
+
+`PUBLIC_CF_BEACON_TOKEN` still works as an override, but it must be a **build** variable,
+not a runtime binding. Astro inlines `import.meta.env.PUBLIC_*` during `npm run build`;
+there is no server at runtime to read anything from.
+
+If the Cloudflare dashboard says *"Variables cannot be added to a Worker that only has
+static assets"*, that is this distinction — it is offering a runtime binding, which a
+static deployment has no use for. Put the value in `site.ts` instead, or find the
+**build**-time variables section of the project settings.
+
+The override is only worth using if you want production measured while preview deploys
+stay unmeasured. Otherwise your own PR previews inflate the numbers slightly.
+
+### Precedence
+
+`PUBLIC_CF_BEACON_TOKEN` wins over `SITE.analyticsToken`. With both empty, no script is
+emitted at all — which is why local builds and previews are clean by default.
+
+### If Cloudflare injects the beacon for you
+
+Some Cloudflare setups can inject the Web Analytics script automatically. If you enable
+that, leave `analyticsToken` empty — otherwise the page carries two beacons and every
+visit is counted twice.
 
 ## Why outbound clicks go through /go/
 
