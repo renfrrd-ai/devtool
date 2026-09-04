@@ -9,7 +9,7 @@ import ToolRow from '../../components/ToolRow.astro';
 import Tag from '../../components/Tag.astro';
 import { tools } from '../../data/tools';
 import { SITE } from '../../data/site';
-import { alternativesFor, categoriesOf, primaryCategory } from '../../lib/directory';
+import { alternativesFor, categoriesOf, primaryCategory, toolHref, categoryHref, goHref } from '../../lib/directory';
 
 export function getStaticPaths() {
   return tools.map((tool) => ({ params: { slug: tool.id }, props: { tool } }));
@@ -47,8 +47,8 @@ const description = tool.tagline;
 
 const crumbs = [
   { name: 'Home', href: '/' },
-  ...(primary ? [{ name: primary.name, href: `/categories/${primary.id}` }] : []),
-  { name: tool.name, href: `/tools/${tool.id}` },
+  ...(primary ? [{ name: primary.name, href: categoryHref(primary.id) }] : []),
+  { name: tool.name, href: toolHref(tool.id) },
 ];
 
 const schema = [
@@ -97,7 +97,7 @@ const facts = [
               primary && (
                 <>
                   <span aria-hidden="true">/</span>
-                  <a href={`/categories/${primary.id}`}>{primary.name}</a>
+                  <a href={categoryHref(primary.id)}>{primary.name}</a>
                 </>
               )
             }
@@ -137,7 +137,7 @@ const facts = [
 
           <div class="head__actions">
             {/* Routed through /go/ so the click is counted — see that page. */}
-            <a class="btn btn--primary" href={`/go/${tool.id}`} rel="noopener">
+            <a class="btn btn--primary" href={goHref(tool.id)} rel="noopener">
               Visit {tool.domain}
               <svg
                 class="arrow"
@@ -156,7 +156,7 @@ const facts = [
             </a>
             {
               primary && (
-                <a class="btn btn--secondary" href={`/categories/${primary.id}`}>
+                <a class="btn btn--secondary" href={categoryHref(primary.id)}>
                   More {primary.name.toLowerCase()} tools
                 </a>
               )
@@ -179,7 +179,7 @@ const facts = [
                     <ul class="cats">
                       {cats.map((category) => (
                         <li>
-                          <a class="cats__link" href={`/categories/${category.id}`}>
+                          <a class="cats__link" href={categoryHref(category.id)}>
                             {category.name}
                           </a>
                         </li>

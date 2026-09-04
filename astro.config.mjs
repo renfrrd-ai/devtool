@@ -5,7 +5,14 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://devtool.fyi',
-  trailingSlash: 'never',
+  /*
+   * Must match how the host serves the build. Astro's directory output puts
+   * every route at <route>/index.html, and Cloudflare Pages therefore serves it
+   * at <route>/ — redirecting <route> with a 307. Set to 'never' this config
+   * emitted slashless canonicals, sitemap entries and links, so every internal
+   * click and every crawl cost a redirect.
+   */
+  trailingSlash: 'always',
 
   integrations: [
     sitemap({

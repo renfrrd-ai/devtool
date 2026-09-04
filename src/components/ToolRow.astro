@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Tool } from '../data/tools';
 import Tag from './Tag.astro';
+import { toolHref } from '../lib/directory';
 
 interface Props {
   tool: Tool;
@@ -49,7 +50,7 @@ const overflow = (tool.stack?.length ?? 0) - stack.length;
 ---
 
 <li class="row">
-  <a class="row__link" href={`/tools/${tool.id}`}>
+  <a class="row__link" href={toolHref(tool.id)}>
     <span class:list={['row__mark', logo && 'row__mark--logo']} aria-hidden="true">
       {
         logo ? (

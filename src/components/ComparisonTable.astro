@@ -1,6 +1,6 @@
 ---
 import type { Comparison } from '../data/categories';
-import { getTool } from '../lib/directory';
+import { getTool, toolHref } from '../lib/directory';
 
 interface Props {
   comparison: Comparison;
@@ -50,7 +50,7 @@ const rows = Object.entries(comparison.rows)
               {rows.map(({ tool, cells }) => (
                 <tr>
                   <th scope="row">
-                    <a href={`/tools/${tool.id}`}>{tool.name}</a>
+                    <a href={toolHref(tool.id)}>{tool.name}</a>
                   </th>
                   {cells.map((cell) => (
                     <td>{cell}</td>

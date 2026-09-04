@@ -17,6 +17,7 @@
  */
 import Base from '../../layouts/Base.astro';
 import { tools } from '../../data/tools';
+import { toolHref } from '../../lib/directory';
 
 export function getStaticPaths() {
   return tools.map((tool) => ({ params: { slug: tool.id }, props: { tool } }));
@@ -43,7 +44,7 @@ const { tool } = Astro.props;
       <a class="go__manual" href={tool.url} rel="noopener">
         Continue to {tool.name}
       </a>
-      <a class="go__back" href={`/tools/${tool.id}`}>Back to {tool.name} on devtool.fyi</a>
+      <a class="go__back" href={toolHref(tool.id)}>Back to {tool.name} on devtool.fyi</a>
     </div>
   </main>
 </Base>

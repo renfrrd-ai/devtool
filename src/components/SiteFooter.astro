@@ -1,6 +1,6 @@
 ---
 import { SITE } from '../data/site';
-import { populatedCategories, sortedMadeHere } from '../lib/directory';
+import { populatedCategories, sortedMadeHere, categoryHref, toolHref } from '../lib/directory';
 
 const year = new Date().getFullYear();
 const cats = populatedCategories();
@@ -22,7 +22,7 @@ const mine = sortedMadeHere();
         {
           cats.map((category) => (
             <li>
-              <a class="footer__link" href={`/categories/${category.id}`}>
+              <a class="footer__link" href={categoryHref(category.id)}>
                 {category.name}
               </a>
             </li>
@@ -37,7 +37,7 @@ const mine = sortedMadeHere();
         {
           mine.map((tool) => (
             <li>
-              <a class="footer__link" href={`/tools/${tool.id}`}>
+              <a class="footer__link" href={toolHref(tool.id)}>
                 {tool.name}
               </a>
             </li>

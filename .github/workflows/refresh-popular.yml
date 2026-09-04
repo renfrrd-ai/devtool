@@ -21,6 +21,11 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+
+    # The CF_* secrets live on this environment, not on the repository. Without
+    # this line the job runs with them unset and fails on the first check.
+    environment: Devtool Analytics
+
     steps:
       - uses: actions/checkout@v4
 

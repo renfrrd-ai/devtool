@@ -20,7 +20,7 @@
  * until there is real traffic and appears on its own once there is.
  */
 import { popular } from '../lib/popular';
-import { getTool } from '../lib/directory';
+import { getTool, toolHref } from '../lib/directory';
 import type { Tool } from '../data/tools';
 
 const VISIBLE = 10;
@@ -63,7 +63,7 @@ const width = (share: number) => `${Math.max(share * 100, 3).toFixed(1)}%`;
         <ol class="chart">
           {top.map((entry, index) => (
             <li class="chart__row">
-              <a class="chart__link" href={`/tools/${entry.tool.id}`}>
+              <a class="chart__link" href={toolHref(entry.tool.id)}>
                 <span class="chart__rank">{index + 1}</span>
                 <span class="chart__name">{entry.tool.name}</span>
                 <span class="chart__track">
@@ -82,7 +82,7 @@ const width = (share: number) => `${Math.max(share * 100, 3).toFixed(1)}%`;
             <ol class="chart chart--rest" start={VISIBLE + 1}>
               {rest.map((entry, index) => (
                 <li class="chart__row">
-                  <a class="chart__link" href={`/tools/${entry.tool.id}`}>
+                  <a class="chart__link" href={toolHref(entry.tool.id)}>
                     <span class="chart__rank">{VISIBLE + index + 1}</span>
                     <span class="chart__name">{entry.tool.name}</span>
                     <span class="chart__track">

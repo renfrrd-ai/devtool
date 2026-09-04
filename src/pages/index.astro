@@ -7,7 +7,7 @@ import PopularTools from '../components/PopularTools.astro';
 import ToolRow from '../components/ToolRow.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { SITE } from '../data/site';
-import { populatedCategories, sortedMadeHere, stats } from '../lib/directory';
+import { populatedCategories, sortedMadeHere, stats, categoryHref } from '../lib/directory';
 
 const cats = populatedCategories();
 const mine = sortedMadeHere();
@@ -27,7 +27,7 @@ const schema = [
     about: cats.map((category) => ({
       '@type': 'Thing',
       name: category.name,
-      url: `${SITE.url}/categories/${category.id}`,
+      url: `${SITE.url}${categoryHref(category.id)}`,
     })),
   },
 ];

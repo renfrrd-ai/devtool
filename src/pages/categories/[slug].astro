@@ -6,7 +6,12 @@ import ToolRow from '../../components/ToolRow.astro';
 import ComparisonTable from '../../components/ComparisonTable.astro';
 import { categories } from '../../data/categories';
 import { SITE } from '../../data/site';
-import { toolsInCategory, populatedCategories } from '../../lib/directory';
+import {
+  toolsInCategory,
+  populatedCategories,
+  categoryHref,
+  toolHref,
+} from '../../lib/directory';
 
 export function getStaticPaths() {
   return categories
@@ -26,7 +31,7 @@ const description = `${tools.length} ${category.name.toLowerCase()} tools for de
 
 const crumbs = [
   { name: 'Home', href: '/' },
-  { name: category.name, href: `/categories/${category.id}` },
+  { name: category.name, href: categoryHref(category.id) },
 ];
 
 const schema = [
@@ -44,7 +49,7 @@ const schema = [
         position: index + 1,
         name: tool.name,
         description: tool.tagline,
-        url: `${SITE.url}/tools/${tool.id}`,
+        url: `${SITE.url}${toolHref(tool.id)}`,
       })),
     },
   },
@@ -93,7 +98,7 @@ const schema = [
           {
             others.map((other) => (
               <li>
-                <a class="more__link" href={`/categories/${other.id}`}>
+                <a class="more__link" href={categoryHref(other.id)}>
                   {other.name}
                   <span class="more__count">{other.count}</span>
                 </a>

@@ -1,5 +1,5 @@
 ---
-import { sampleNames } from '../lib/directory';
+import { sampleNames, categoryHref } from '../lib/directory';
 
 interface Props {
   id: string;
@@ -12,7 +12,7 @@ const { id, name, tagline, count } = Astro.props;
 const names = sampleNames(id, 4);
 ---
 
-<a class="cat" href={`/categories/${id}`}>
+<a class="cat" href={categoryHref(id)}>
   <span class="cat__head">
     <span class="cat__name">{name}</span>
     <span class="cat__count">{count}</span>

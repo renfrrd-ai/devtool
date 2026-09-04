@@ -6,6 +6,19 @@
 import { tools, type Tool, type ToolStatus } from '../data/tools';
 import { categories, type Category } from '../data/categories';
 
+/*
+ * Route builders. Every internal link goes through these.
+ *
+ * The trailing slash is load-bearing: Astro's directory output puts each route
+ * at <route>/index.html, so Cloudflare Pages serves it at <route>/ and 307s
+ * anything without the slash. Hand-written slashless links therefore cost a
+ * redirect on every click, and slashless sitemap entries waste crawl budget.
+ * Keep these in step with `trailingSlash` in astro.config.mjs.
+ */
+export const toolHref = (id: string) => `/tools/${id}/`;
+export const categoryHref = (id: string) => `/categories/${id}/`;
+export const goHref = (id: string) => `/go/${id}/`;
+
 /** Third-party entries — the directory proper. */
 export const curated = tools.filter((tool) => !tool.madeHere);
 
