@@ -1,0 +1,30 @@
+---
+/*
+ * Cloudflare Web Analytics.
+ *
+ * Cookieless and per-visit rather than per-person, which is what lets the
+ * footer keep claiming no cookies. It is the only third-party script on the
+ * site, and it renders only when a token is present — so local builds and
+ * previews stay completely clean.
+ *
+ * Set PUBLIC_CF_BEACON_TOKEN in the Cloudflare Pages project's environment
+ * variables (production only, if you would rather previews stayed unmeasured).
+ * Getting the token: docs/analytics.md.
+ *
+ * Note the beacon counts pageviews and nothing else — Cloudflare Web Analytics
+ * has no custom-event API. Outbound clicks are measured with the /go/ redirect
+ * pages instead.
+ */
+const token = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
+---
+
+{
+  token && (
+    <script
+      is:inline
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon={JSON.stringify({ token })}
+    />
+  )
+}

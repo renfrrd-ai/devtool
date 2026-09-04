@@ -73,6 +73,7 @@ and the structured data all follow from step 1.
 | [Architecture](docs/architecture.md) | Stack rationale, project layout, SEO and social metadata |
 | [Design](docs/design.md) | Visual system, type, color, dark mode, components |
 | [Deployment](docs/deployment.md) | Cloudflare Pages setup, DNS, headers, launch checklist |
+| [Analytics](docs/analytics.md) | What's measured, the /go/ redirects, and the most-viewed plan |
 | [Decisions](docs/decisions.md) | Choices made and why, plus open questions |
 | [Roadmap](docs/roadmap.md) | What's shipped and what's next |
 | [PRD](docs/prd.md) | The original brief — historical, since superseded |

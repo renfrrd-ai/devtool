@@ -93,14 +93,14 @@ after deploy.
 
 ## Analytics
 
-Basic page-view counting only, per the PRD. Cloudflare Web Analytics or the host's
-built-in stats — server-side or a single lightweight beacon, no tag manager, no cookies,
-no consent banner needed.
+Cloudflare Web Analytics, enabled by setting `PUBLIC_CF_BEACON_TOKEN` in the Pages
+project's environment variables. Without that variable no script is emitted at all.
 
-What's worth knowing: total visits, referrers (which tool site sends the most traffic),
-and outbound clicks per tool. That last one is the actual measure of whether the
-cross-promotion goal in the PRD is working, so if the chosen host can't report outbound
-clicks, that's a reason to pick a different one.
+Outbound clicks are counted through the `/go/` redirect pages rather than an event script,
+since Cloudflare Web Analytics has no custom-event API.
+
+Full setup steps, the privacy claim, and the plan for a most-viewed section:
+[analytics.md](analytics.md).
 
 ## Cross-linking
 
@@ -135,7 +135,8 @@ Still to do, on the host:
       (Twitter's card validator, and a message to yourself in Slack and WhatsApp, which
       pick the landscape and square crops respectively)
 - [ ] Site submitted to Search Console
-- [ ] Analytics recording page views
+- [ ] `PUBLIC_CF_BEACON_TOKEN` set in Pages, analytics recording page views
+- [ ] A `/go/` link forwards correctly and shows up in the top-pages report
 - [ ] Backlinks live on each tool's site
 - [ ] trueluk's entry says something real, or comes off the page — see
       [Q2](decisions.md#q2--what-should-truelukcom-become)

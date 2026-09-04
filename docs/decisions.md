@@ -162,6 +162,34 @@ tool to a shelf that has a table means an optional second edit. Accepted because
 *as a payments choice*, and it means nothing on any other shelf. Tools without a row are
 omitted from the table and still appear in the list.
 
+### D16 — Outbound clicks are counted with redirect pages, not a tracking script
+
+Cloudflare Web Analytics has no custom-event API, so a direct outbound link is invisible
+to it. The "Visit" button therefore points at `/go/<tool-id>`, a static page that fires the
+beacon and forwards after 250ms, turning each click into an ordinary pageview.
+
+Rejected alternatives: an event-tracking script (means a heavier vendor, and undermines
+the privacy claim), and a `sendBeacon` endpoint on a Worker (means a backend, for a number
+we can get for free). The redirect approach is vendor-agnostic and survives changing
+analytics providers.
+
+Cost: a quarter-second hop, and 49 extra pages in the build. The pages are `noindex`,
+disallowed in `robots.txt`, and excluded from the sitemap, so crawlers cannot inflate the
+counts.
+
+### D17 — No database, and no live view counters
+
+A most-viewed section will be built from a committed JSON snapshot refreshed by a daily
+cron, not from a runtime counter. The build never calls the network, so an analytics
+outage cannot fail a deploy.
+
+Live counters would mean Workers plus D1 or KV, a public write endpoint anyone can curl in
+a loop to inflate their favourite tool, and bot filtering to go with it — all to buy
+freshness nobody refreshes a directory to watch. Daily is indistinguishable from live
+here.
+
+Full design in [analytics.md](analytics.md#most-viewed-the-path-when-theres-traffic).
+
 ### D13 — Tools within a category are ordered alphabetically
 
 Any other order implies a ranking this directory has not earned. Alphabetical is visibly

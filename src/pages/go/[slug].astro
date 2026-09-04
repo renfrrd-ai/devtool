@@ -1,0 +1,112 @@
+---
+/*
+ * Outbound click counting, without a tracking script.
+ *
+ * Cloudflare Web Analytics counts pageviews and has no custom-event API, so a
+ * direct link out of the site is invisible to it. Routing outbound clicks
+ * through a real page makes each one a pageview named /go/<tool>, which lands
+ * in the top-pages report alongside everything else — no event API, no vendor
+ * lock-in, and it works identically if the analytics vendor ever changes.
+ *
+ * The cost is a hop of roughly a quarter second. That is the deliberate trade:
+ * outbound clicks are the only real measure of whether this directory sends
+ * anyone anywhere, and there is no way to count them on a static site without
+ * either this or a tracking script.
+ *
+ * These pages are noindex and excluded from the sitemap — see astro.config.mjs.
+ */
+import Base from '../../layouts/Base.astro';
+import { tools } from '../../data/tools';
+
+export function getStaticPaths() {
+  return tools.map((tool) => ({ params: { slug: tool.id }, props: { tool } }));
+}
+
+const { tool } = Astro.props;
+---
+
+<Base
+  title={`Going to ${tool.domain} — devtool.fyi`}
+  description={`Redirecting to ${tool.name}.`}
+  noindex
+>
+  <!--
+    Fallback for browsers with JavaScript disabled. One second rather than zero,
+    so the manual link below is readable if the redirect is slow.
+  -->
+  <meta http-equiv="refresh" content={`1;url=${tool.url}`} slot="head" />
+
+  <main id="main" class="go">
+    <div class="go__inner">
+      <p class="go__label">Taking you to</p>
+      <p class="go__domain">{tool.domain}</p>
+      <a class="go__manual" href={tool.url} rel="noopener">
+        Continue to {tool.name}
+      </a>
+      <a class="go__back" href={`/tools/${tool.id}`}>Back to {tool.name} on devtool.fyi</a>
+    </div>
+  </main>
+</Base>
+
+<script is:inline define:vars={{ target: tool.url }}>
+  /*
+   * A short delay so the analytics beacon has time to fire before we leave;
+   * `replace` keeps this page out of the back-button history, so going back
+   * from the destination returns to the tool page rather than bouncing.
+   */
+  setTimeout(function () {
+    window.location.replace(target);
+  }, 250);
+</script>
+
+<style>
+  .go {
+    min-height: 70vh;
+    display: grid;
+    place-items: center;
+    padding: 4rem 1.5rem;
+  }
+
+  .go__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .go__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .go__domain {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 5vw, 2.75rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .go__manual {
+    margin-top: 1.5rem;
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--bg);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text-ui);
+    font-weight: 600;
+  }
+
+  .go__back {
+    margin-top: 0.75rem;
+    font-size: var(--text-ui);
+    color: var(--text-faint);
+  }
+
+  .go__back:hover {
+    color: var(--text);
+  }
+</style>

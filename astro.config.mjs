@@ -9,8 +9,10 @@ export default defineConfig({
 
   integrations: [
     sitemap({
-      // One page, and it changes when a tool is added — which is rarely, but
-      // matters enough to re-crawl when it happens.
+      // The /go/ pages are redirect stubs for counting outbound clicks. They
+      // are noindex, and listing them would invite crawlers to follow every
+      // one and inflate the click numbers they exist to measure.
+      filter: (page) => !page.includes('/go/'),
       changefreq: 'monthly',
       priority: 1.0,
       lastmod: new Date(),

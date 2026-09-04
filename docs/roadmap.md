@@ -16,8 +16,22 @@
 - [x] Breadcrumbs, per-page structured data (`CollectionPage`, `ItemList`, `SoftwareApplication`, `BreadcrumbList`)
 - [x] A head-to-head comparison table on every category page, on category-specific axes
 
-**Next**
-- [ ] Deploy — the Cloudflare Pages project is still not connected
+- [x] Cookieless analytics wired, inert until a token is set
+- [x] Outbound click counting via `/go/` redirect pages
+
+**Next** — in this order, because each one depends on the last
+
+1. [ ] **Deploy.** The Cloudflare Pages project is still not connected. Nothing below is
+       possible until this is done, and it is the only step that needs your Cloudflare
+       account rather than a commit.
+2. [ ] Set `PUBLIC_CF_BEACON_TOKEN` — [setup](analytics.md#setting-it-up)
+3. [ ] Collect a few weeks of real traffic
+4. [ ] **Then** build the most-viewed section — top 10, rank only, build-time SVG chart,
+       `<details>` for show-more. Design already settled in
+       [analytics.md](analytics.md#most-viewed-the-path-when-theres-traffic); building it
+       before there is traffic renders a chart of zeros.
+
+**Also next**
 - [ ] A second pass on descriptions: they are accurate, but a few are drier than they need to be
 - [ ] Decide trueluk's fate — [Q2](decisions.md#q2--what-should-truelukcom-become)
 - [ ] Backlinks from clueline.dev and hqbase.io

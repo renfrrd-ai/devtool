@@ -136,7 +136,8 @@ const facts = [
           </div>
 
           <div class="head__actions">
-            <a class="btn btn--primary" href={tool.url} rel="noopener">
+            {/* Routed through /go/ so the click is counted — see that page. */}
+            <a class="btn btn--primary" href={`/go/${tool.id}`} rel="noopener">
               Visit {tool.domain}
               <svg
                 class="arrow"
