@@ -1,6 +1,11 @@
 {
-  "generatedAt": null,
+  "generatedAt": "2026-09-05T08:19:21.763Z",
   "window": "30d",
   "basis": "views",
-  "entries": []
+  "entries": [
+    {
+      "id": "hqbase",
+      "share": 1
+    }
+  ]
 }
