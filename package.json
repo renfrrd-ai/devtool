@@ -7,11 +7,13 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build",
+    "build": "npm run check:entries && astro check && astro build",
     "preview": "astro preview",
+    "check:entries": "node scripts/check-entries.mjs",
     "images": "node scripts/build-images.mjs",
     "logos": "node scripts/fetch-favicons.mjs",
     "popular": "node scripts/fetch-popular.mjs",
+    "suggestions": "node scripts/fetch-suggestions.mjs",
     "astro": "astro"
   },
   "dependencies": {

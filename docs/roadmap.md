@@ -20,24 +20,36 @@
 - [x] Outbound click counting via `/go/` redirect pages
 - [x] Most-viewed section: ranked bar chart, show-more, daily cron snapshot —
       renders nothing until there is real traffic
+- [x] **Deployed.** Live at devtool.fyi on Cloudflare Pages
+- [x] Beacon token committed, analytics live
+- [x] `CF_*` secrets set; the refresh workflow has been running daily since 13 September
+      and the GraphQL query is confirmed against the live account
+- [x] Six more entries, so every shelf clears the six-entry floor the content model sets —
+      55 tools
+- [x] Reader suggestions: issue form, votes by reaction, daily snapshot, `accepted` label
+      opens a promotion PR — [docs](suggestions.md)
+- [x] `npm run check:entries` as an editorial build gate: TODO descriptions, dangling
+      alternatives, comparison rows keyed to nothing, form/shelf drift
 
-**Next** — in this order, because each one depends on the last
+**Next** — the site is finished; the problem now is that nobody is on it
 
-1. [ ] **Deploy.** The Cloudflare Pages project is still not connected. Nothing below is
-       possible until this is done, and it is the only step that needs your Cloudflare
-       account rather than a commit.
-2. [ ] Paste the beacon token into `analyticsToken` in `src/data/site.ts` and commit —
-       [setup](analytics.md#setting-it-up)
-3. [ ] Add the `CF_*` repository secrets and run the refresh workflow by hand once, to
-       confirm the GraphQL query against a live account —
-       [details](analytics.md#secrets-it-needs)
-4. [ ] Collect traffic. The most-viewed section appears by itself once the cron finds
+1. [ ] **Backlinks.** Still the only distribution work that is scoped, still not started —
+       [the table](deployment.md#cross-linking) is fully unchecked. With zero inbound
+       links, nothing else on this list is measurable.
+2. [ ] Announce it somewhere once. The suggestion flow is worthless without people, and
+       the shelves are now deep enough to be worth someone's time.
+3. [ ] Collect traffic. The most-viewed section appears by itself once the cron finds
        data; nothing to build or switch on.
+
+> **Where the traffic actually stands.** The 30-day snapshot has held one entry — `hqbase`,
+> plausibly the owner's own visits — since 5 September. The machinery is all working. It is
+> measuring an empty room, and no amount of further building changes that.
 
 **Also next**
 - [ ] A second pass on descriptions: they are accurate, but a few are drier than they need to be
 - [ ] Decide trueluk's fate — [Q2](decisions.md#q2--what-should-truelukcom-become)
-- [ ] Backlinks from clueline.dev and hqbase.io
+- [ ] Consider a tenth shelf once six entries exist for it — CI/CD and background jobs are
+      the two that submissions will most likely ask for
 
 **Deliberately not doing** — search, pricing filters, a `/tools` index page. Reasoning in
 [information architecture](information-architecture.md#where-it-stops).
@@ -50,7 +62,7 @@ backlinks in place.
 **Milestone 1 — Scaffold** ✅
 - [x] Astro project initialized, building to `dist/`
 - [x] `Base` layout, `global.css` with the design tokens from [design.md](design.md#color)
-- [ ] Deploy pipeline wired up, previews working on PRs
+- [x] Deploy pipeline wired up, previews working on PRs
 
 **Milestone 2 — The list** ✅
 - [x] `Tool` type and `tools.ts` per the [content model](content-model.md)
@@ -67,14 +79,14 @@ backlinks in place.
 **Milestone 4 — Launch**
 - [x] Meta tags, JSON-LD, `robots.txt`, `sitemap-index.xml`
 - [x] Security headers and cache policy in `public/_headers`
-- [ ] Cloudflare Pages project connected and domain pointed —
+- [x] Cloudflare Pages project connected and domain pointed —
       [setup steps](deployment.md#hosting-cloudflare-pages)
-- [ ] Analytics on
+- [x] Analytics on
 - [ ] Backlinks added to clueline.dev, hqbase.io, trueluk.com
 - [ ] Run the [launch checklist](deployment.md#launch-checklist)
 
-The code is done. What's left is a deploy, three backlinks in three other repos, and one
-sentence about trueluk — and that last one is a decision, not a task.
+What's left is three backlinks in three other repos and one sentence about trueluk — and
+that last one is a decision, not a task.
 
 ## Deliberately not in v1
 

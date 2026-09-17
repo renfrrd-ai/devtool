@@ -16,9 +16,14 @@ their own section and sit on their category shelves alongside everything else.
        └─ /tools/<slug>    the entry  — one tool, in depth
 ```
 
-59 static pages: 1 home, 9 categories, 49 tools. The home page deliberately does *not*
+65 static pages: 1 home, 9 categories, 55 tools. The home page deliberately does *not*
 list the tools — that would be a wall nobody reads. Reasoning in
 [docs/information-architecture.md](docs/information-architecture.md).
+
+Readers can suggest tools without waiting for anyone: a [suggestion
+form](.github/ISSUE_TEMPLATE/suggest-tool.yml) feeds a GitHub issue, 👍 reactions are the
+votes, and entries clearing the threshold appear at the foot of their shelf flagged as
+unreviewed. [How that works, and what stops it diluting the curation](docs/suggestions.md).
 
 ## Built here
 
@@ -50,10 +55,16 @@ Generators, run only when their inputs change:
 npm run logos    # vendor each tool's favicon into public/logos/
 npm run images   # social cards and app icons into public/
 npm run popular  # refresh the most-viewed snapshot (needs CF_* env vars)
+npm run suggestions  # rebuild the reader-suggestion snapshot from open issues
 ```
 
-`popular` normally runs itself on a daily GitHub Action, not by hand — see
-[docs/analytics.md](docs/analytics.md).
+`popular` and `suggestions` normally run themselves on daily GitHub Actions, not by hand —
+see [docs/analytics.md](docs/analytics.md) and [docs/suggestions.md](docs/suggestions.md).
+
+`npm run build` runs `check:entries` first, which fails on a TODO description, a dangling
+`alternatives` id, a comparison row keyed to a tool that does not exist, or a suggestion
+form that has drifted from the category names. `astro check` proves the entries typecheck;
+that proves somebody wrote them.
 
 ## Adding a tool
 
@@ -78,6 +89,7 @@ and the structured data all follow from step 1.
 | [Design](docs/design.md) | Visual system, type, color, dark mode, components |
 | [Deployment](docs/deployment.md) | Cloudflare Pages setup, DNS, headers, launch checklist |
 | [Analytics](docs/analytics.md) | What's measured, the /go/ redirects, and the most-viewed plan |
+| [Suggestions](docs/suggestions.md) | How readers add tools, and the three guards on unreviewed entries |
 | [Decisions](docs/decisions.md) | Choices made and why, plus open questions |
 | [Roadmap](docs/roadmap.md) | What's shipped and what's next |
 | [PRD](docs/prd.md) | The original brief — historical, since superseded |

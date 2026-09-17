@@ -1,0 +1,190 @@
+---
+/*
+ * Reader suggestions for one shelf, below the comparison table.
+ *
+ * Everything about this block is deliberately subordinate to the curated list
+ * above it, because the directory's whole value is that somebody read each entry
+ * and wrote down where its catch is. An unreviewed suggestion has had none of
+ * that done to it, and presenting it as though it had would spend the site's
+ * credibility on entries that have not earned any.
+ *
+ * So it is a separate section rather than extra rows in the list; it carries no
+ * description, because the "where's the catch" paragraph is the editorial voice
+ * and this entry has not been through review; it shows no logo, so it never
+ * looks as finished as the rows above; and it says how many people asked for it,
+ * because that is the only claim being made.
+ *
+ * The outbound link is `nofollow ugc`. That is the part that matters for abuse:
+ * a listing that passes no ranking signal is worth very little to somebody
+ * submitting their own product for the backlink, which is most of the reason
+ * anyone spams a directory. The link still works for readers; it just does not
+ * pay until a human has reviewed the entry and moved it into tools.ts.
+ *
+ * Renders nothing when no suggestion on this shelf has cleared the threshold, so
+ * a quiet category page looks exactly as it does today.
+ */
+import Tag from './Tag.astro';
+import { suggestionsForCategory, suggestions } from '../lib/suggestions';
+
+interface Props {
+  categoryId: string;
+  categoryName: string;
+}
+
+const { categoryId, categoryName } = Astro.props;
+const entries = suggestionsForCategory(categoryId);
+
+const REPO = 'https://github.com/renfrrd-ai/devtool';
+const issueHref = (issue: number) => `${REPO}/issues/${issue}`;
+const suggestHref = `${REPO}/issues/new?template=suggest-tool.yml`;
+---
+
+{
+  entries.length > 0 && (
+    <section class="suggested">
+      <div class="container container--reading">
+        <p class="eyebrow">Suggested by readers</p>
+        <h2 class="suggested__title">Not reviewed yet.</h2>
+        <p class="suggested__note">
+          {entries.length === 1 ? 'One tool' : `${entries.length} tools`} readers asked for
+          on this shelf, with at least {suggestions.threshold} votes each. They have not
+          been through review, so there is no write-up and no judgement here — just the
+          suggestion, and how many people wanted it.
+        </p>
+
+        <ul class="suggested__list">
+          {entries.map((entry) => (
+            <li class="srow">
+              <div class="srow__head">
+                <a
+                  class="srow__name"
+                  href={entry.url}
+                  rel="nofollow ugc noopener"
+                  target="_blank"
+                >
+                  {entry.name}
+                </a>
+                <Tag variant="dashed">Unreviewed</Tag>
+                {entry.affiliated && <Tag variant="muted">Submitted by its maker</Tag>}
+              </div>
+
+              <p class="srow__tagline">{entry.tagline}</p>
+
+              <div class="srow__meta">
+                <span class="srow__domain">{entry.domain}</span>
+                <span aria-hidden="true">·</span>
+                <a class="srow__votes" href={issueHref(entry.issue)} rel="noopener">
+                  {entry.votes} {entry.votes === 1 ? 'vote' : 'votes'}
+                </a>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <p class="suggested__cta">
+          <a href={suggestHref} rel="noopener">Suggest a {categoryName.toLowerCase()} tool</a>
+          <span class="suggested__hint">
+            — or 👍 one above. Enough votes and it gets reviewed and written up properly.
+          </span>
+        </p>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .suggested {
+    border-top: 1px solid var(--border);
+    padding-block: 3.5rem 4rem;
+  }
+
+  .suggested__title {
+    margin-top: 1.25rem;
+    font-size: var(--text-h3, 1.375rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .suggested__note {
+    margin-top: 1rem;
+    max-width: 62ch;
+    font-size: var(--text-ui);
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  .suggested__list {
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /*
+   * Dashed, not solid. The curated rows above are enclosed in solid borders;
+   * this reads as provisional at a glance, before any label is read.
+   */
+  .srow {
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.125rem;
+    background: var(--bg-subtle);
+  }
+
+  .srow__head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+  }
+
+  .srow__name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  .srow__name:hover {
+    text-decoration: underline;
+  }
+
+  .srow__tagline {
+    margin-top: 0.5rem;
+    max-width: 62ch;
+    font-size: var(--text-ui);
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  .srow__meta {
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .srow__votes:hover {
+    color: var(--text);
+  }
+
+  .suggested__cta {
+    margin-top: 2rem;
+    font-size: var(--text-ui);
+    color: var(--text-faint);
+  }
+
+  .suggested__cta a {
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .suggested__hint {
+    color: var(--text-faint);
+  }
+</style>

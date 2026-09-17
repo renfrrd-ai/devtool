@@ -1,0 +1,137 @@
+name: Suggest a tool
+description: Propose a tool for the directory. Reactions on the issue are the votes.
+title: 'Suggest: '
+labels: ['tool-suggestion']
+
+# The fields below map onto the Tool schema in src/data/tools.ts, and
+# scripts/fetch-suggestions.mjs parses this form's rendered body by heading.
+# RENAMING A LABEL BREAKS THAT PARSE — the script warns rather than guessing, but
+# keep the two in step. See docs/suggestions.md.
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting something.
+
+        Two things worth knowing before you fill this in:
+
+        - **Reactions are the votes.** Once this issue is open, a 👍 on it counts.
+          Suggestions reach the site once they clear the threshold; below that they
+          live here in the tracker.
+        - **The description is written here, not by you.** Every entry on the site
+          says where the tool's catch is, in one editorial voice. Your notes below
+          feed that, but the published paragraph gets written during review — so
+          please don't paste marketing copy, it only slows the review down.
+
+  - type: input
+    id: name
+    attributes:
+      label: Tool name
+      placeholder: Checkly
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: URL
+      placeholder: https://www.checklyhq.com
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: >-
+        The shelf it belongs on. If nothing here fits, say so in the notes — a new
+        category needs about six entries before it earns a page, so a tool with no
+        shelf usually waits for company.
+      # These must match `name` in src/data/categories.ts exactly — the scripts
+      # map a submission onto a shelf by name. scripts/check-entries.mjs fails
+      # the build if the two drift, so this list is checked, not trusted.
+      options:
+        - Authentication
+        - Payments
+        - Email & SMTP
+        - UI & Components
+        - Databases & ORMs
+        - Hosting & Deploy
+        - Monitoring & Errors
+        - Analytics
+        - AI & LLMs
+    validations:
+      required: true
+
+  - type: input
+    id: tagline
+    attributes:
+      label: Tagline
+      description: >-
+        One line on what it does and who it is for — under about 95 characters, no
+        full stop. It has to survive being read against five others on the same
+        page, so no "powerful" or "modern": every tool here is both, so the words
+        carry no information.
+      placeholder: Monitors written as Playwright scripts, run from where your users are
+    validations:
+      required: true
+
+  - type: dropdown
+    id: pricing
+    attributes:
+      label: Pricing
+      description: >-
+        What you pay. This is separate from the licence — a tool can be open source
+        and paid to use hosted.
+      options:
+        - free — no cost for normal use
+        - freemium — usable free tier, paid tiers beyond it
+        - paid — you pay to use it in any real capacity
+    validations:
+      required: true
+
+  - type: input
+    id: licence
+    attributes:
+      label: Open source licence
+      description: Leave blank if it is not open source.
+      placeholder: MIT
+
+  - type: input
+    id: stack
+    attributes:
+      label: Stack
+      description: >-
+        What it runs on or is built with, comma separated, three or four at most.
+        `Playwright, TypeScript, Hosted` is a stack. `Alerting, Dashboards, SSO` is
+        a feature list — those go in the notes instead.
+      placeholder: Playwright, TypeScript, Hosted
+
+  - type: textarea
+    id: catch
+    attributes:
+      label: Where is the catch?
+      description: >-
+        The most useful box on this form, and the one the review actually reads.
+        What is the trade-off, who is it genuinely not for, what does it stop being
+        a good idea at? A suggestion that answers this honestly gets reviewed
+        faster than one that reads like a landing page.
+      placeholder: >-
+        It watches from the outside, so it tells you that checkout broke without
+        telling you why — you still want an error tracker next to it. The bill
+        scales with check frequency times locations, which adds up quicker than
+        the per-check price suggests.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: disclosure
+    attributes:
+      label: Disclosure
+      options:
+        - label: I work on this tool, or have a commercial interest in it
+        - label: >-
+            I checked devtool.fyi and the open issues, and this is not already
+            listed or already suggested
+          required: true

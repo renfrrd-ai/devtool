@@ -4,6 +4,7 @@ import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import ToolRow from '../../components/ToolRow.astro';
 import ComparisonTable from '../../components/ComparisonTable.astro';
+import SuggestedTools from '../../components/SuggestedTools.astro';
 import { categories } from '../../data/categories';
 import { SITE } from '../../data/site';
 import {
@@ -90,6 +91,14 @@ const schema = [
         <ComparisonTable comparison={category.comparison} categoryName={category.name} />
       )
     }
+
+    {/*
+      Below the comparison table on purpose. Suggestions are not candidates for
+      the head-to-head — nobody has verified a fact about them yet — and putting
+      them after it keeps the reviewed material as the whole of the page's
+      argument. Renders nothing until something clears the vote threshold.
+    */}
+    <SuggestedTools categoryId={category.id} categoryName={category.name} />
 
     <section class="more">
       <div class="container container--reading">

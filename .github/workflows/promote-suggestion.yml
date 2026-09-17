@@ -1,0 +1,79 @@
+name: Promote accepted suggestion
+
+# Labelling a suggestion `accepted` opens a pull request adding it to
+# src/data/tools.ts, with the description left as a TODO.
+#
+# A PR rather than a push to main, deliberately. The entry arrives incomplete by
+# design — scripts/check-entries.mjs fails the build on a TODO description — and
+# that failure belongs on a branch where it is a checklist, not on main where it
+# would block every deploy until someone found the time to write a paragraph.
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  promote:
+    if: github.event.label.name == 'accepted'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Add the entry
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/promote-suggestion.mjs ${{ github.event.issue.number }}
+
+      - name: Open the pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number }}
+          TITLE: ${{ github.event.issue.title }}
+        run: |
+          BRANCH="suggestion/${ISSUE}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add src/data/tools.ts
+          git commit -m "Add the tool suggested in #${ISSUE}"
+          git push -u origin "$BRANCH"
+
+          gh pr create \
+            --title "Add the tool suggested in #${ISSUE}" \
+            --body "$(cat <<EOF
+          Promoted from #${ISSUE} — \`${TITLE}\`.
+
+          The submitter's facts are in. **The description is a TODO, and the build
+          fails until it is written** — two or three sentences saying where the
+          catch is, in the site's voice rather than the vendor's. The submitter's
+          own notes are in a comment above the entry as raw material.
+
+          Before merging:
+
+          - [ ] Write the description
+          - [ ] Check the tagline reads well against the others on that shelf
+          - [ ] Add a comparison row in \`src/data/categories.ts\` if the shelf has a table
+          - [ ] Run \`npm run logos\` to vendor the icon
+          - [ ] Close #${ISSUE}
+
+          🤖 Generated with [Claude Code](https://claude.com/claude-code)
+          EOF
+          )"
+
+      - name: Say so on the issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --body "Accepted — a pull request adding this is open. It needs a write-up of where the tool's catch is before it can ship, which is the part that does not automate."

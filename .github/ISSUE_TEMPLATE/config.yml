@@ -1,0 +1,15 @@
+# Suggesting a tool goes through the form; anything else is a normal issue.
+blank_issues_enabled: true
+
+contact_links:
+  - name: Add the tool yourself
+    url: https://github.com/renfrrd-ai/devtool/blob/main/docs/content-model.md#adding-a-tool
+    about: >-
+      Faster than the form if you are comfortable opening a PR — one entry in
+      src/data/tools.ts and it is done. Skips the vote threshold entirely.
+
+  - name: Correct something that is wrong
+    url: https://github.com/renfrrd-ai/devtool/issues/new
+    about: >-
+      A tool's pricing changed, a licence is wrong, a link is dead. Open a plain
+      issue — these get fixed ahead of new entries.

@@ -210,6 +210,54 @@ than on the page would have been the same disclosure with an extra step.
 
 Share is also all the bar chart needs, so nothing was given up.
 
+### D20 — Readers can suggest tools, and GitHub is the database
+
+The directory only grows when one person has an afternoon free, which is a bad property for
+a directory. Submissions fix it, and they arrive through a GitHub issue form: issues hold
+the submissions, 👍 reactions hold the votes, labels hold the moderation state. A daily
+Action turns open issues into `src/data/suggestions.json`.
+
+The alternative was a form on the site posting to a Worker with D1 behind it. That buys a
+public write endpoint anyone can curl in a loop, and with it rate limiting, bot filtering,
+vote dedupe with no identity to dedupe against, and client JavaScript on a site that ships
+none — the same argument that settled [D17](#d17--no-database-and-no-live-view-counters),
+reached again from a different direction. What it would have bought is submissions from
+people without GitHub accounts, which on a developer-tool directory is a small population.
+
+It also reuses the pipeline shape the analytics snapshot already proved: a scheduled job
+commits a JSON file, and the build reads it without ever calling the network.
+
+### D21 — Unreviewed entries are subordinate, and their links are `nofollow`
+
+The directory's whole value is that somebody read each entry and wrote down its trade-off.
+Suggestions have had none of that done to them, so they render below the comparison table
+in their own dashed block, with no description, no logo, no tool page, and no presence in
+the counts, the sitemap or the structured data. They are not `Tool`s — they live in a
+separate module, so they *cannot* reach any of that, rather than relying on each place to
+remember to exclude them.
+
+The outbound link is `nofollow ugc`, and that is the load-bearing part. Most of the reason
+anyone spams a directory is the ranking signal the link passes; an unreviewed listing
+passes none. A vote threshold of three sits on top of it, so submitting your own product
+and clicking 👍 once does not buy a shelf placement.
+
+Affiliation is disclosed on the form and **surfaced rather than filtered** — a tool's own
+maker is a good source, and the honest move is to label it and let the reader weigh it.
+
+### D22 — Accepting a suggestion opens a PR; the description never automates
+
+Labelling an issue `accepted` writes the submitter's facts into `tools.ts` — name, url,
+category, pricing, licence, stack — and leaves `description` as a TODO that
+`scripts/check-entries.mjs` fails the build on.
+
+The description is the only reason a tool page exists here, it is written in one voice, and
+a submitted one is almost always marketing copy. Automating it would make the site into the
+thing it was built not to be, at exactly the moment it started scaling.
+
+Promotion opens a branch and a pull request rather than pushing to `main`, so the
+deliberate build failure lands where it is a checklist instead of where it would block
+every deploy.
+
 ### D13 — Tools within a category are ordered alphabetically
 
 Any other order implies a ranking this directory has not earned. Alphabetical is visibly

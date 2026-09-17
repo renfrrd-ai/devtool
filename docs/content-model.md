@@ -186,7 +186,10 @@ PNG from Google's favicon service — that last one exists because plenty of sit
 publish only a `favicon.ico`, which sharp cannot decode. All of it happens at build time
 and the result is committed, so the deployed page still makes no third-party requests.
 
-Currently 48 of 49 entries resolve an icon; trueluk has no site to fetch one from.
+Currently 54 of 55 entries resolve an icon; trueluk has no site to fetch one from.
+
+Suggested tools deliberately get no icon, even though one could be fetched — see
+[D21](decisions.md#d21--unreviewed-entries-are-subordinate-and-their-links-are-nofollow).
 
 The `logo` field overrides all of this, for when a tool's favicon makes a poor 44px tile.
 
@@ -206,3 +209,22 @@ Under 15 minutes, and it touches one file:
 
 The category counts, sample names, hero statistics, footer lists, the tool's own page, the
 sitemap and the structured data all follow from step 1. None of them need touching.
+
+`npm run build` runs `scripts/check-entries.mjs` before anything else, which catches the
+mistakes the type system cannot see: a description still set to `TODO`, an `alternatives`
+id that matches no tool, a comparison row keyed to nothing, a `licence` without
+`openSource`, a tagline over the limit or ending in a full stop.
+
+## Suggestions from readers
+
+Tools can also arrive without anyone here noticing them first. A reader fills in the
+[suggestion form](../.github/ISSUE_TEMPLATE/suggest-tool.yml), other readers vote with 👍,
+and entries above the threshold appear at the foot of their shelf marked unreviewed.
+
+Those entries are **not** `Tool`s and never touch this schema — they have their own shape
+in `src/lib/suggestions.ts`, which is what keeps them out of the counts, the comparison
+tables, the sitemap and the structured data. They become `Tool`s only when the issue is
+labelled `accepted`, which opens a PR with everything filled in except the description.
+
+Writing that description is the step that does not automate, and the build fails until it
+is done. Full walkthrough in [suggestions.md](suggestions.md).
