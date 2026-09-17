@@ -178,6 +178,28 @@ handler answering, not a Function.
 2. **Build system version.** Functions need v2; a project created on v1 will not build them.
 3. **The deployment log** for the failing build, which names a compile error if there is one.
 
+### Do not add a `wrangler.toml` to fix this
+
+It was tried, and it **broke the build entirely**. A `wrangler.toml` with `name` and
+`pages_build_output_dir` took the project's configuration over from the dashboard and no
+deployment completed afterwards — twelve minutes against a usual ninety seconds — while the
+previously deployed build carried on serving. The site stayed up and looked healthy the
+whole time, which is the part worth remembering: a failed Pages build is invisible from
+outside, because the last good deployment keeps answering.
+
+**How to tell a deploy actually landed.** `astro.config.mjs` sets the sitemap's `lastmod`
+to build time, so the deployed build stamps itself:
+
+```bash
+curl -s https://devtool.fyi/sitemap-0.xml | grep -o "<lastmod>[^<]*" | head -1
+```
+
+If that timestamp is older than your last push, the build failed. Nothing else about the
+site will tell you.
+
+The configuration is dashboard-only for now, and the fix for a 404 is in those settings
+rather than in this repository.
+
 A local check that rules the code out entirely:
 
 ```bash
