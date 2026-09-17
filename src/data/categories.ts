@@ -68,6 +68,7 @@ export const categories: Category[] = [
       note: 'Merchant of record is the column that matters. Everything else follows from it.',
       columns: ['Merchant of record', 'Global tax', 'Checkout control', 'Best for'],
       rows: {
+        adyen: ['No', 'Yours to file', 'Full', 'Enterprise and in-store volume'],
         'lemon-squeezy': ['Yes', 'Handled', 'Their checkout', 'Indie digital products'],
         mollie: ['No', 'Yours to file', 'Full', 'European payment methods'],
         paddle: ['Yes', 'Handled', 'Their checkout', 'SaaS selling worldwide'],
@@ -106,6 +107,7 @@ export const categories: Category[] = [
       columns: ['Layer', 'Styling', 'Arrives as', 'Customising means'],
       rows: {
         'base-ui': ['Primitives', 'Unstyled', 'A dependency', 'Your own CSS'],
+        'chakra-ui': ['Component kit', 'Styled', 'A dependency', 'Tokens and recipes'],
         mantine: ['Component kit', 'Styled', 'A dependency', 'Theme overrides'],
         'radix-ui': ['Primitives', 'Unstyled', 'A dependency', 'Your own CSS'],
         'shadcn-ui': ['Components', 'Tailwind', 'Source in your repo', 'Editing your own file'],
@@ -163,6 +165,7 @@ export const categories: Category[] = [
       rows: {
         axiom: ['Logs, events', 'No', 'Monitors', 'Keeping everything, not sampling'],
         betterstack: ['Uptime, logs, on-call', 'No', 'Paging', 'Three jobs, one bill'],
+        checkly: ['Uptime, browser flows', 'No', 'Paging', 'Playwright scripts as monitors'],
         clueline: ['Errors', 'No', 'Yes', 'Messages your users can read'],
         grafana: ['Metrics, logs, traces', 'Yes', 'Yes', 'The dashboard standard'],
         sentry: ['Errors, tracing', 'Yes', 'Yes', 'Stack trace to the commit'],
@@ -179,7 +182,9 @@ export const categories: Category[] = [
       note: 'Cookie-free is what removes the consent banner. Depth is what you trade for it.',
       columns: ['Cookie-free', 'Consent banner', 'Self-host', 'Depth'],
       rows: {
+        'cloudflare-analytics': ['Yes', 'Not needed', 'No', 'Pageviews and referrers only'],
         fathom: ['Yes', 'Not needed', 'No', 'Pageviews, referrers, goals'],
+        matomo: ['Configurable', 'Usually needed', 'Yes', 'Funnels, goals, heatmaps'],
         plausible: ['Yes', 'Not needed', 'Yes', 'Pageviews, referrers, goals'],
         posthog: ['Configurable', 'Usually needed', 'Yes', 'Funnels, replays, flags'],
         umami: ['Yes', 'Not needed', 'Yes', 'Pageviews and custom events'],
@@ -200,6 +205,7 @@ export const categories: Category[] = [
         ollama: ['Local runtime', 'Your machine', 'Free', 'Nothing'],
         openai: ['Model provider', 'Hosted', 'Per token', 'One provider'],
         openrouter: ['Router', 'Hosted', 'Per token, plus margin', 'One gateway'],
+        replicate: ['Model host', 'Hosted', 'Per second of compute', 'One host'],
         'vercel-ai-sdk': ['SDK', 'Whichever you point it at', 'Free', 'Nothing'],
       },
     },

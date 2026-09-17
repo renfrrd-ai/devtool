@@ -263,6 +263,20 @@ export const tools: Tool[] = [
     alternatives: ['stripe', 'paddle'],
     addedAt: '2026-09-04',
   },
+  {
+    id: 'adyen',
+    name: 'Adyen',
+    url: 'https://www.adyen.com',
+    domain: 'adyen.com',
+    tagline: 'One platform for online, in-store and marketplace payouts worldwide',
+    description:
+      'Acquiring, local payment methods, point of sale and split payouts on a single contract, which is why marketplaces and retailers with physical stores end up here rather than stitching three vendors together. Onboarding is a sales process with volume expectations attached, not a signup form — if you are looking for an API key this afternoon, this is the wrong shelf entry.',
+    categories: ['payments'],
+    pricing: 'paid',
+    stack: ['REST', 'Hosted checkout', 'Point of sale'],
+    alternatives: ['stripe', 'mollie'],
+    addedAt: '2026-09-17',
+  },
 
   // ------------------------------------------------------------------- email
 
@@ -420,6 +434,22 @@ export const tools: Tool[] = [
     stack: ['React', 'CSS Modules'],
     alternatives: ['shadcn-ui', 'radix-ui'],
     addedAt: '2026-09-04',
+  },
+  {
+    id: 'chakra-ui',
+    name: 'Chakra UI',
+    url: 'https://chakra-ui.com',
+    domain: 'chakra-ui.com',
+    tagline: 'Styled, accessible components driven by design tokens rather than overrides',
+    description:
+      'Sits on the same side of the line as Mantine — components that already look finished — but customisation runs through a token and recipe system instead of per-component overrides, which holds up better once a design system has real constraints. The v3 rewrite changed the styling engine, so a v2 codebase faces a genuine migration rather than a version bump.',
+    categories: ['ui'],
+    pricing: 'free',
+    openSource: true,
+    licence: 'MIT',
+    stack: ['React', 'TypeScript'],
+    alternatives: ['mantine', 'radix-ui', 'shadcn-ui'],
+    addedAt: '2026-09-17',
   },
 
   // ---------------------------------------------------------------- database
@@ -666,6 +696,20 @@ export const tools: Tool[] = [
     alternatives: ['axiom', 'betterstack'],
     addedAt: '2026-09-04',
   },
+  {
+    id: 'checkly',
+    name: 'Checkly',
+    url: 'https://www.checklyhq.com',
+    domain: 'checklyhq.com',
+    tagline: 'Monitors written as Playwright scripts, run from where your users are',
+    description:
+      'Everything else on this shelf tells you about a request your own servers already saw; this runs the real signup flow from outside, on a schedule, from the regions you care about, and pages you when a step breaks. It watches from the outside, so it tells you that checkout failed without telling you why — it pairs with an error tracker rather than replacing one, and the bill scales with frequency multiplied by locations.',
+    categories: ['monitoring'],
+    pricing: 'freemium',
+    stack: ['Playwright', 'TypeScript', 'Hosted'],
+    alternatives: ['betterstack', 'sentry'],
+    addedAt: '2026-09-17',
+  },
 
   // --------------------------------------------------------------- analytics
 
@@ -730,6 +774,36 @@ export const tools: Tool[] = [
     stack: ['Node.js', 'PostgreSQL', 'Self-hosted'],
     alternatives: ['plausible', 'fathom', 'posthog'],
     addedAt: '2026-09-04',
+  },
+  {
+    id: 'cloudflare-analytics',
+    name: 'Cloudflare Web Analytics',
+    url: 'https://www.cloudflare.com/web-analytics/',
+    domain: 'cloudflare.com',
+    tagline: 'Free cookie-free analytics, with no plan to outgrow and no sampling',
+    description:
+      'Genuinely free for any traffic level, cookieless, and it works on any host rather than only on sites proxied through Cloudflare. The catch is that it counts pageviews and nothing else — there is no custom-event API, so anything that is not a page load has to be modelled as one to be measured at all.',
+    categories: ['analytics'],
+    pricing: 'free',
+    stack: ['Beacon script', 'Cloudflare'],
+    alternatives: ['plausible', 'fathom', 'umami'],
+    addedAt: '2026-09-17',
+  },
+  {
+    id: 'matomo',
+    name: 'Matomo',
+    url: 'https://matomo.org',
+    domain: 'matomo.org',
+    tagline: 'The full Google Analytics replacement, self-hosted and entirely yours',
+    description:
+      'The heavyweight of the self-hosted end: segments, goals, funnels, heatmaps and session recording, with the raw data staying on your own server. That completeness is also the cost — it is a PHP and MySQL application with real operational weight, and the cookieless configuration that removes the consent banner is something you switch on rather than the default.',
+    categories: ['analytics'],
+    pricing: 'free',
+    openSource: true,
+    licence: 'GPL-3.0',
+    stack: ['PHP', 'MySQL', 'Self-hosted'],
+    alternatives: ['posthog', 'plausible', 'umami'],
+    addedAt: '2026-09-17',
   },
 
   // ---------------------------------------------------------------------- ai
@@ -807,5 +881,19 @@ export const tools: Tool[] = [
     stack: ['Local', 'llama.cpp', 'GGUF'],
     alternatives: ['claude-api', 'openai'],
     addedAt: '2026-09-04',
+  },
+  {
+    id: 'replicate',
+    name: 'Replicate',
+    url: 'https://replicate.com',
+    domain: 'replicate.com',
+    tagline: 'Run open models behind an API without provisioning a single GPU',
+    description:
+      'The practical way to use image, audio and video models that the text-first providers do not serve, plus fine-tuning on your own data. Billing is per second of compute rather than per token, which means a slow model costs more for identical output, and a model nobody has called recently pays a cold-start penalty before it answers.',
+    categories: ['ai'],
+    pricing: 'paid',
+    stack: ['REST', 'Cog', 'Hosted GPUs'],
+    alternatives: ['ollama', 'openrouter'],
+    addedAt: '2026-09-17',
   },
 ];
