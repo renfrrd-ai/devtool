@@ -1,0 +1,35 @@
+# Cloudflare Pages configuration.
+#
+# Added to make the Functions build explicit. `functions/api/report.js` is in
+# the repository and compiles correctly under `wrangler pages dev`, but the
+# deployed site answered /api/report with a static-asset 404 — the Functions
+# worker was never built. A project configured only from the dashboard gives no
+# way to see why from here; this file at least makes the output directory and
+# the compatibility date part of the repository.
+#
+# IT MAY NOT BE THE WHOLE FIX. If the Pages project's "Root directory" is not
+# `/`, or its build system is still version 1, Functions will not build
+# regardless of what is in here — both are dashboard settings. See
+# docs/reports.md#the-endpoint-returns-404.
+#
+# NOTE: this file supersedes some dashboard configuration for the project. The
+# build command stays a dashboard setting; the output directory below must keep
+# matching it.
+
+name = "devtool"
+compatibility_date = "2026-09-17"
+pages_build_output_dir = "dist"
+
+# The REPORTS KV namespace and the REPORT_SALT secret are deliberately NOT here
+# yet. A binding needs the namespace's id, and no namespace exists — a wrong or
+# placeholder id fails the build, which would take the static site down with it
+# rather than just leaving the endpoint broken.
+#
+# Once the namespace exists, moving the binding here is worth doing, so that it
+# is version-controlled rather than dashboard-only:
+#
+#   [[kv_namespaces]]
+#   binding = "REPORTS"
+#   id = "<the namespace id>"
+#
+# REPORT_SALT stays a dashboard secret either way — it does not belong in git.

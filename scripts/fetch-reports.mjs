@@ -58,11 +58,30 @@ const WINDOW_DAYS = 30;
 const MIN_REPORTS = 3;
 const RATE = 0.01;
 
+/*
+ * "Not set up yet" and "set up wrong" need different answers, and the KV
+ * namespace is what tells them apart.
+ *
+ * Reporting needs bindings on the Pages project that nothing else here needs,
+ * so until somebody creates them this job has nothing it could possibly do.
+ * Failing daily for that would train the owner to ignore a red cross in the
+ * Actions tab, which is the one place a genuine failure has to be visible. So
+ * an absent namespace id is a clean skip.
+ *
+ * Every other variable already exists for the analytics job. One of those going
+ * missing while the namespace is configured means something broke rather than
+ * something being unfinished, and that still fails loudly.
+ */
+if (!CF_KV_NAMESPACE_ID) {
+  console.log('CF_KV_NAMESPACE_ID is not set, so reporting is not configured yet.');
+  console.log('Nothing to weigh. Setup: docs/reports.md#setting-it-up');
+  process.exit(0);
+}
+
 const missing = Object.entries({
   CF_API_TOKEN,
   CF_ACCOUNT_ID,
   CF_SITE_TAG,
-  CF_KV_NAMESPACE_ID,
   GITHUB_TOKEN,
   GITHUB_REPOSITORY,
 })

@@ -150,6 +150,45 @@ There is deliberately no `wrangler.toml`. The Pages project is configured from t
 dashboard, and adding one would take that over — a config file is the better long-term
 answer, but not one worth switching to underneath a live deployment without a reason.
 
+## Telling the two failure modes apart
+
+The status code from `POST /api/report` says which layer is wrong, and they need
+completely different fixes:
+
+| Response | Means | Fix |
+| --- | --- | --- |
+| **503** | The Function ran and found no `REPORTS` binding | Bind the KV namespace, above |
+| **404** | The Function never ran at all | Below |
+| **303** | Working | — |
+
+That distinction is why the handler returns 503 on a missing binding rather than quietly
+accepting reports into nowhere.
+
+### The endpoint returns 404
+
+Cloudflare is serving `/api/report` as a static-asset miss, which means the Functions
+worker is not in the deployment. Confirm it with the response headers: a 404 carrying the
+`X-Frame-Options` and `X-Content-Type-Options` from `public/_headers` is the static asset
+handler answering, not a Function.
+
+`functions/api/report.js` being committed is not sufficient — check, in order:
+
+1. **Root directory** (Pages → Settings → Builds). If it is not `/`, Pages looks for
+   `functions/` inside that subdirectory and finds nothing.
+2. **Build system version.** Functions need v2; a project created on v1 will not build them.
+3. **The deployment log** for the failing build, which names a compile error if there is one.
+
+A local check that rules the code out entirely:
+
+```bash
+npm run build
+npx wrangler pages dev dist --kv REPORTS --binding REPORT_SALT=testsalt
+curl -i -X POST localhost:8788/api/report -d "id=stripe&kind=tool&reason=pricing"
+```
+
+A 303 there and a 404 in production means the code is fine and the project configuration
+is not.
+
 ## Running it locally
 
 ```bash
