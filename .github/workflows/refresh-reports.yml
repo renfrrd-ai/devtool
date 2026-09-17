@@ -1,0 +1,60 @@
+name: Refresh review flags
+
+# Pairs the reports in KV against page views, flags anything over the threshold,
+# opens a review issue for it, and commits src/data/flags.json if the verdict
+# changed. Same shape as the other two snapshot jobs: the site build never calls
+# the network, so the verdict lives in git.
+#
+# See docs/reports.md.
+
+on:
+  schedule:
+    # 05:40 UTC daily — after the suggestions refresh, so a suggestion accepted
+    # or dropped that morning is already reflected when flags are computed.
+    - cron: '40 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: refresh-reports
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    # The CF_* secrets live on this environment rather than the repository,
+    # matching refresh-popular.yml. Without this line the job runs with them
+    # unset and fails on the first check.
+    environment: Devtool Analytics
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Weigh the reports
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_SITE_TAG: ${{ secrets.CF_SITE_TAG }}
+          CF_KV_NAMESPACE_ID: ${{ secrets.CF_KV_NAMESPACE_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/fetch-reports.mjs
+
+      - name: Commit if the flags changed
+        run: |
+          if git diff --quiet -- src/data/flags.json; then
+            echo "No change to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/flags.json
+          git commit -m "Refresh review flags"
+          git push

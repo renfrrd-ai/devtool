@@ -1,0 +1,69 @@
+---
+/*
+ * Where /api/report sends a submission it could not make sense of — a slug that
+ * is not slug-shaped, a reason that is not on the list, an unparseable body.
+ *
+ * Worth its own page rather than a silent thank-you: telling somebody their
+ * report was discarded is the honest answer, and a report that vanishes without
+ * a word is indistinguishable from one that worked.
+ */
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+---
+
+<Base
+  title="That didn't go through — devtool.fyi"
+  description="The report could not be recorded."
+  noindex
+>
+  <SiteHeader />
+
+  <main id="main" class="problem">
+    <div class="container container--reading">
+      <h1 class="problem__title">That didn't go through.</h1>
+      <p class="problem__lead">
+        Something in the form didn't make sense to the server, so nothing was recorded.
+        Going back and sending it again is worth a try — and if it fails a second time,
+        that is a bug worth knowing about rather than something you did wrong.
+      </p>
+
+      <a class="problem__back" href="/">Back to the directory</a>
+    </div>
+  </main>
+
+  <SiteFooter />
+</Base>
+
+<style>
+  .problem {
+    padding-block: 5rem 7rem;
+  }
+
+  .problem__title {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2-lh);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .problem__lead {
+    margin-top: 1.5rem;
+    max-width: 58ch;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  .problem__back {
+    display: inline-block;
+    margin-top: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .problem__back:hover {
+    color: var(--text);
+  }
+</style>

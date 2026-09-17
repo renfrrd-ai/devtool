@@ -1,0 +1,271 @@
+---
+/*
+ * One report form per entry, served as a static page.
+ *
+ * The form is plain HTML posting to /api/report — no JavaScript, in the same
+ * spirit as /go/<id>/. That keeps the site's "no client JS beyond the theme
+ * toggle" property intact even though reporting is inherently a write.
+ *
+ * These pages are noindex and excluded from the sitemap. A crawler following
+ * every one of them would achieve nothing, and they are not content.
+ */
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { tools } from '../../data/tools';
+import { toolHref } from '../../lib/directory';
+import { suggestions } from '../../lib/suggestions';
+
+export function getStaticPaths() {
+  const fromTools = tools.map((tool) => ({
+    params: { slug: tool.id },
+    props: { kind: 'tool', name: tool.name, domain: tool.domain, href: toolHref(tool.id) },
+  }));
+
+  /*
+   * Suggestions get a form too — they are the ungated surface, so they are the
+   * entries most likely to need reporting. Their ids never collide with tool
+   * ids because fetch-suggestions.mjs drops anything already in the directory.
+   */
+  const fromSuggestions = suggestions.entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { kind: 'suggestion', name: entry.name, domain: entry.domain, href: null },
+  }));
+
+  return [...fromTools, ...fromSuggestions];
+}
+
+const { kind, name, domain, href } = Astro.props;
+
+/*
+ * The reason lists differ because a report means different things on the two
+ * surfaces. On a reviewed entry it is a correction — the facts have gone stale.
+ * On a suggestion nobody has checked anything yet, so it is gatekeeping.
+ */
+const TOOL_REASONS = [
+  ['dead-link', 'The link is dead, or the tool has shut down'],
+  ['pricing', 'The pricing, licence or stack is wrong'],
+  ['misleading', "The description doesn't match what it actually does"],
+  ['security', 'A security or trust concern'],
+  ['other', 'Something else'],
+];
+
+const SUGGESTION_REASONS = [
+  ['spam', 'Spam, or submitted purely for the link'],
+  ['misleading', "It isn't what it claims to be"],
+  ['security', 'A security or trust concern'],
+  ['dead-link', 'The link is dead, or it does not exist'],
+  ['other', 'Something else'],
+];
+
+const reasons = kind === 'suggestion' ? SUGGESTION_REASONS : TOOL_REASONS;
+---
+
+<Base
+  title={`Report ${name} — devtool.fyi`}
+  description={`Report a problem with the ${name} entry.`}
+  noindex
+>
+  <SiteHeader />
+
+  <main id="main">
+    <header class="head">
+      <div class="container container--reading">
+        <p class="eyebrow">Report an entry</p>
+        <h1 class="head__title">{name}</h1>
+        <p class="head__domain">{domain}</p>
+        <p class="head__lead">
+          {
+            kind === 'suggestion'
+              ? 'This is a reader suggestion that nobody here has reviewed yet. If it should not be on the shelf, say so.'
+              : 'Tools change, shut down and get acquired, and nobody here notices automatically. If this entry has gone wrong, say so.'
+          }
+        </p>
+      </div>
+    </header>
+
+    <section class="form-section">
+      <div class="container container--reading">
+        <form class="form" method="POST" action="/api/report">
+          <input type="hidden" name="id" value={Astro.params.slug} />
+          <input type="hidden" name="kind" value={kind} />
+
+          <fieldset class="field">
+            <legend class="field__label">What's wrong?</legend>
+            {
+              reasons.map(([value, label], index) => (
+                <label class="choice">
+                  <input type="radio" name="reason" value={value} required={index === 0} />
+                  <span>{label}</span>
+                </label>
+              ))
+            }
+          </fieldset>
+
+          <div class="field">
+            <label class="field__label" for="detail">Anything else? (optional)</label>
+            <p class="field__hint">
+              A link or a sentence is plenty. This goes to a human, not a queue.
+            </p>
+            <textarea id="detail" name="detail" rows="4" maxlength="500"></textarea>
+          </div>
+
+          {/*
+            Honeypot. Hidden from sight, from screen readers and from the tab
+            order, so only an automated submitter fills it in. Off-screen rather
+            than display:none, which some bots skip.
+          */}
+          <div class="hp" aria-hidden="true">
+            <label for="website">Leave this field empty</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <button class="btn btn--primary" type="submit">Send report</button>
+
+          <p class="form__fine">
+            No account needed, and no cookie or identifier is set. To stop one person
+            reporting the same entry fifty times, the server hashes your IP with a secret
+            and the date and keeps that for a day — your address is never written down.
+            A report is never published and never hides an entry on its own; it asks a
+            person to take a look.
+          </p>
+        </form>
+
+        {href && <a class="back" href={href}>Back to {name}</a>}
+        {!href && <a class="back" href="/">Back to the directory</a>}
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+</Base>
+
+<style>
+  .head {
+    padding-block: 3rem 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .head__title {
+    margin-top: 1.25rem;
+    font-size: var(--text-h2);
+    line-height: var(--text-h2-lh);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .head__domain {
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .head__lead {
+    margin-top: 1.25rem;
+    max-width: 62ch;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  .form-section {
+    padding-block: 2.5rem 5rem;
+  }
+
+  .form {
+    max-width: 48ch;
+  }
+
+  .field {
+    margin: 0 0 2rem;
+    padding: 0;
+    border: 0;
+  }
+
+  .field__label {
+    display: block;
+    padding: 0;
+    font-size: var(--text-ui);
+    font-weight: 600;
+  }
+
+  .field__hint {
+    margin-top: 0.375rem;
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    margin-top: 0.75rem;
+    font-size: var(--text-ui);
+    line-height: 1.5;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .choice input {
+    margin-top: 0.25rem;
+    accent-color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .choice:hover {
+    color: var(--text);
+  }
+
+  textarea {
+    margin-top: 0.75rem;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: var(--text-ui);
+    resize: vertical;
+  }
+
+  textarea:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 1px;
+  }
+
+  .hp {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .form__fine {
+    margin-top: 1.5rem;
+    max-width: 52ch;
+    font-size: var(--text-label);
+    line-height: 1.6;
+    color: var(--text-faint);
+  }
+
+  .form__fine a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .back {
+    display: inline-block;
+    margin-top: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .back:hover {
+    color: var(--text);
+  }
+</style>

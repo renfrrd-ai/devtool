@@ -1,0 +1,66 @@
+---
+/*
+ * Where /api/report sends people afterwards. Static, so the endpoint's entire
+ * response is a 303 and there is no rendering on the write path at all.
+ *
+ * A malformed submission goes to /report/problem/ instead. That is a separate
+ * page rather than a query parameter on this one, because these pages are
+ * prerendered — a static page cannot read `?e=1` at request time, so branching
+ * on one here would silently always take the same branch.
+ */
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+---
+
+<Base title="Thanks — devtool.fyi" description="Your report was received." noindex>
+  <SiteHeader />
+
+  <main id="main" class="thanks">
+    <div class="container container--reading">
+      <h1 class="thanks__title">Thanks — that's logged.</h1>
+      <p class="thanks__lead">
+        A person will look at it. Reports don't hide anything on their own and aren't
+        published; enough of them on one entry puts it in front of a moderator, which is
+        the whole mechanism.
+      </p>
+
+      <a class="thanks__back" href="/">Back to the directory</a>
+    </div>
+  </main>
+
+  <SiteFooter />
+</Base>
+
+<style>
+  .thanks {
+    padding-block: 5rem 7rem;
+  }
+
+  .thanks__title {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2-lh);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .thanks__lead {
+    margin-top: 1.5rem;
+    max-width: 58ch;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  .thanks__back {
+    display: inline-block;
+    margin-top: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .thanks__back:hover {
+    color: var(--text);
+  }
+</style>

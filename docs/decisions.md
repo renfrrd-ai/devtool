@@ -258,6 +258,61 @@ Promotion opens a branch and a pull request rather than pushing to `main`, so th
 deliberate build failure lands where it is a checklist instead of where it would block
 every deploy.
 
+### D23 — Reporting gets one dynamic endpoint, and D17 gives way for it
+
+Suggestions work through GitHub because a considered contribution justifies an account. A
+report is a two-second reflex, and gating it behind a login takes the report rate to
+approximately zero — which makes a reports-to-views ratio meaningless and the whole
+mechanism decorative. There is no version of this feature that works without accepting
+anonymous writes.
+
+So [D17](#d17--no-database-and-no-live-view-counters) gives way, in the smallest possible
+way: one Pages Function, one KV namespace. The site around it does not change — `/report/<id>/`
+is a prerendered page with a plain `<form method="POST">` and no JavaScript, the same trick
+`/go/<id>/` already uses to count outbound clicks without a tracking script, and the
+endpoint's entire response is a 303 to a static page.
+
+What made this acceptable where a live view counter was not: a write that inflates a counter
+changes what readers see, and a write that files a report does not. The ceiling is D24.
+
+### D24 — A report can cause a review and nothing else
+
+Reports never hide a curated entry, never reorder anything, never change a score, and are
+never displayed. Crossing the threshold opens an issue and writes a verdict to
+`flags.json`; the page is unchanged.
+
+That ceiling is the actual security model. Anonymous reporting is gameable and the ratio is
+attackable from both ends — somebody can file reports, and somebody can generate views to
+dilute them. It does not matter much, because the prize for winning is that a moderator
+looks at a page. Defences are sized to that: a honeypot, one report per person per entry
+per day, a daily cap. No CAPTCHA, which would cost client-side JavaScript to protect against
+an unnecessary code review.
+
+The one exception is a reported suggestion, which is withheld from its shelf until reviewed.
+That is not a flag being shown — the entry is simply absent. A suggestion was never vouched
+for, so declining to keep showing one readers object to costs nothing; a curated entry had a
+human read it, so it stands.
+
+### D25 — The threshold is a Wilson lower bound over a report floor
+
+"Reports as a percentage of views" gets small samples exactly backwards. Three views and one
+report is 33% and would flag instantly; ten thousand views and fifty reports is 0.5% and
+never would. The first is noise; the second might be real.
+
+Two guards instead: a hard floor of three reports, so no ratio flags an entry two people
+complained about, and a 1% threshold applied to the *lower bound* of the report rate rather
+than the raw proportion. One report in three views scores 6% on that measure, not 33%, and
+the bound climbs towards the true rate as the sample grows.
+
+The denominator is views of the page carrying the report link — the population that could
+actually have filed one. And since you cannot report an entry without looking at it, a
+report count above the recorded view count means the analytics missed views, not a rate
+above 100%; the larger of the two is used, so a gap in the analytics cannot flag everything.
+
+`flags.json` stores the verdict only, never the counts, for the reason in
+[D19](#d19--the-snapshot-stores-share-never-counts) plus one more: a public file saying
+"stripe: 14 reports" is an unreviewed accusation about a named company.
+
 ### D13 — Tools within a category are ordered alphabetically
 
 Any other order implies a ranking this directory has not earned. Alphabetical is visibly

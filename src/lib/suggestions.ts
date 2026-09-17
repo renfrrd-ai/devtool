@@ -13,6 +13,7 @@
  */
 
 import raw from '../data/suggestions.json';
+import { flaggedSuggestions } from './flags';
 
 export interface Suggestion {
   /** Slug derived from the name. Only ever used as a React-ish key and an anchor. */
@@ -58,5 +59,7 @@ export function suggestionsForCategory(categoryId: string): Suggestion[] {
   return suggestions.entries
     .filter((entry) => entry.category === categoryId)
     .filter((entry) => entry.votes >= suggestions.threshold)
+    /* Reported often enough to be worth a look — withheld until it gets one. */
+    .filter((entry) => !flaggedSuggestions.has(entry.id))
     .sort((a, b) => b.votes - a.votes || a.name.localeCompare(b.name));
 }

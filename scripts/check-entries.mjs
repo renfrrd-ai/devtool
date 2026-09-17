@@ -21,6 +21,8 @@ import { categories } from '../src/data/categories.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const FORM = join(root, '.github', 'ISSUE_TEMPLATE', 'suggest-tool.yml');
+const REPORT_PAGE = join(root, 'src', 'pages', 'report', '[slug].astro');
+const REPORT_FN = join(root, 'functions', 'api', 'report.js');
 
 const TAGLINE_MAX = 95;
 
@@ -124,6 +126,42 @@ try {
   }
 } catch (error) {
   problems.push(`suggest-tool.yml could not be read: ${error.message}`);
+}
+
+/*
+ * The report form offers reasons; the endpoint validates against its own list.
+ * A value on the page that the endpoint does not accept fails the same way the
+ * category drift did — invisibly. The reader fills the form in, gets sent to
+ * /report/problem/, and nothing is recorded. Checked rather than trusted, for
+ * the same reason and after the same mistake.
+ */
+try {
+  const page = readFileSync(REPORT_PAGE, 'utf8');
+  const fn = readFileSync(REPORT_FN, 'utf8');
+
+  const declared = fn.match(/const REASONS = new Set\(\[([^\]]*)\]\)/);
+  const offered = [...page.matchAll(/^\s*\['([a-z-]+)',/gm)].map((match) => match[1]);
+
+  if (!declared) {
+    problems.push('report.js: could not find the REASONS set — update this check with it.');
+  } else if (offered.length === 0) {
+    problems.push('report/[slug].astro: could not find any reason values.');
+  } else {
+    const accepted = new Set(
+      [...declared[1].matchAll(/'([a-z-]+)'/g)].map((match) => match[1]),
+    );
+
+    for (const reason of new Set(offered)) {
+      if (!accepted.has(reason)) {
+        problems.push(
+          `report/[slug].astro offers the reason "${reason}", which /api/report rejects.\n` +
+            '    Reports choosing it are discarded and the reader is sent to /report/problem/.',
+        );
+      }
+    }
+  }
+} catch (error) {
+  problems.push(`the report form could not be checked: ${error.message}`);
 }
 
 if (problems.length > 0) {

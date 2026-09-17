@@ -76,6 +76,13 @@ const suggestHref = `${REPO}/issues/new?template=suggest-tool.yml`;
                 <a class="srow__votes" href={issueHref(entry.issue)} rel="noopener">
                   {entry.votes} {entry.votes === 1 ? 'vote' : 'votes'}
                 </a>
+                <span aria-hidden="true">·</span>
+                {/*
+                  More prominent here than on a curated entry, deliberately.
+                  Nobody has checked this one, so the reader is the only review
+                  it has had so far.
+                */}
+                <a class="srow__report" href={`/report/${entry.id}/`}>Report</a>
               </div>
             </li>
           ))}
@@ -167,7 +174,8 @@ const suggestHref = `${REPO}/issues/new?template=suggest-tool.yml`;
     color: var(--text-faint);
   }
 
-  .srow__votes:hover {
+  .srow__votes:hover,
+  .srow__report:hover {
     color: var(--text);
   }
 

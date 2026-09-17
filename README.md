@@ -25,6 +25,10 @@ form](.github/ISSUE_TEMPLATE/suggest-tool.yml) feeds a GitHub issue, 👍 reacti
 votes, and entries clearing the threshold appear at the foot of their shelf flagged as
 unreviewed. [How that works, and what stops it diluting the curation](docs/suggestions.md).
 
+They can also report one that has gone wrong. Enough reports relative to the entry's page
+views puts it in front of a moderator — it never hides anything on its own.
+[Reports](docs/reports.md).
+
 ## Built here
 
 | Tool | Domain | Category | Status |
@@ -35,8 +39,9 @@ unreviewed. [How that works, and what stops it diluting the curation](docs/sugge
 
 ## Stack
 
-Astro building to fully static output. No framework runtime, no server, no database, no
-tracking. Each page ships HTML, one shared stylesheet, self-hosted font subsets, and two
+Astro building to fully static output, plus one Cloudflare Pages Function — `/api/report`,
+the only thing on the site that accepts a write ([why](docs/decisions.md#d23--reporting-gets-one-dynamic-endpoint-and-d17-gives-way-for-it)).
+No framework runtime, no server, no database, no tracking. Each page ships HTML, one shared stylesheet, self-hosted font subsets, and two
 small scripts for the theme toggle — 23 KB of HTML for the home page, 16 KB for a tool
 page.
 
@@ -90,6 +95,7 @@ and the structured data all follow from step 1.
 | [Deployment](docs/deployment.md) | Cloudflare Pages setup, DNS, headers, launch checklist |
 | [Analytics](docs/analytics.md) | What's measured, the /go/ redirects, and the most-viewed plan |
 | [Suggestions](docs/suggestions.md) | How readers add tools, and the three guards on unreviewed entries |
+| [Reports](docs/reports.md) | The report endpoint, the review threshold, and why it is a Wilson bound |
 | [Decisions](docs/decisions.md) | Choices made and why, plus open questions |
 | [Roadmap](docs/roadmap.md) | What's shipped and what's next |
 | [PRD](docs/prd.md) | The original brief — historical, since superseded |

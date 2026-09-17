@@ -59,7 +59,19 @@ const mine = sortedMadeHere();
 
   <div class="container footer__bottom">
     <p class="footer__fine">&copy; {year} {SITE.author.name}</p>
-    <p class="footer__fine">Static pages. Cookieless analytics, nothing personal stored.</p>
+    {/*
+      Re-checked when reporting was added, per the standing rule in
+      docs/analytics.md that this line gets revisited whenever what the site
+      stores changes. A report keeps a reason, an optional sentence and a
+      timestamp. It also keeps a salted hash of the reporter's address for a
+      day, to stop the same entry being reported fifty times — the address
+      itself is never written down and the hash cannot be read back or
+      correlated across days. "Nothing personal stored" still holds; "no
+      accounts" is now worth saying out loud, because reporting needs none.
+    */}
+    <p class="footer__fine">
+      Static pages. Cookieless analytics, no accounts, nothing personal stored.
+    </p>
   </div>
 </footer>
 

@@ -30,15 +30,23 @@
       opens a promotion PR — [docs](suggestions.md)
 - [x] `npm run check:entries` as an editorial build gate: TODO descriptions, dangling
       alternatives, comparison rows keyed to nothing, form/shelf drift
+- [x] Reporting: a no-JavaScript form per entry, one Pages Function, and a review
+      threshold on the lower bound of the report rate — [docs](reports.md)
 
 **Next** — the site is finished; the problem now is that nobody is on it
 
 1. [ ] **Backlinks.** Still the only distribution work that is scoped, still not started —
        [the table](deployment.md#cross-linking) is fully unchecked. With zero inbound
        links, nothing else on this list is measurable.
-2. [ ] Announce it somewhere once. The suggestion flow is worthless without people, and
+2. [ ] **Switch the two ungated features on.** Both are built and both are inert until
+       something outside this repo happens:
+       - Make the repository public, or nobody can suggest or vote
+       - Bind `REPORTS` (KV) and `REPORT_SALT` on the Pages project, and add
+         `CF_KV_NAMESPACE_ID` to the environment secrets — until then `/api/report`
+         answers 503 — [setup](reports.md#setting-it-up)
+3. [ ] Announce it somewhere once. The suggestion flow is worthless without people, and
        the shelves are now deep enough to be worth someone's time.
-3. [ ] Collect traffic. The most-viewed section appears by itself once the cron finds
+4. [ ] Collect traffic. The most-viewed section appears by itself once the cron finds
        data; nothing to build or switch on.
 
 > **Where the traffic actually stands.** The 30-day snapshot has held one entry — `hqbase`,

@@ -19,7 +19,10 @@ export default defineConfig({
       // The /go/ pages are redirect stubs for counting outbound clicks. They
       // are noindex, and listing them would invite crawlers to follow every
       // one and inflate the click numbers they exist to measure.
-      filter: (page) => !page.includes('/go/'),
+      //
+      // The /report/ pages are forms, one per entry. Also noindex, also not
+      // content, and a crawler working through them achieves nothing.
+      filter: (page) => !page.includes('/go/') && !page.includes('/report/'),
       changefreq: 'monthly',
       priority: 1.0,
       lastmod: new Date(),

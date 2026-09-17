@@ -5,4 +5,8 @@ Allow: /
 # very numbers they measure. They also carry a noindex meta tag.
 Disallow: /go/
 
+# One report form per entry, plus the two pages the endpoint redirects to.
+# Not content, and nothing here wants indexing. They carry noindex too.
+Disallow: /report/
+
 Sitemap: https://devtool.fyi/sitemap-index.xml

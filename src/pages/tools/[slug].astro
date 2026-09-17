@@ -229,6 +229,19 @@ const facts = [
           </section>
         )
       }
+
+      {/*
+        Quiet on purpose. Reporting should be findable by somebody who noticed
+        something wrong, and invisible to everybody else — a prominent "report"
+        button on every entry would read as an invitation to doubt the listing.
+      */}
+      <section class="report">
+        <div class="container container--reading">
+          <a class="report__link" href={`/report/${tool.id}/`}>
+            Something wrong with this entry?
+          </a>
+        </div>
+      </section>
     </article>
   </main>
 
@@ -236,6 +249,22 @@ const facts = [
 </Base>
 
 <style>
+  .report {
+    padding-block: 0 4rem;
+  }
+
+  .report__link {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .report__link:hover {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
   .head {
     padding-block: 3rem 3rem;
     border-bottom: 1px solid var(--border);
