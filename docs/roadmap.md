@@ -32,6 +32,12 @@
       alternatives, comparison rows keyed to nothing, form/shelf drift
 - [x] Reporting: a no-JavaScript form per entry, one Pages Function, and a review
       threshold on the lower bound of the report rate — [docs](reports.md)
+- [x] Contribution paths written down and linked from the site itself: `CONTRIBUTING.md`,
+      a code of conduct, a security policy, a PR template, a correction form, and
+      `/contribute/` for readers who have never seen the repo —
+      [D26](decisions.md#d26--contributing-gets-a-page-on-the-site-not-only-a-contributingmd)
+- [x] CI on every pull request — the same `npm run build` the host runs, so a fork PR gets
+      the editorial gate as a status check rather than only a preview deployment
 
 **Next** — the site is finished; the problem now is that nobody is on it
 

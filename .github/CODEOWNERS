@@ -1,0 +1,15 @@
+# One maintainer, so this is a review request rather than a gate: every pull
+# request gets @renfrrd-ai attached automatically, including the ones the
+# promotion workflow opens by itself.
+#
+# Listed per-path rather than as a single `*` line so that splitting the
+# editorial content off from the code later is an edit here, not a rethink.
+
+*                       @renfrrd-ai
+
+# The entries and the shelves — editorial, and the reason the site exists.
+/src/data/tools.ts      @renfrrd-ai
+/src/data/categories.ts @renfrrd-ai
+
+# The decisions everything else is justified against.
+/docs/                  @renfrrd-ai

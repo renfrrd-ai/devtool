@@ -16,8 +16,9 @@ their own section and sit on their category shelves alongside everything else.
        └─ /tools/<slug>    the entry  — one tool, in depth
 ```
 
-65 static pages: 1 home, 9 categories, 55 tools. The home page deliberately does *not*
-list the tools — that would be a wall nobody reads. Reasoning in
+66 static pages: 1 home, 9 categories, 55 tools, and [one page on how to
+contribute](CONTRIBUTING.md). The home page deliberately does *not* list the tools — that
+would be a wall nobody reads. Reasoning in
 [docs/information-architecture.md](docs/information-architecture.md).
 
 Readers can suggest tools without waiting for anyone: a [suggestion
@@ -42,7 +43,7 @@ views puts it in front of a moderator — it never hides anything on its own.
 Astro building to fully static output, plus one Cloudflare Pages Function — `/api/report`,
 the only thing on the site that accepts a write ([why](docs/decisions.md#d23--reporting-gets-one-dynamic-endpoint-and-d17-gives-way-for-it)).
 No framework runtime, no server, no database, no tracking. Each page ships HTML, one shared stylesheet, self-hosted font subsets, and two
-small scripts for the theme toggle — 23 KB of HTML for the home page, 16 KB for a tool
+small scripts for the theme toggle — 26 KB of HTML for the home page, 17 KB for a tool
 page.
 
 ## Getting started
@@ -92,10 +93,32 @@ Under 15 minutes, and it touches one file. Full walkthrough in
 Its row, its own page, the category counts, the hero statistics, the footer, the sitemap
 and the structured data all follow from step 1.
 
+## Contributing
+
+Four ways in, and they cost different amounts —
+[CONTRIBUTING.md](CONTRIBUTING.md) has all of them, plus setup, the editorial standard,
+what the build checks and which features this site is deliberately not building.
+
+| You want to | Go here |
+| --- | --- |
+| Put a tool on the list, no setup | [Suggestion form](.github/ISSUE_TEMPLATE/suggest-tool.yml) — votes are 👍 reactions |
+| Put a tool on the list, today | [A PR](CONTRIBUTING.md#adding-a-tool-yourself) — one entry in one file |
+| Say an entry is wrong | [Correction form](.github/ISSUE_TEMPLATE/correct-entry.yml), or the Report link on the entry |
+| Change the site itself | [Read this first](CONTRIBUTING.md#changing-the-site-itself) |
+
+The same thing, written for a reader who has never seen this repository, is on the site at
+[devtool.fyi/contribute](https://devtool.fyi/contribute/) — [why both
+exist](docs/decisions.md#d26--contributing-gets-a-page-on-the-site-not-only-a-contributingmd).
+
+Also here: a [code of conduct](CODE_OF_CONDUCT.md), and [where to send a security
+issue](SECURITY.md) — by email, not the tracker. Every pull request runs the full build in
+[CI](.github/workflows/ci.yml): `check:entries`, then `astro check`.
+
 ## Docs
 
 | Doc | What's in it |
 | --- | --- |
+| [Contributing](CONTRIBUTING.md) | The four ways in, the editorial standard, and what the checks check |
 | [Information architecture](docs/information-architecture.md) | The three page types and what derives from what |
 | [Content model](docs/content-model.md) | The tool and category schemas, and how to add one |
 | [Architecture](docs/architecture.md) | Stack rationale, project layout, SEO and social metadata |

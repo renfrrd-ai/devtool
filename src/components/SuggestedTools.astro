@@ -25,6 +25,7 @@
  */
 import Tag from './Tag.astro';
 import { suggestionsForCategory, suggestions } from '../lib/suggestions';
+import { SITE } from '../data/site';
 
 interface Props {
   categoryId: string;
@@ -34,9 +35,8 @@ interface Props {
 const { categoryId, categoryName } = Astro.props;
 const entries = suggestionsForCategory(categoryId);
 
-const REPO = 'https://github.com/renfrrd-ai/devtool';
-const issueHref = (issue: number) => `${REPO}/issues/${issue}`;
-const suggestHref = `${REPO}/issues/new?template=suggest-tool.yml`;
+const issueHref = (issue: number) => `${SITE.repo}/issues/${issue}`;
+const suggestHref = `${SITE.repo}/issues/new?template=suggest-tool.yml`;
 ---
 
 {

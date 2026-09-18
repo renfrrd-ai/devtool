@@ -112,6 +112,57 @@ const schema = [
         </div>
       </div>
     </section>
+
+    {/*
+      Last section on the page, and deliberately so: the ask comes after the
+      thing being asked about. A reader who has not scrolled this far has no
+      reason to add anything yet. The detail lives on /contribute/ — this is
+      three lines and a door.
+    */}
+    <section id="contribute" class="section contribute">
+      <div class="container container--reading">
+        <p class="eyebrow">Contribute</p>
+        <h2 class="h2 section__title">Missing something?</h2>
+        <p class="lead section__lead">
+          The list grows when somebody says what is not on it. Suggesting a tool takes two
+          minutes and readers vote on it; adding one yourself is a pull request touching
+          one file; saying an entry has gone stale needs no account at all.
+        </p>
+
+        <ul class="ways">
+          <li class="way">
+            <span class="way__label">Suggest a tool</span>
+            <span class="way__cost">Two minutes, and other readers vote on it</span>
+          </li>
+          <li class="way">
+            <span class="way__label">Add one yourself</span>
+            <span class="way__cost">One entry in one file, and it is on the shelf</span>
+          </li>
+          <li class="way">
+            <span class="way__label">Report an entry</span>
+            <span class="way__cost">Prices change and links die — nothing notices on its own</span>
+          </li>
+        </ul>
+
+        <a class="btn btn--primary contribute__cta" href="/contribute/">
+          How contributing works
+          <svg
+            class="arrow"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6"></path>
+          </svg>
+        </a>
+      </div>
+    </section>
   </main>
 
   <SiteFooter />
@@ -185,6 +236,37 @@ const schema = [
     line-height: 1.65;
   }
 
+  .contribute {
+    border-top: 1px solid var(--border);
+  }
+
+  .ways {
+    margin-top: 2.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .way {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-block: 1.125rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .way__label {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .way__cost {
+    font-size: var(--text-ui);
+    color: var(--text-muted);
+  }
+
+  .contribute__cta {
+    margin-top: 2.5rem;
+  }
+
   @media (min-width: 640px) {
     .approach__grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -192,6 +274,13 @@ const schema = [
 
     .principle__number {
       font-size: 3rem;
+    }
+
+    .way {
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1.5rem;
     }
   }
 </style>

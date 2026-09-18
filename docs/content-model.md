@@ -195,7 +195,9 @@ The `logo` field overrides all of this, for when a tool's favicon makes a poor 4
 
 ## Adding a tool
 
-Under 15 minutes, and it touches one file:
+Under 15 minutes, and it touches one file. Everything outside the schema — local setup,
+the PR conventions, what gets turned down — is in
+[CONTRIBUTING.md](../CONTRIBUTING.md).
 
 1. **Add the entry** to the `tools` array in `src/data/tools.ts`. TypeScript catches a
    missing field or a mistyped status.

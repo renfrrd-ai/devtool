@@ -313,6 +313,35 @@ above 100%; the larger of the two is used, so a gap in the analytics cannot flag
 [D19](#d19--the-snapshot-stores-share-never-counts) plus one more: a public file saying
 "stripe: 14 reports" is an unreviewed accusation about a named company.
 
+### D26 — Contributing gets a page on the site, not only a `CONTRIBUTING.md`
+
+`CONTRIBUTING.md` is written for somebody who has already found the repository. Almost
+nobody reading a directory has: the routes in were a GitHub link at the foot of a shelf
+and a Report link on an entry, neither of which says what happens next, how long it takes,
+or why the entries read the way they do.
+
+So the same material exists twice, at two depths, and that duplication is the decision
+rather than an accident. [`/contribute/`](../src/pages/contribute.astro) is the reader's
+version — three routes with their costs, the two copy fields with real examples, what
+happens to a suggestion, and the four things this site deliberately is not. `CONTRIBUTING.md`
+is the contributor's — setup, the build gates, PR conventions, licensing. The page links
+out to the guide for anything a contributor needs a checkout for, and never restates it.
+
+This is a fourth page type, after map, shelf and entry
+([D12](#d12--three-page-types-map-shelf-entry)). It does not weaken that structure: the
+three types describe how the *directory* is navigated, and this page is not directory
+content — it is indexed and linked from the header, the footer and the foot of the home
+page, and nothing derives from it.
+
+The vote threshold on the page is read from the suggestions snapshot rather than typed in,
+so lowering the bar in `fetch-suggestions.mjs` cannot leave the page quietly lying about
+it. The repository URL moved into `site.ts` for the same reason — three components were
+about to hard-code it.
+
+The home page gets a short section and a link, placed last on purpose. The ask comes after
+the thing being asked about, and a reader who has not scrolled that far has nothing to add
+yet.
+
 ### D27 — A missing binding answers operators and readers differently
 
 `/api/report` returns 503 when `REPORTS` is not bound, and that status is load-bearing:

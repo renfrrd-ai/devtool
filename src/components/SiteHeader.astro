@@ -8,10 +8,13 @@ import ThemeToggle from './ThemeToggle.astro';
 const onHome = Astro.url.pathname === '/';
 const base = onHome ? '' : '/';
 
+// Contribute is a route rather than an anchor, so it is the same link
+// everywhere and does not take the `base` prefix.
 const links = [
   { label: 'Categories', href: `${base}#categories` },
   { label: 'Built here', href: `${base}#built-here` },
   { label: 'Approach', href: `${base}#approach` },
+  { label: 'Contribute', href: '/contribute/' },
 ];
 ---
 

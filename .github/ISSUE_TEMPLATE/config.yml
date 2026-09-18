@@ -1,15 +1,22 @@
-# Suggesting a tool goes through the form; anything else is a normal issue.
+# Suggesting a tool and correcting one both go through a form; anything else is
+# a normal issue.
 blank_issues_enabled: true
 
 contact_links:
+  - name: How contributing works
+    url: https://github.com/renfrrd-ai/devtool/blob/main/CONTRIBUTING.md
+    about: >-
+      The four ways in, what the editorial standard is, and which features this
+      site is deliberately not building. Worth two minutes before a first PR.
+
   - name: Add the tool yourself
-    url: https://github.com/renfrrd-ai/devtool/blob/main/docs/content-model.md#adding-a-tool
+    url: https://github.com/renfrrd-ai/devtool/blob/main/CONTRIBUTING.md#adding-a-tool-yourself
     about: >-
       Faster than the form if you are comfortable opening a PR — one entry in
       src/data/tools.ts and it is done. Skips the vote threshold entirely.
 
-  - name: Correct something that is wrong
-    url: https://github.com/renfrrd-ai/devtool/issues/new
+  - name: Report a security issue
+    url: https://github.com/renfrrd-ai/devtool/blob/main/SECURITY.md
     about: >-
-      A tool's pricing changed, a licence is wrong, a link is dead. Open a plain
-      issue — these get fixed ahead of new entries.
+      Privately, by email, rather than in the tracker. What is in scope, and what
+      to expect.

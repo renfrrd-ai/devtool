@@ -1,0 +1,68 @@
+name: Correct an entry
+description: A tool's pricing changed, a licence is wrong, a link is dead, a description no longer matches.
+title: 'Fix: '
+labels: ['correction']
+
+# Nothing parses this form — unlike suggest-tool.yml, which is read field by
+# field by scripts/fetch-suggestions.mjs. Corrections go to a human, so the
+# labels here can change without breaking a script. Deliberately no category
+# dropdown for the same reason: that list is coupled to categories.ts and
+# checked by scripts/check-entries.mjs, and one coupling is enough.
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks — these get fixed ahead of new entries. Tools change, shut down and get
+        acquired, and nothing here notices automatically.
+
+        Two faster routes, if either fits:
+
+        - **The Report link** at the foot of any entry, if you would rather not open an
+          issue. No account needed.
+        - **A pull request**, if the fix is one field —
+          [how](https://github.com/renfrrd-ai/devtool/blob/main/CONTRIBUTING.md#adding-a-tool-yourself).
+
+  - type: input
+    id: entry
+    attributes:
+      label: Which entry
+      description: The name, or the /tools/ URL.
+      placeholder: Paddle — https://devtool.fyi/tools/paddle/
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What's wrong with it
+      options:
+        - The link is dead, or the tool has shut down
+        - The pricing tier or model changed
+        - The licence or open-source status is wrong
+        - The stack is wrong or out of date
+        - The description no longer matches what it does
+        - A security or trust concern
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: correction
+    attributes:
+      label: What should it say instead?
+      description: >-
+        The more specific the better. "Paid, no free tier since March" is actionable;
+        "the pricing is wrong" means someone has to go and work out how.
+      placeholder: >-
+        The free tier ended in March — it is `paid` now, and the licence moved from
+        MIT to BSL 1.1 at the same time.
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Where you saw it
+      description: A link to the pricing page, changelog, licence file or announcement. Optional, but it turns a review into a two-minute fix.
+      placeholder: https://example.com/pricing

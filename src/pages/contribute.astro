@@ -1,0 +1,624 @@
+---
+/*
+ * The one page on the site that is neither map, shelf nor entry.
+ *
+ * CONTRIBUTING.md already says all of this, but it says it to somebody who has
+ * already found the repository. Almost nobody reading a directory has — the
+ * routes in are a GitHub link at the foot of a shelf and a Report link on an
+ * entry, and neither explains what happens next or why the entries read the way
+ * they do. This page is the version a reader meets, and it hands the detail off
+ * to the repo rather than restating the whole guide. See D26.
+ */
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE } from '../data/site';
+import { suggestions } from '../lib/suggestions';
+import { stats } from '../lib/directory';
+
+const title = 'Contribute — devtool.fyi';
+const description =
+  'How a tool gets onto devtool.fyi: suggest one and let readers vote, add one yourself in a pull request, or say when an entry has gone wrong.';
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Contribute', href: '/contribute/' },
+];
+
+const schema = [
+  {
+    '@type': 'WebPage',
+    name: title,
+    description,
+    isPartOf: { '@id': `${SITE.url}/#website` },
+  },
+];
+
+/*
+ * Read from the snapshot rather than typed in, so lowering the bar in
+ * fetch-suggestions.mjs cannot leave this page quietly lying about it.
+ */
+const threshold = suggestions.threshold;
+
+const suggestHref = `${SITE.repo}/issues/new?template=suggest-tool.yml`;
+const correctHref = `${SITE.repo}/issues/new?template=correct-entry.yml`;
+const guideHref = `${SITE.repo}/blob/main/CONTRIBUTING.md`;
+const toolsFileHref = `${SITE.repo}/blob/main/src/data/tools.ts`;
+const contentModelHref = `${SITE.repo}/blob/main/docs/content-model.md`;
+const decisionsHref = `${SITE.repo}/blob/main/docs/decisions.md`;
+const conductHref = `${SITE.repo}/blob/main/CODE_OF_CONDUCT.md`;
+const securityHref = `${SITE.repo}/blob/main/SECURITY.md`;
+
+const routes = [
+  {
+    number: '01',
+    title: 'Suggest one',
+    cost: 'Two minutes · needs a GitHub account',
+    body: `Fill in the form. It opens an issue, and 👍 reactions on that issue are the
+      votes — ${threshold} of them and the tool appears at the foot of its shelf, marked
+      unreviewed, until somebody here has written it up properly.`,
+    href: suggestHref,
+    cta: 'Open the suggestion form',
+    external: true,
+  },
+  {
+    number: '02',
+    title: 'Add it yourself',
+    cost: 'Fifteen minutes · one file',
+    body: `A pull request adding an entry to src/data/tools.ts, and that is the whole
+      change — the row, the tool page, the category counts, the sitemap and the structured
+      data all follow from it. It skips the vote threshold, because a written-up entry is
+      written up however it arrived.`,
+    href: `${guideHref}#adding-a-tool-yourself`,
+    cta: 'How to add one',
+    external: true,
+  },
+  {
+    number: '03',
+    title: 'Say it is wrong',
+    cost: 'One minute · no account',
+    body: `Tools shut down, get acquired and quietly drop their free tier, and nothing
+      here notices automatically. Every entry has a Report link at the foot of it. If you
+      know what it should say instead, the correction form is better still — it arrives
+      with the fix in it.`,
+    href: correctHref,
+    cta: 'Open the correction form',
+    external: true,
+  },
+];
+---
+
+<Base title={title} description={description} schema={schema} crumbs={crumbs}>
+  <SiteHeader />
+
+  <main id="main">
+    <header class="head">
+      <div class="container container--reading">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Contribute</span>
+        </nav>
+
+        <h1 class="head__title">Add to it.</h1>
+        <p class="head__lead">
+          {stats.tools} tools across {stats.categories} shelves, and the list only grows when
+          somebody has an afternoon free. Three ways around that — one of them takes two
+          minutes and needs nothing but an opinion.
+        </p>
+      </div>
+    </header>
+
+    <section class="section routes">
+      <div class="container container--reading">
+        <p class="eyebrow">Three routes in</p>
+        <h2 class="h2 section__title">Pick the cheapest one that fits.</h2>
+
+        <div class="routes__grid">
+          {
+            routes.map((route) => (
+              <div class="route">
+                <span class="route__number">{route.number}</span>
+                <span class="route__rule" aria-hidden="true" />
+                <h3 class="route__title">{route.title}</h3>
+                <p class="route__cost">{route.cost}</p>
+                <p class="route__body">{route.body}</p>
+                <a class="route__cta" href={route.href} rel="noopener">
+                  {route.cta} <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="section voice">
+      <div class="container container--reading">
+        <p class="eyebrow">The editorial standard</p>
+        <h2 class="h2 section__title">Where's the catch?</h2>
+        <p class="lead section__lead">
+          It is the only question this directory exists to answer. Anyone can list a tool's
+          features; the tool already does that, better and at greater length. Every entry
+          here carries two fields, and they do different jobs.
+        </p>
+
+        <div class="fields">
+          <div class="field">
+            <p class="field__name">tagline</p>
+            <p class="field__rule">
+              What it does and who it is for, in one line, under 95 characters, no full
+              stop. It has to survive being read against five others on the same page. No
+              "powerful" and no "modern" — every tool here is both, so the words carry no
+              information.
+            </p>
+            <blockquote class="field__eg">
+              Merchant of record for software — it owns the global tax problem
+            </blockquote>
+          </div>
+
+          <div class="field">
+            <p class="field__name">description</p>
+            <p class="field__rule">
+              Two or three sentences saying something the tagline cannot: the trade-off,
+              the catch, who it is genuinely not for. This is the whole reason a tool page
+              exists. If it restates the tagline at greater length, it is not a description
+              yet.
+            </p>
+            <blockquote class="field__eg">
+              Paddle is the seller of record, which means it registers for and remits sales
+              tax and VAT worldwide instead of you. You pay a higher percentage than a raw
+              processor and accept less control over checkout; for a small team selling
+              internationally that is usually the right trade.
+            </blockquote>
+          </div>
+        </div>
+
+        <p class="voice__note">
+          On a suggestion, that paragraph gets written here rather than by you — not to be
+          precious about it, but because a directory in fifty voices is just a list of
+          landing pages. Your notes on the form feed it, and the "where is the catch?" box
+          is the one the review actually reads.
+        </p>
+      </div>
+    </section>
+
+    <section class="section flow">
+      <div class="container container--reading">
+        <p class="eyebrow">What happens to a suggestion</p>
+        <h2 class="h2 section__title">No backend, no inbox, nothing to wait on.</h2>
+        <p class="lead section__lead">
+          GitHub is the database: issues hold the submissions, reactions hold the votes,
+          labels hold the moderation state. A daily job writes the result into the repo and
+          the site rebuilds from it.
+        </p>
+
+        <ol class="steps">
+          <li class="step">
+            <span class="step__marker" aria-hidden="true"></span>
+            <p class="step__title">You submit</p>
+            <p class="step__body">
+              The form opens an issue, visible immediately. Nothing is moderated away
+              before anyone sees it.
+            </p>
+          </li>
+          <li class="step">
+            <span class="step__marker" aria-hidden="true"></span>
+            <p class="step__title">Readers vote</p>
+            <p class="step__body">
+              A 👍 on the issue is a vote — one per account, and accounts have history.
+              Below {threshold} votes a suggestion is real and visible, but only in the
+              tracker.
+            </p>
+          </li>
+          <li class="step">
+            <span class="step__marker" aria-hidden="true"></span>
+            <p class="step__title">It reaches the shelf, unreviewed</p>
+            <p class="step__body">
+              Below the comparison table, dashed rather than solid, no write-up, no icon,
+              and the outbound link is <code>nofollow ugc</code> — so it passes no ranking
+              signal at all until a human has checked it. Spamming this buys nothing, which
+              is the point.
+            </p>
+          </li>
+          <li class="step">
+            <span class="step__marker" aria-hidden="true"></span>
+            <p class="step__title">It gets reviewed and written up</p>
+            <p class="step__body">
+              Accepting it opens a pull request with your facts already filled in and the
+              description left blank — and the build refuses to publish until that
+              paragraph is written. That step is the one thing here that deliberately does
+              not automate.
+            </p>
+          </li>
+        </ol>
+
+        <p class="flow__note">
+          Declare it if the tool is yours — the form asks, and a declared interest is shown
+          next to the entry rather than filtered out. You know the tool best; the honest
+          move is to let the reader weigh that themselves.
+        </p>
+      </div>
+    </section>
+
+    <section class="section limits">
+      <div class="container container--reading">
+        <p class="eyebrow">Before you build something</p>
+        <h2 class="h2 section__title">What this site is deliberately not.</h2>
+        <p class="lead section__lead">
+          Code contributions are welcome — bugs, accessibility, build, performance. But a
+          few obvious improvements have already been argued out and turned down, and a pull
+          request is a sad way to find that out.
+        </p>
+
+        <ul class="limits__list">
+          <li>
+            <strong>No search or filtering.</strong> Nine shelves is browsable, the facts you
+            would filter on are already on every row, and both cost client-side JavaScript
+            the site otherwise does not ship.
+          </li>
+          <li>
+            <strong>No index of every tool.</strong> It would be the fifty-row wall the
+            three-page structure exists to avoid.
+          </li>
+          <li>
+            <strong>No ranking.</strong> Tools within a shelf are alphabetical, which is
+            visibly arbitrary — the honest signal, because this directory has not earned a
+            ranking.
+          </li>
+          <li>
+            <strong>No JavaScript beyond the theme toggle,</strong> and no database. The
+            report form is plain HTML posting to one function; everything else is static
+            files.
+          </li>
+        </ul>
+
+        <p class="limits__note">
+          None of that is permanent. Each one is a decision with a paragraph behind it, and
+          the way to reverse one is to argue with the paragraph first —
+          <a href={decisionsHref} rel="noopener">they are all written down</a>.
+        </p>
+      </div>
+    </section>
+
+    <section class="section more">
+      <div class="container container--reading">
+        <h2 class="more__title">The long version</h2>
+        <p class="more__lead">
+          Setup, the schema field by field, what the build checks and what gets turned
+          down — in the repository, where the work happens.
+        </p>
+
+        <div class="more__actions">
+          <a class="btn btn--primary" href={guideHref} rel="noopener">
+            Read the contributing guide
+            <svg
+              class="arrow"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6"></path>
+            </svg>
+          </a>
+          <a class="btn btn--secondary" href={SITE.repo} rel="noopener">The repository</a>
+        </div>
+
+        <ul class="more__links">
+          <li><a href={toolsFileHref} rel="noopener">src/data/tools.ts</a> — the one file an entry lives in</li>
+          <li><a href={contentModelHref} rel="noopener">Content model</a> — every field, and how to write it</li>
+          <li><a href={conductHref} rel="noopener">Code of conduct</a></li>
+          <li><a href={securityHref} rel="noopener">Security</a> — what's in scope, and where to send it</li>
+          <li><a href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a> — if none of the above fits</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+</Base>
+
+<style>
+  .head {
+    padding-block: 3rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .crumbs a:hover {
+    color: var(--text);
+  }
+
+  .head__title {
+    margin-top: 1.25rem;
+    font-size: var(--text-h2);
+    line-height: var(--text-h2-lh);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .head__lead {
+    margin-top: 1.25rem;
+    max-width: 62ch;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  .section__title {
+    margin-top: 1.25rem;
+  }
+
+  .section__lead {
+    margin-top: 1.5rem;
+  }
+
+  /* ------------------------------------------------------------- routes */
+
+  .routes__grid {
+    margin-top: 3.5rem;
+    display: grid;
+    gap: 3rem;
+  }
+
+  .route {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .route__number {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  .route__rule {
+    display: block;
+    height: 1px;
+    width: 100%;
+    margin-block: 0.5rem;
+    background: var(--border-strong);
+  }
+
+  .route__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .route__cost {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .route__body {
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  .route__cta {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    font-size: var(--text-ui);
+    font-weight: 600;
+  }
+
+  .route__cta:hover {
+    color: var(--text-muted);
+  }
+
+  /* -------------------------------------------------------------- voice */
+
+  .voice {
+    border-top: 1px solid var(--border);
+    background: var(--bg-subtle);
+  }
+
+  .fields {
+    margin-top: 3rem;
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .field {
+    border-top: 1px solid var(--border-strong);
+    padding-top: 1.5rem;
+  }
+
+  .field__name {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .field__rule {
+    margin-top: 0.75rem;
+    max-width: 62ch;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  /* The examples are the argument — they earn the indent. */
+  .field__eg {
+    margin-top: 1.25rem;
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--border-strong);
+    max-width: 62ch;
+    font-size: var(--text-ui);
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .voice__note {
+    margin-top: 3rem;
+    max-width: 62ch;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  /* --------------------------------------------------------------- flow */
+
+  .flow {
+    border-top: 1px solid var(--border);
+  }
+
+  .steps {
+    margin-top: 3rem;
+    display: grid;
+    gap: 2.25rem;
+    border-left: 1px solid var(--border-strong);
+    padding-left: 1.75rem;
+  }
+
+  .step {
+    position: relative;
+  }
+
+  .step__marker {
+    position: absolute;
+    left: -2.1rem;
+    top: 0.45rem;
+    width: 0.6875rem;
+    height: 0.6875rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+  }
+
+  .step__title {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .step__body {
+    margin-top: 0.5rem;
+    max-width: 60ch;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  .step__body code {
+    font-family: var(--font-mono);
+    font-size: 0.8125em;
+    background: var(--chip-bg);
+    border-radius: var(--radius-sm);
+    padding: 0.1rem 0.35rem;
+  }
+
+  .flow__note {
+    margin-top: 3rem;
+    max-width: 62ch;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  /* ------------------------------------------------------------- limits */
+
+  .limits {
+    border-top: 1px solid var(--border);
+    background: var(--bg-subtle);
+  }
+
+  .limits__list {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 1.25rem;
+    max-width: 62ch;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  .limits__list li {
+    border-top: 1px solid var(--border);
+    padding-top: 1.25rem;
+  }
+
+  .limits__list strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .limits__note {
+    margin-top: 2.5rem;
+    max-width: 62ch;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  .limits__note a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* --------------------------------------------------------------- more */
+
+  .more {
+    border-top: 1px solid var(--border);
+  }
+
+  .more__title {
+    font-size: var(--text-h3);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .more__lead {
+    margin-top: 1rem;
+    max-width: 58ch;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  .more__actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .more__links {
+    margin-top: 3rem;
+    display: grid;
+    gap: 0.875rem;
+    font-size: var(--text-ui);
+    color: var(--text-faint);
+  }
+
+  .more__links a {
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .more__links a:hover {
+    color: var(--text);
+  }
+
+  @media (min-width: 720px) {
+    .routes__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2.5rem;
+    }
+
+    .route__number {
+      font-size: 3rem;
+    }
+  }
+</style>

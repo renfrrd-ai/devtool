@@ -16,13 +16,13 @@ below the fold.
        └─ /tools/<slug>    the entry    — one tool, in depth
 ```
 
-**`/` — the map.** Hero, a grid of nine category cards, the Built here section, and three
-principles. It does *not* list the tools. Each category card carries its name, its count,
+**`/` — the map.** Hero, a grid of nine category cards, the Built here section, three
+principles, and a short contribute block at the foot. It does *not* list the tools. Each category card carries its name, its count,
 a one-line description, and four actual tool names — enough to tell you whether the shelf
 is worth opening, which is the only decision the home page has to support.
 
-Around 23 KB of HTML. A fifty-row list here would roughly triple that and bury the
-categories under it.
+Around 26 KB of HTML, the last 3 of which are the contribute section at the foot. A
+fifty-row list here would roughly triple that and bury the categories under it.
 
 **`/categories/<slug>` — the shelf.** The full list for one category, as rows. A header
 with the category's description — the trade-off that actually distinguishes the tools on
@@ -44,6 +44,21 @@ meaningless outside payments. See
 categories it belongs to, and three alternatives to compare against. This is where the
 stack tags, licence and pricing detail live in full, so the rows above them can stay
 light.
+
+## Everything else is not directory content
+
+Three types describe how the *directory* is navigated. A few routes sit outside that, and
+they are deliberately not a fourth level of it:
+
+- **`/contribute/`** — how a tool gets onto the list, for a reader who has never seen the
+  repository. Indexed, linked from the header, the footer and the foot of the home page,
+  and nothing derives from it. It is the reader-facing half of `CONTRIBUTING.md`; the
+  contributor-facing half stays in the repo ([D26](decisions.md#d26--contributing-gets-a-page-on-the-site-not-only-a-contributingmd)).
+- **`/report/<slug>/`** — one form per entry. `noindex`, out of the sitemap, not content.
+- **`/go/<slug>/`** — redirect stubs that count outbound clicks. Same treatment.
+
+The test for adding another is whether the site can be browsed without it. These three
+can be, which is why none of them appears in a breadcrumb chain above a category.
 
 ## Why depth goes on its own page
 

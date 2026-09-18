@@ -1,0 +1,44 @@
+name: CI
+
+# The same build the host runs, on every pull request and every push to main.
+#
+# Cloudflare Pages already builds a preview per PR, but that preview is a
+# deployment rather than a check: a fork PR does not always get one, and a red
+# build there is a link in a dashboard rather than a status on the PR. This puts
+# the editorial gate — scripts/check-entries.mjs — and `astro check` in front of
+# a reviewer before anything is merged.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Only the checkout. This workflow never needs a token beyond that, and the
+# snapshot jobs that do (refresh-*.yml) ask for it themselves.
+permissions:
+  contents: read
+
+concurrency:
+  # A second push to the same branch makes the first run irrelevant.
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # `npm run build` is check:entries, then astro check, then the build. The
+      # first fails on an entry nobody wrote — a TODO description, a dangling
+      # alternatives id, a form that has drifted from the category names.
+      - run: npm run build
