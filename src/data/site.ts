@@ -21,6 +21,13 @@ export const SITE = {
    * measure production only. See docs/analytics.md.
    */
   analyticsToken: 'cd8d13da408540dc8187e74c7cf80616',
+
+  /*
+   * The repository. Every contribution route on the site is a link into it —
+   * the issue forms, the guide, the file somebody edits to add a tool — so the
+   * URL lives here once rather than in each component that builds one.
+   */
+  repo: 'https://github.com/renfrrd-ai/devtool',
   author: {
     name: 'Renfred Alonge',
     github: 'https://github.com/renfrrd-ai',

@@ -313,6 +313,33 @@ above 100%; the larger of the two is used, so a gap in the analytics cannot flag
 [D19](#d19--the-snapshot-stores-share-never-counts) plus one more: a public file saying
 "stripe: 14 reports" is an unreviewed accusation about a named company.
 
+### D27 — A missing binding answers operators and readers differently
+
+`/api/report` returns 503 when `REPORTS` is not bound, and that status is load-bearing:
+it is the only thing distinguishing a missing binding from a missing Function, which need
+completely different fixes ([D23](#d23--reporting-gets-one-dynamic-endpoint-and-d17-gives-way-for-it),
+and the 404 section of [reports.md](reports.md#the-endpoint-returns-404)).
+
+What it was also doing was showing a reader a bare line of plain text after they had
+typed two sentences about a dead link — no explanation, no idea whether they had caused
+it, and nowhere else to put the report. The form is live on 55 pages and has been
+answering like that for as long as the binding has been missing.
+
+So the response now depends on who asked. A request whose `Accept` header wants HTML gets
+a 303 to `/report/unavailable/`, a static page that says nothing was recorded, that it is
+not their fault, and offers the correction form and an email address. Everything else —
+`curl`, the probe, any monitor — still gets the 503.
+
+Content negotiation on an error is worth a second look, because "it works in my browser"
+is exactly the wrong lesson to teach. It is safe here because the page a browser lands on
+says reporting is off in its first line: the browser check tells you the same truth, just
+politely. The operator's signal is unchanged, and `scripts/setup-reports.mjs --probe`
+reads it.
+
+The alternative was making the 503 body itself a designed page, which the site's own CSP
+(`style-src 'self'`) would have rendered unstyled anyway. A static page the Astro build
+already knows how to style is better than an HTML document a Function has to carry.
+
 ### D13 — Tools within a category are ordered alphabetically
 
 Any other order implies a ranking this directory has not earned. Alphabetical is visibly

@@ -38,12 +38,17 @@
 1. [ ] **Backlinks.** Still the only distribution work that is scoped, still not started —
        [the table](deployment.md#cross-linking) is fully unchecked. With zero inbound
        links, nothing else on this list is measurable.
-2. [ ] **Switch the two ungated features on.** Both are built and both are inert until
-       something outside this repo happens:
-       - Make the repository public, or nobody can suggest or vote
-       - Bind `REPORTS` (KV) and `REPORT_SALT` on the Pages project, and add
-         `CF_KV_NAMESPACE_ID` to the environment secrets — until then `/api/report`
-         answers 503 — [setup](reports.md#setting-it-up)
+2. [ ] **Finish switching reporting on.** Suggestions are live — the repository is public,
+       so the form and the votes work. Reporting is not, and it is two problems stacked:
+       - [x] Repository public
+       - [ ] **`/api/report` answers 404, not 503** — the Functions worker is not in the
+             deployment at all, so no binding can fix it yet. It is a Pages project
+             setting: Root directory, or a v1 build image.
+             [Which, and how to see it](reports.md#the-endpoint-returns-404)
+       - [ ] Bind `REPORTS` (KV) and `REPORT_SALT`, then add `CF_KV_NAMESPACE_ID` to the
+             environment secrets. `npm run reports:setup` does all of it against the
+             Cloudflare API, including the diagnosis above —
+             [setup](reports.md#setting-it-up)
 3. [ ] Announce it somewhere once. The suggestion flow is worthless without people, and
        the shelves are now deep enough to be worth someone's time.
 4. [ ] Collect traffic. The most-viewed section appears by itself once the cron finds

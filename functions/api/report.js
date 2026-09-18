@@ -53,13 +53,28 @@ const seeOther = (request, path) =>
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  // A missing binding must be loud. Silently accepting reports into nowhere is
-  // the worst outcome available: the feature looks fine and measures nothing.
+  /*
+   * A missing binding must be loud. Silently accepting reports into nowhere is
+   * the worst outcome available: the feature looks fine and measures nothing.
+   *
+   * Loud to an operator and loud to a reader are different things, though, and
+   * for a while this was only the first — a reader who filled the form in on a
+   * deployment without the binding got a bare line of plain text and no idea
+   * whether they had done something wrong. So the answer depends on who asked:
+   * a browser is sent to a page that explains it and offers the tracker
+   * instead, and everything else still gets the 503 that says which layer is
+   * broken. `curl -X POST` therefore reads the same as it always did, which is
+   * what docs/reports.md#telling-the-two-failure-modes-apart relies on.
+   */
   if (!env.REPORTS) {
-    return new Response('Reporting is not configured on this deployment.', {
-      status: 503,
-      headers: { 'Content-Type': 'text/plain' },
-    });
+    const wantsHtml = (request.headers.get('Accept') ?? '').includes('text/html');
+
+    return wantsHtml
+      ? seeOther(request, '/report/unavailable/')
+      : new Response('Reporting is not configured on this deployment.', {
+          status: 503,
+          headers: { 'Content-Type': 'text/plain' },
+        });
   }
 
   let form;

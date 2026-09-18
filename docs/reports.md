@@ -125,7 +125,48 @@ site that ships none, to defend a mechanism whose worst case is an unnecessary c
 
 ## Setting it up
 
-The endpoint needs two bindings on the Pages project, and the Action needs one more secret.
+The endpoint needs two bindings on the Pages project, and the Action needs one more
+secret. None of that is in this repository, which is exactly how the feature ended up
+shipped, documented and quietly broken: the code was right the whole time and the endpoint
+never worked.
+
+So there is a script for it now, and it does the diagnosis as well as the setup:
+
+```bash
+npm run reports:probe                        # what state is the live endpoint in?
+
+CF_API_TOKEN=… CF_ACCOUNT_ID=… \
+npm run reports:setup                        # what is wrong, and what it would change
+CF_API_TOKEN=… CF_ACCOUNT_ID=… \
+npm run reports:setup -- --apply --redeploy  # do it, rebuild, and prove it worked
+```
+
+The default run **changes nothing** — it prints the project's build settings, the bindings
+it can see and a plan. `--apply` creates the `devtool-reports` namespace if it does not
+exist, binds it as `REPORTS`, generates a 32-byte `REPORT_SALT` and sets it as a secret,
+and corrects a root directory or build image version that would stop Functions building at
+all. It never overwrites a binding or a salt that already exists without `--force`, and the
+salt is never printed, because nothing else ever needs to read it.
+
+The token wants **Cloudflare Pages: Edit** and **Workers KV Storage: Edit** on top of the
+Account Analytics: Read the refresh job already uses. A 403 says which one is missing.
+
+**Production only, deliberately.** `--preview` binds preview deployments too, and normally
+you do not want that: a branch preview would write test reports into the same keyspace the
+daily job weighs, and a report filed against a preview is not evidence of anything. An
+unbound preview answers 503, which is the honest state for it to be in.
+
+Two things the script deliberately leaves to you, because both are GitHub's side of the
+fence and it prints the exact commands:
+
+```bash
+gh secret set CF_KV_NAMESPACE_ID --env "Devtool Analytics" --body <namespace-id>
+```
+
+and adding **Workers KV Storage: Read** to `CF_API_TOKEN` so `fetch-reports.mjs` can list
+the namespace.
+
+### By hand instead
 
 **Pages → Settings → Functions:**
 
@@ -164,19 +205,58 @@ completely different fixes:
 That distinction is why the handler returns 503 on a missing binding rather than quietly
 accepting reports into nowhere.
 
+`npm run reports:probe` asks the question and reads the answer, against production or
+against a local `wrangler pages dev`:
+
+```bash
+npm run reports:probe
+npm run reports:setup -- --probe --url=http://localhost:8788
+```
+
+It posts a reason that is deliberately **not** one of the six the handler accepts. A
+working endpoint validates it, rejects it and redirects — which reaches the branch that
+proves the Function ran and the binding is there, and stops before the branch that writes
+to KV. Probing production should not leave a report behind for a moderator to puzzle over.
+
+It also reads the 404 properly: a 404 carrying the headers from `public/_headers` is the
+static asset handler answering, not a Function, and the probe says so rather than making
+you check by hand.
+
+### What a reader sees while it is broken
+
+The 503 is for whoever is debugging it. A browser gets a redirect to
+[`/report/unavailable/`](../src/pages/report/unavailable.astro) instead — a page saying
+nothing was recorded, that it is not their fault, and offering the correction form and an
+email address, because the report still needs somewhere to go.
+
+The handler tells them apart on the `Accept` header, so `curl -X POST` still returns the
+503 this section depends on and the probe above is unaffected. A browser check still
+reveals the truth, because the page it lands on says reporting is off.
+
 ### The endpoint returns 404
 
-Cloudflare is serving `/api/report` as a static-asset miss, which means the Functions
-worker is not in the deployment. Confirm it with the response headers: a 404 carrying the
-`X-Frame-Options` and `X-Content-Type-Options` from `public/_headers` is the static asset
-handler answering, not a Function.
+**This is the current state of production, and it is the first thing to fix.** Cloudflare
+is serving `/api/report` as a static-asset miss, which means the Functions worker is not in
+the deployment. Confirm it with the response headers: a 404 carrying the `X-Frame-Options`
+and `X-Content-Type-Options` from `public/_headers` is the static asset handler answering,
+not a Function.
 
 `functions/api/report.js` being committed is not sufficient — check, in order:
 
 1. **Root directory** (Pages → Settings → Builds). If it is not `/`, Pages looks for
-   `functions/` inside that subdirectory and finds nothing.
-2. **Build system version.** Functions need v2; a project created on v1 will not build them.
-3. **The deployment log** for the failing build, which names a compile error if there is one.
+   `functions/` inside that subdirectory and finds nothing. There is no error for this:
+   a project with no functions to build is a legitimate project.
+2. **Build image version.** Functions need v2; a project on v1 will not build them.
+3. **The deployment log** for the most recent build, which names a compile error if there
+   is one.
+
+The first two are visible from the API, and `npm run reports:setup` prints both without
+changing anything — which is faster than finding them in the dashboard and is the whole
+reason that script reads the project before it writes to it. If it reports a correct root
+directory and a v2 image, the answer is in the build log and this repository cannot see it.
+
+The code itself is ruled out: it compiles and serves a 303 under `wrangler pages dev`,
+verified again alongside the reader-facing page above.
 
 ### Do not add a `wrangler.toml` to fix this
 

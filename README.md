@@ -61,10 +61,18 @@ npm run logos    # vendor each tool's favicon into public/logos/
 npm run images   # social cards and app icons into public/
 npm run popular  # refresh the most-viewed snapshot (needs CF_* env vars)
 npm run suggestions  # rebuild the reader-suggestion snapshot from open issues
+npm run reports      # weigh the reports against views and flag what needs a look
 ```
 
-`popular` and `suggestions` normally run themselves on daily GitHub Actions, not by hand —
-see [docs/analytics.md](docs/analytics.md) and [docs/suggestions.md](docs/suggestions.md).
+`popular`, `suggestions` and `reports` normally run themselves on daily GitHub Actions,
+not by hand — see [docs/analytics.md](docs/analytics.md),
+[docs/suggestions.md](docs/suggestions.md) and [docs/reports.md](docs/reports.md).
+
+Reporting is the one feature that needs state outside this repository, and
+`npm run reports:probe` says what state it is actually in — it posts a deliberately
+invalid reason, so it reaches the branch that proves the endpoint works without leaving a
+report behind. `npm run reports:setup` diagnoses the project and, with `--apply`,
+configures it. [What it does](docs/reports.md#setting-it-up).
 
 `npm run build` runs `check:entries` first, which fails on a TODO description, a dangling
 `alternatives` id, a comparison row keyed to a tool that does not exist, or a suggestion

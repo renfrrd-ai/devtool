@@ -143,6 +143,10 @@ Still to do, on the host:
 - [ ] Site submitted to Search Console
 - [ ] `analyticsToken` filled in and committed, analytics recording page views
 - [ ] A `/go/` link forwards correctly and shows up in the top-pages report
+- [ ] `npm run reports:probe` comes back green. It is currently 404, which means the
+      Functions worker is not in the deployment at all —
+      [what to check](reports.md#the-endpoint-returns-404). A form on 55 pages that
+      silently does nothing is worse than no form, so this one is not optional.
 - [ ] Backlinks live on each tool's site
 - [ ] trueluk's entry says something real, or comes off the page — see
       [Q2](decisions.md#q2--what-should-truelukcom-become)

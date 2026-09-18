@@ -1,0 +1,118 @@
+---
+/*
+ * Where /api/report sends a browser when the REPORTS binding is missing.
+ *
+ * The endpoint answers 503 to anything that did not ask for HTML, because that
+ * status is how an operator tells a missing binding apart from a missing
+ * Function — see docs/reports.md. A reader gets this instead, because "503:
+ * Reporting is not configured on this deployment" tells somebody who just typed
+ * two sentences about a dead link nothing they can act on, and leaves them
+ * unsure whether they broke it.
+ *
+ * It offers the tracker rather than apologising, on the grounds that the report
+ * still needs somewhere to go.
+ */
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { SITE } from '../../data/site';
+
+const correctHref = `${SITE.repo}/issues/new?template=correct-entry.yml`;
+---
+
+<Base
+  title="Reporting is off right now — devtool.fyi"
+  description="The report endpoint is not configured on this deployment."
+  noindex
+>
+  <SiteHeader />
+
+  <main id="main" class="unavailable">
+    <div class="container container--reading">
+      <h1 class="unavailable__title">Reporting is off right now.</h1>
+      <p class="unavailable__lead">
+        Not something you did, and not something you can fix by trying again — the
+        endpoint that records reports is not switched on for this deployment, so nothing
+        was saved and whatever you typed is gone. Sorry: that is a setup job on this side.
+      </p>
+
+      <p class="unavailable__body">
+        The entry can still be corrected, and the tracker is the reliable route while this
+        is out. It takes a GitHub account and about a minute, and a correction with a link
+        in it gets fixed faster than a report ever would.
+      </p>
+
+      <div class="unavailable__actions">
+        <a class="btn btn--primary" href={correctHref} rel="noopener">
+          Correct the entry on GitHub
+          <svg
+            class="arrow"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6"></path>
+          </svg>
+        </a>
+        <a class="btn btn--secondary" href={`mailto:${SITE.author.email}`}>Email it instead</a>
+      </div>
+
+      <a class="unavailable__back" href="/">Back to the directory</a>
+    </div>
+  </main>
+
+  <SiteFooter />
+</Base>
+
+<style>
+  .unavailable {
+    padding-block: 5rem 7rem;
+  }
+
+  .unavailable__title {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2-lh);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .unavailable__lead {
+    margin-top: 1.5rem;
+    max-width: 58ch;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  .unavailable__body {
+    margin-top: 1.5rem;
+    max-width: 58ch;
+    line-height: 1.65;
+    color: var(--text-muted);
+  }
+
+  .unavailable__actions {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .unavailable__back {
+    display: inline-block;
+    margin-top: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .unavailable__back:hover {
+    color: var(--text);
+  }
+</style>
