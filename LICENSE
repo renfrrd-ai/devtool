@@ -1,0 +1,56 @@
+MIT License
+
+Copyright (c) 2026 Renfred Alonge
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-------------------------------------------------------------------------------
+
+WHAT "THE SOFTWARE" COVERS
+
+The MIT grant above applies to the source of devtool.fyi: the Astro components,
+layouts, pages and styles under src/, the Pages Function under functions/, the
+build and snapshot scripts under scripts/, the workflows under .github/, and
+the configuration around them. Take it, learn from it, build your own directory
+with it.
+
+WHAT IT DOES NOT COVER
+
+The directory content is not licensed for reuse and is reserved:
+
+  - the entries in src/data/tools.ts and the shelves in src/data/categories.ts,
+    including every tagline, description, comparison table and editorial
+    judgement in them,
+  - the prose in docs/, README.md and the site's own pages,
+  - the devtool.fyi name, wordmark and visual identity.
+
+Those are © 2026 Renfred Alonge, all rights reserved. They are the part somebody
+sat down and wrote, and the reason the site is worth reading; the machinery that
+renders them is the part worth sharing.
+
+A pull request adding or editing an entry is a contribution to that reserved
+content, offered on the understanding that it becomes part of it. Everything
+else you contribute is covered by the MIT grant above.
+
+THIRD PARTIES
+
+Product names, logos and favicons belong to their respective owners. They appear
+here as identification, under nominative fair use, and nothing in this licence
+grants any right to them. Requests to remove a logo or an entry go to
+hello@devtool.fyi and are honoured.

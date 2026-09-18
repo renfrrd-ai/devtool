@@ -102,6 +102,11 @@ and the structured data all follow from step 1.
 
 ## License
 
-Content and editorial judgements are © Renfred Alonge. Third-party names and logos belong
-to their owners. Licensing for the site source is TBD —
-[Q4](docs/decisions.md#q4--source-licensing).
+[MIT](LICENSE) for the source — the components, the scripts, the Function, the workflows.
+Take it and build your own directory with it.
+
+The directory content is reserved: the entries and shelves in `src/data/`, the prose in
+`docs/`, and the devtool.fyi name and identity are © Renfred Alonge, all rights reserved.
+That is the part somebody sat down and wrote. Third-party names and logos belong to their
+owners and appear here as identification — removal requests go to hello@devtool.fyi and
+are honoured. [Why the split](docs/decisions.md#q4--source-licensing--answered).

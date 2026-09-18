@@ -374,9 +374,26 @@ Less pressing than it was: the list layout ([D6a](#d6a--a-list-not-a-card-grid))
 finished at three entries, where the two-column grid would have left a hole. Still worth
 knowing, but it no longer constrains the layout.
 
-### Q4 — Source licensing
+### Q4 — Source licensing — **answered**
 
-The README says TBD. The site source could reasonably be MIT, or stay unlicensed while
-the content and branding remain reserved. No urgency unless the repo goes public — worth
-settling before it does, since HQBase is already AGPL and a consistent posture reads
-better than an accidental one.
+**MIT for the source, and the directory content reserved.** The repository is public now,
+so this stopped being hypothetical: an unlicensed public repo grants nothing at all, which
+is a posture nobody chose and everybody has to guess at.
+
+The split follows what is actually worth protecting. The machinery — components, scripts,
+the Function, the workflows — is worth sharing and is not the thing that makes the site
+good. The entries are: every tagline and description is somebody sitting down and working
+out where a tool's catch is, and an MIT grant over those would explicitly license a
+competitor to publish all 55 of them tomorrow under their own name. So `LICENSE` carries
+the MIT text verbatim and then says, below a rule, what "the Software" covers and what it
+does not.
+
+AGPL was the other candidate, for consistency with HQBase. Rejected: it is the right
+licence for a product people self-host and the wrong one for a static site nobody deploys
+a modified copy of, and it would not have protected the content either — copying a
+paragraph off a web page has never needed a licence violation. Consistency for its own
+sake is not a reason.
+
+A contribution to `tools.ts` or `categories.ts` is a contribution to the reserved content
+rather than to the MIT source, and [CONTRIBUTING.md](../CONTRIBUTING.md#licensing) says so
+before anyone writes one.
