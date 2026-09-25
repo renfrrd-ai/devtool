@@ -312,11 +312,76 @@ svg {
   transform: translateX(2px);
 }
 
+/* ------------------------------------------------------------ navigation */
+
+/*
+ * Moving between pages: a native cross-document view transition, so no router
+ * and no JavaScript. The page underneath fades out while the next one fades
+ * in and settles a few pixels upward; the header is lifted out of that and
+ * stays still, which is what makes it read as one site rather than a reload.
+ * Browsers without support navigate exactly as before.
+ */
+@view-transition {
+  navigation: auto;
+}
+
+.header {
+  view-transition-name: site-header;
+}
+
+::view-transition-old(root) {
+  animation: 120ms ease-out both page-out;
+}
+
+::view-transition-new(root) {
+  animation: 220ms cubic-bezier(0.2, 0, 0, 1) 40ms both page-in;
+}
+
+/* The header has nothing to animate; skip the default crossfade on it. */
+::view-transition-group(site-header) {
+  animation: none;
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/*
+ * Moving within a page: section links scroll there instead of jumping. The
+ * padding is the sticky header's height, so a section lands just below it and
+ * its own top padding does the spacing, as it does on first load.
+ */
+html {
+  scroll-padding-top: 4.5rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* The pseudo-elements above hang off <html>, so `*` does not reach them. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

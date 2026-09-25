@@ -223,8 +223,18 @@ mistake.
 
 ## Motion
 
-Almost none, and all of it on hover: row tint, 3px name slide, arrow nudge, button fill.
-Nothing animates on load — the page's first frame is its finished state.
+Almost none, and all of it on hover or on navigation: row tint, 3px name slide, arrow
+nudge, button fill.
+
+- **Between pages**, a native cross-document view transition (`@view-transition` in
+  `global.css`, no JavaScript): the old page fades out in 120ms, the new one fades in
+  over 220ms while rising 6px. The header carries its own `view-transition-name` so it
+  stays put while the content changes under it. Browsers without support just navigate.
+- **Within a page**, section links scroll smoothly, and `scroll-padding-top` matches the
+  sticky header's height so a section is never tucked under it.
+
+Nothing animates on first load. A page you land on directly, or from outside the site, starts
+in its finished state.
 `prefers-reduced-motion: reduce` collapses every transition to 0.01ms globally.
 
 ## Favicon and social cards
