@@ -50,24 +50,6 @@ export const tools: Tool[] = [
   // ---------------------------------------------------------------- built here
 
   {
-    id: 'hqbase',
-    name: 'HQBase',
-    url: 'https://hqbase.io',
-    domain: 'hqbase.io',
-    tagline: "Your team's email, running on your own Cloudflare account",
-    description:
-      'Shared mailboxes, team access and workflows deployed into infrastructure you already own, so the mail data never sits on someone else\'s servers. Free and unlimited seats because you are paying Cloudflare for Workers and R2 rather than paying per user. The catch is the same as the pitch: you operate it.',
-    categories: ['email'],
-    pricing: 'free',
-    openSource: true,
-    licence: 'AGPL-3.0',
-    stack: ['Cloudflare Workers', 'R2', 'Self-hosted'],
-    alternatives: ['resend', 'postmark', 'plunk'],
-    madeHere: true,
-    status: 'live',
-    addedAt: '2026-09-04',
-  },
-  {
     id: 'clueline',
     name: 'Clueline',
     url: 'https://clueline.dev',
@@ -350,6 +332,22 @@ export const tools: Tool[] = [
     pricing: 'freemium',
     stack: ['Hosted', 'SMTP'],
     alternatives: ['postmark', 'resend'],
+    addedAt: '2026-09-04',
+  },
+  {
+    id: 'hqbase',
+    name: 'HQBase',
+    url: 'https://hqbase.io',
+    domain: 'hqbase.io',
+    tagline: "Your team's email, running on your own Cloudflare account",
+    description:
+      'Shared mailboxes, team access and workflows deployed into infrastructure you already own, so the mail data never sits on someone else\'s servers. Free and unlimited seats because you are paying Cloudflare for Workers and R2 rather than paying per user. The catch is the same as the pitch: you operate it.',
+    categories: ['email'],
+    pricing: 'free',
+    openSource: true,
+    licence: 'AGPL-3.0',
+    stack: ['Cloudflare Workers', 'R2', 'Self-hosted'],
+    alternatives: ['resend', 'postmark', 'plunk'],
     addedAt: '2026-09-04',
   },
 

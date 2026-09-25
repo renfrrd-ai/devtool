@@ -34,7 +34,6 @@ views puts it in front of a moderator — it never hides anything on its own.
 
 | Tool | Domain | Category | Status |
 | --- | --- | --- | --- |
-| HQBase | [hqbase.io](https://hqbase.io) | Email & SMTP | Live |
 | Clueline | [clueline.dev](https://clueline.dev) | Monitoring & Errors | Live |
 | trueluk | [trueluk.com](https://trueluk.com) | — | Idea |
 

@@ -60,8 +60,8 @@
 4. [ ] Collect traffic. The most-viewed section appears by itself once the cron finds
        data; nothing to build or switch on.
 
-> **Where the traffic actually stands.** The 30-day snapshot has held one entry — `hqbase`,
-> plausibly the owner's own visits — since 5 September. The machinery is all working. It is
+> **Where the traffic actually stands.** The 30-day snapshot has held one entry — `hqbase`
+> — since 5 September. The machinery is all working. It is
 > measuring an empty room, and no amount of further building changes that.
 
 **Also next**
@@ -90,7 +90,7 @@ backlinks in place.
 - [x] Responsive down to 320px, dark mode via tokens, theme toggle
 
 **Milestone 3 — Content** ✅ (one caveat)
-- [x] Real taglines for Clueline and HQBase, taken from their own homepages
+- [x] Real taglines for Clueline, taken from its own homepage
 - [ ] trueluk still carries placeholder copy —
       [Q2](decisions.md#q2--what-should-truelukcom-become)
 - [x] Tool icons vendored into `public/logos/`, favicon, social images, app icons
@@ -101,10 +101,10 @@ backlinks in place.
 - [x] Cloudflare Pages project connected and domain pointed —
       [setup steps](deployment.md#hosting-cloudflare-pages)
 - [x] Analytics on
-- [ ] Backlinks added to clueline.dev, hqbase.io, trueluk.com
+- [ ] Backlinks added to clueline.dev, trueluk.com
 - [ ] Run the [launch checklist](deployment.md#launch-checklist)
 
-What's left is three backlinks in three other repos and one sentence about trueluk — and
+What's left is two backlinks in two other repos and one sentence about trueluk — and
 that last one is a decision, not a task.
 
 ## Deliberately not in v1

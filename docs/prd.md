@@ -4,6 +4,10 @@
 > Renfred's own tools to a curated directory of developer tools generally, with his own in
 > a Built here section. See [D0 in decisions.md](decisions.md#d0--the-site-is-a-curated-directory-not-a-portfolio-supersedes-the-prds-premise)
 > for what changed and what survived. This file is kept as written, not updated.
+>
+> One factual error in it: hqbase.io is not Renfred's tool. It is listed in the directory
+> as a third-party entry, not in Built here — see
+> [Q1 in decisions.md](decisions.md#q1--what-is-hqbaseio--answered-and-corrected).
 
 ## Overview
 devtool.fyi is a hub and directory site showcasing developer tools built and maintained by Renfred Alonge. It serves as a single, discoverable front door for an expanding portfolio of independent products — starting with Clueline, hqbase.io, and trueluk.com — so that visitors, potential users, and collaborators can see the full body of work in one place instead of stumbling on each tool separately.

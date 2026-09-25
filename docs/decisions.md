@@ -29,13 +29,13 @@ historical document rather than rewritten.
 ### D0a — Own tools appear on their category shelves, not only in Built here
 
 When asked, the choice was "curated third-party tools, with your own in a highlighted
-section." We do that *and* list HQBase under Email, Clueline under Monitoring, next to
-their competitors and carrying a "Built here" tag.
+section." We do that *and* list Clueline under Monitoring, next to its competitors and
+carrying a "Built here" tag.
 
-Segregating them entirely would have been worse in both directions: someone browsing email
-tools would not find HQBase, and a section of tools that appear nowhere else reads as an
-advert rather than a recommendation. Standing them next to Resend and Postmark is a
-stronger claim than a roped-off section is.
+Segregating them entirely would have been worse in both directions: someone browsing
+monitoring tools would not find Clueline, and a section of tools that appear nowhere else
+reads as an advert rather than a recommendation. Standing it next to Sentry and Better
+Stack is a stronger claim than a roped-off section is.
 
 Flagging it because it is a small liberty taken with the answer given.
 
@@ -399,15 +399,19 @@ Funnel Display.
 
 ## Open questions
 
-### Q1 — What is hqbase.io? — **answered**
+### Q1 — What is hqbase.io? — **answered, and corrected**
 
 HQBase turned out to be live and self-describing: *"Your team's email. On your Cloudflare
 infrastructure."* Free, open source (AGPL-3.0), self-hosted, unlimited seats, v1 shipped
 August 2026. Read off the site itself, so the entry is written from the product's own
-words rather than guessed at, and its status is `live` rather than the `coming-soon`
-the PRD assumed.
+words rather than guessed at.
 
-Clueline likewise: *"The error tool that talks to your users."*
+**Correction:** it is not one of Renfred's tools. The PRD listed it alongside Clueline and
+trueluk, and the site carried it in Built here on that basis — wrongly. It stays in the
+directory as an ordinary third-party entry on the Email shelf, with no `madeHere` flag and
+no status.
+
+Clueline, meanwhile, was read off its own site too: *"The error tool that talks to your users."*
 
 ### Q2 — What should trueluk.com become? *(still open — see the note below)*
 
@@ -419,15 +423,15 @@ The choice is still Renfred's, and it's a real one:
 
 - **Give it a direction.** Even one sentence — "Exploring X for Y" — turns the row from
   an idle domain into evidence of an active mind, which is the whole point of the page.
-- **Take it off until there's something to say.** Two live tools and a confident list
-  beats three entries where one is visibly empty.
+- **Take it off until there's something to say.** One live tool and a confident list
+  beats two entries where one is visibly empty.
 
 Leaving it exactly as it is now is the weakest of the three.
 
 ### Q3 — Is there a fourth tool coming?
 
 Less pressing than it was: the list layout ([D6a](#d6a--a-list-not-a-card-grid)) looks
-finished at three entries, where the two-column grid would have left a hole. Still worth
+finished at any count, where the two-column grid would have left a hole. Still worth
 knowing, but it no longer constrains the layout.
 
 ### Q4 — Source licensing — **answered**
@@ -444,8 +448,8 @@ competitor to publish all 55 of them tomorrow under their own name. So `LICENSE`
 the MIT text verbatim and then says, below a rule, what "the Software" covers and what it
 does not.
 
-AGPL was the other candidate, for consistency with HQBase. Rejected: it is the right
-licence for a product people self-host and the wrong one for a static site nobody deploys
+AGPL was the other candidate. Rejected: it is the right licence for a product people
+self-host and the wrong one for a static site nobody deploys
 a modified copy of, and it would not have protected the content either — copying a
 paragraph off a web page has never needed a licence violation. Consistency for its own
 sake is not a reason.

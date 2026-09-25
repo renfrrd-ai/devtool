@@ -37,8 +37,7 @@ rather than shipping.
 
 Netlify and Vercel would both work identically. Pages wins on one thing: the domain is
 already Cloudflare's problem, and keeping DNS and hosting with one provider removes a
-moving part. If HQBase's Cloudflare-native architecture means that account is where the
-attention already is, that's a second reason.
+moving part.
 
 ## Environments
 
@@ -116,7 +115,6 @@ That work happens in other repos and is easy to lose track of, so it's tracked h
 | Site | Links to devtool.fyi | Notes |
 | --- | --- | --- |
 | clueline.dev | ☐ | Footer link |
-| hqbase.io | ☐ | Footer link |
 | trueluk.com | ☐ | Whole page can point here while it's an Idea |
 
 A footer line — "Part of devtool.fyi" — is enough. Consistent placement and wording
@@ -129,7 +127,7 @@ Done in the repo:
 - [x] `robots.txt`, `sitemap-index.xml`, canonical URL, and full OG/Twitter/JSON-LD
 - [x] Social images and app icons generated (`npm run images`)
 - [x] Security headers and cache policy in `public/_headers`
-- [x] Real taglines for Clueline and HQBase — see [decisions](decisions.md#open-questions)
+- [x] Real taglines for Clueline — see [decisions](decisions.md#open-questions)
 
 Still to do, on the host:
 
