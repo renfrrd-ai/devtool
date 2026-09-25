@@ -219,3 +219,32 @@ export type CategoryId = (typeof categories)[number]['id'];
 export function getCategory(id: string): Category | undefined {
   return categories.find((category) => category.id === id);
 }
+
+/**
+ * The suggestion form's last dropdown option, for a tool none of the shelves
+ * fit. It is not a shelf — the submitter names the category they want in a
+ * free-text field instead, and the suggestion waits in the tracker until a
+ * shelf by that name exists. Then it lands on it without anyone re-filing it.
+ */
+export const NEW_CATEGORY_OPTION = 'Something else — a new category';
+
+const loosely = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '');
+
+/**
+ * The shelf a suggestion form submission belongs on, or undefined while it is
+ * still asking for one that does not exist. A proposed name matches loosely —
+ * "object storage" finds an `Object Storage` shelf, or one with the id
+ * `object-storage` — because people typing freely will not match the case.
+ */
+export function shelfForSuggestion(chosen: string, proposed = ''): Category | undefined {
+  if (chosen !== NEW_CATEGORY_OPTION) {
+    return categories.find((category) => category.name === chosen);
+  }
+
+  const wanted = loosely(proposed);
+  if (!wanted) return undefined;
+
+  return categories.find(
+    (category) => loosely(category.name) === wanted || loosely(category.id) === wanted,
+  );
+}

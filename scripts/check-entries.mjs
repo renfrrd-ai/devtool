@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { tools } from '../src/data/tools.ts';
-import { categories } from '../src/data/categories.ts';
+import { categories, NEW_CATEGORY_OPTION } from '../src/data/categories.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const FORM = join(root, '.github', 'ISSUE_TEMPLATE', 'suggest-tool.yml');
@@ -110,7 +110,7 @@ try {
     const names = categories.map((category) => category.name);
 
     for (const option of offered) {
-      if (!names.includes(option)) {
+      if (option !== NEW_CATEGORY_OPTION && !names.includes(option)) {
         problems.push(
           `suggest-tool.yml: offers "${option}", which is not a category name.\n` +
             '    Submissions choosing it are silently discarded by fetch-suggestions.mjs.',
@@ -122,6 +122,13 @@ try {
       if (!offered.includes(name)) {
         problems.push(`suggest-tool.yml: the ${name} shelf is missing from the dropdown.`);
       }
+    }
+
+    if (!offered.includes(NEW_CATEGORY_OPTION)) {
+      problems.push(
+        `suggest-tool.yml: the "${NEW_CATEGORY_OPTION}" option is missing.\n` +
+          '    Without it a tool no shelf fits cannot be suggested at all.',
+      );
     }
   }
 } catch (error) {

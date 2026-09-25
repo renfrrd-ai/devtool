@@ -45,12 +45,12 @@ body:
     attributes:
       label: Category
       description: >-
-        The shelf it belongs on. If nothing here fits, say so in the notes — a new
-        category needs about six entries before it earns a page, so a tool with no
-        shelf usually waits for company.
+        The shelf it belongs on. If none of them fit, pick "Something else" and
+        name the category you would put it in below.
       # These must match `name` in src/data/categories.ts exactly — the scripts
-      # map a submission onto a shelf by name. scripts/check-entries.mjs fails
-      # the build if the two drift, so this list is checked, not trusted.
+      # map a submission onto a shelf by name. The last option is
+      # NEW_CATEGORY_OPTION from the same file. scripts/check-entries.mjs fails
+      # the build if any of them drift, so this list is checked, not trusted.
       options:
         - Authentication
         - Payments
@@ -61,8 +61,19 @@ body:
         - Monitoring & Errors
         - Analytics
         - AI & LLMs
+        - Something else — a new category
     validations:
       required: true
+
+  - type: input
+    id: new-category
+    attributes:
+      label: New category
+      description: >-
+        Only if you picked "Something else" above. A new shelf opens once it has
+        about six tools, so other suggestions asking for the same category count
+        towards it — and yours goes onto the shelf by itself when it opens.
+      placeholder: Object Storage
 
   - type: input
     id: tagline

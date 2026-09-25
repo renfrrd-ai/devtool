@@ -5,9 +5,11 @@ labels: ['correction']
 
 # Nothing parses this form — unlike suggest-tool.yml, which is read field by
 # field by scripts/fetch-suggestions.mjs. Corrections go to a human, so the
-# labels here can change without breaking a script. Deliberately no category
-# dropdown for the same reason: that list is coupled to categories.ts and
-# checked by scripts/check-entries.mjs, and one coupling is enough.
+# labels here can change without breaking a script. The category field is free
+# text rather than a dropdown for the same reason: the dropdown in
+# suggest-tool.yml is coupled to categories.ts and checked by
+# scripts/check-entries.mjs, and one coupling is enough. Free text also lets a
+# reader name a shelf that does not exist yet.
 
 body:
   - type: markdown
@@ -42,6 +44,7 @@ body:
         - The licence or open-source status is wrong
         - The stack is wrong or out of date
         - The description no longer matches what it does
+        - It is on the wrong shelf, or deserves a new one
         - A security or trust concern
         - Something else
     validations:
@@ -59,6 +62,15 @@ body:
         MIT to BSL 1.1 at the same time.
     validations:
       required: true
+
+  - type: input
+    id: category
+    attributes:
+      label: Category it belongs in
+      description: >-
+        Only if it is on the wrong shelf. An existing one or one that does not exist
+        yet — a new shelf opens once about six tools are waiting for it.
+      placeholder: Object Storage
 
   - type: input
     id: source

@@ -108,6 +108,14 @@ one of them is discarded on the next cron run, with an explanation in a log nobo
 not hypothetical — five of the nine options were wrong when the form was first written,
 which is what prompted the check.
 
+The one option that is not a shelf is the last, `NEW_CATEGORY_OPTION` in
+`categories.ts`, for a tool none of them fit. The submitter names the category in the
+free-text **New category** field, and `shelfForSuggestion()` resolves it loosely against
+the shelf names and ids — so the suggestion is skipped (logged as waiting for that shelf)
+until one exists, and lands on it on the first refresh after. Promoting one before its
+shelf exists fails with the same explanation. The check requires this option to be there,
+because without it a tool with no shelf cannot be suggested at all.
+
 The same script also catches dangling `alternatives`, comparison rows keyed to a tool that
 does not exist, a `licence` without `openSource`, an over-long tagline, and a `status` on a
 third-party entry. `astro check` proves the entries typecheck; this proves somebody wrote

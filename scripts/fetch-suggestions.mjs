@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { tools } from '../src/data/tools.ts';
-import { categories } from '../src/data/categories.ts';
+import { NEW_CATEGORY_OPTION, shelfForSuggestion } from '../src/data/categories.ts';
 
 const OUT = join(
   dirname(fileURLToPath(import.meta.url)),
@@ -119,8 +119,6 @@ const issues = await res.json();
 const listedIds = new Set(tools.map((tool) => tool.id));
 const listedDomains = new Set(tools.map((tool) => tool.domain.replace(/^www\./, '')));
 
-const byName = new Map(categories.map((category) => [category.name, category.id]));
-
 const entries = [];
 const skipped = [];
 
@@ -142,9 +140,18 @@ for (const issue of issues) {
     continue;
   }
 
-  const category = byName.get(categoryName);
+  const proposed = fields.get('New category') ?? '';
+  const category = shelfForSuggestion(categoryName, proposed)?.id;
   if (!category) {
-    skip(`category "${categoryName}" is not a shelf`);
+    // Not a failure: a tool asking for a shelf that does not exist yet stays in
+    // the tracker, and is picked up on the first run after the shelf is added.
+    skip(
+      categoryName !== NEW_CATEGORY_OPTION
+        ? `category "${categoryName}" is not a shelf`
+        : proposed
+          ? `waiting for a "${proposed}" shelf`
+          : 'asks for a new category without naming one',
+    );
     continue;
   }
 
