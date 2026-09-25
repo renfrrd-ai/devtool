@@ -631,6 +631,20 @@ export const tools: Tool[] = [
     alternatives: ['railway', 'fly-io'],
     addedAt: '2026-09-04',
   },
+  {
+    id: 'minio',
+    name: 'MinIO',
+    url: 'https://www.min.io',
+    domain: 'min.io',
+    tagline: 'S3-compatible object storage you run on your own servers',
+    description:
+      'The open-source edition was archived in April 2026 and gets no more releases or security fixes; what MinIO ships now is AIStor, free on a single node and paid once you need it distributed. Either way you run the storage yourself — disks, capacity, backups, upgrades and uptime are all yours.',
+    categories: ['hosting'],
+    pricing: 'freemium',
+    stack: ['Go', 'S3 API', 'Self-hosted'],
+    alternatives: ['cloudflare-workers'],
+    addedAt: '2026-09-25',
+  },
 
   // -------------------------------------------------------------- monitoring
 
