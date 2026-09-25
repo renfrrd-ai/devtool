@@ -67,7 +67,7 @@
 **Also next**
 - [ ] A second pass on descriptions: they are accurate, but a few are drier than they need to be
 - [ ] Decide trueluk's fate — [Q2](decisions.md#q2--what-should-truelukcom-become)
-- [ ] Consider a tenth shelf once six entries exist for it — CI/CD and background jobs are
+- [ ] Consider a tenth shelf once three entries exist for it — CI/CD and background jobs are
       the two that submissions will most likely ask for
 
 **Deliberately not doing** — search, pricing filters, a `/tools` index page. Reasoning in

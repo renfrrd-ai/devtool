@@ -28,6 +28,9 @@ It opens an issue, and from there:
 - **You do not write the published description.** The form's "where is the catch?" box is
   the one the review actually reads, and it feeds the paragraph — but the paragraph gets
   written here, because a directory in fifty voices is just a list of landing pages.
+- **No shelf fits? Name a new one.** Pick "Something else" and type the category. It
+  waits in the tracker until a shelf by that name exists — other suggestions asking for
+  the same category are what get it opened — and then lands on it by itself.
 - **Say if it's yours.** The form asks. A disclosed commercial interest is surfaced next
   to the entry ("Submitted by its maker"), not filtered out. You know the tool best; the
   honest move is to let the reader weigh that themselves.
@@ -101,11 +104,13 @@ they did not waste it. That is the whole editorial standard.
 ## Adding a category
 
 A deliberate act, not a tag. A new shelf creates a page that has to earn its place, and a
-shelf with two tools on it looks broken.
+shelf with one tool on it looks broken.
 
-**Six entries is roughly the floor.** If your tool has no shelf, the useful contribution
-is usually to say so in the suggestion notes and let it wait for company — a category
-arrives with a handful of tools or not at all.
+**Three entries is the floor.** If your tool has no shelf, the useful contribution
+is usually to suggest it with "Something else" and the category named, and let it wait
+for company — a category arrives with a handful of tools or not at all. Suggestions
+waiting on a shelf are the evidence for opening it, and they move onto it on the next
+daily refresh once it exists.
 
 If you are adding one anyway: an entry in `categories.ts` with a `description` that names
 the trade-off distinguishing the tools on that shelf (not a restatement of the name), a
@@ -228,7 +233,7 @@ Not personal, and usually predictable:
 
 - **Marketing copy.** Rewritten, not rejected — but it slows the review down, so the
   submission is better off without it.
-- **Tools with no shelf,** until the shelf has six entries in sight.
+- **Tools with no shelf,** until the shelf has three entries in sight.
 - **Link-farm submissions.** The `nofollow ugc` on unreviewed entries means there is
   nothing in this for SEO, which is the point.
 - **Features the site is deliberately not building** — see above.

@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { tools } from '../src/data/tools.ts';
-import { categories } from '../src/data/categories.ts';
+import { NEW_CATEGORY_OPTION, shelfForSuggestion } from '../src/data/categories.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TOOLS = join(root, 'src', 'data', 'tools.ts');
@@ -84,9 +84,15 @@ if (!name || !url || !categoryName || !tagline || !pricing) {
   process.exit(1);
 }
 
-const category = categories.find((entry) => entry.name === categoryName);
+const proposed = fields.get('New category') ?? '';
+const category = shelfForSuggestion(categoryName, proposed);
 if (!category) {
-  console.error(`Category "${categoryName}" is not a shelf.`);
+  console.error(
+    categoryName === NEW_CATEGORY_OPTION
+      ? `#${issueNumber} asks for a "${proposed || 'unnamed'}" shelf, which does not exist yet.\n` +
+          'Add it to src/data/categories.ts first, then take the accepted label off and put it back.'
+      : `Category "${categoryName}" is not a shelf.`,
+  );
   process.exit(1);
 }
 
