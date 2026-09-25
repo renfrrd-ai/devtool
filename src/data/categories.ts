@@ -3,7 +3,7 @@
  *
  * Categories are a fixed, curated set — not a free-form tag cloud. Adding one is
  * a deliberate act: every category is a page that has to earn its place, and a
- * shelf with two tools on it looks broken. Six entries is roughly the floor.
+ * shelf with one tool on it looks broken. Three entries is the floor.
  *
  * `id` is the URL slug: /categories/<id>.
  */

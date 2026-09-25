@@ -104,9 +104,9 @@ they did not waste it. That is the whole editorial standard.
 ## Adding a category
 
 A deliberate act, not a tag. A new shelf creates a page that has to earn its place, and a
-shelf with two tools on it looks broken.
+shelf with one tool on it looks broken.
 
-**Six entries is roughly the floor.** If your tool has no shelf, the useful contribution
+**Three entries is the floor.** If your tool has no shelf, the useful contribution
 is usually to suggest it with "Something else" and the category named, and let it wait
 for company — a category arrives with a handful of tools or not at all. Suggestions
 waiting on a shelf are the evidence for opening it, and they move onto it on the next
@@ -233,7 +233,7 @@ Not personal, and usually predictable:
 
 - **Marketing copy.** Rewritten, not rejected — but it slows the review down, so the
   submission is better off without it.
-- **Tools with no shelf,** until the shelf has six entries in sight.
+- **Tools with no shelf,** until the shelf has three entries in sight.
 - **Link-farm submissions.** The `nofollow ugc` on unreviewed entries means there is
   nothing in this for SEO, which is the point.
 - **Features the site is deliberately not building** — see above.

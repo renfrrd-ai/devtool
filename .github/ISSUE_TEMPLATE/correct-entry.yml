@@ -69,7 +69,7 @@ body:
       label: Category it belongs in
       description: >-
         Only if it is on the wrong shelf. An existing one or one that does not exist
-        yet — a new shelf opens once about six tools are waiting for it.
+        yet — a new shelf opens once three tools are waiting for it.
       placeholder: Object Storage
 
   - type: input

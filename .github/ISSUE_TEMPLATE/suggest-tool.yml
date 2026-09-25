@@ -71,7 +71,7 @@ body:
       label: New category
       description: >-
         Only if you picked "Something else" above. A new shelf opens once it has
-        about six tools, so other suggestions asking for the same category count
+        three tools, so other suggestions asking for the same category count
         towards it — and yours goes onto the shelf by itself when it opens.
       placeholder: Object Storage
 

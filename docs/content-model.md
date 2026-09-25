@@ -116,8 +116,8 @@ export interface Category {
 ```
 
 The set is fixed and curated, not a free-form tag cloud. Adding a category is a deliberate
-act: it creates a page that has to earn its place, and a shelf with two tools on it looks
-broken. **Six entries is roughly the floor.**
+act: it creates a page that has to earn its place, and a shelf with one tool on it looks
+broken. **Three entries is the floor.**
 
 A category's `description` should name the trade-off that actually distinguishes the tools
 on that shelf — for payments, whether the provider is a merchant of record; for databases,
