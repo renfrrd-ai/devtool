@@ -1,0 +1,263 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import ToolRow from '../components/ToolRow.astro';
+import { tools } from '../data/tools';
+import { populatedCategories, categoryHref, searchText } from '../lib/directory';
+
+/*
+ * Every row is rendered here, each carrying its own search text, and the script
+ * below takes out the ones that do not match. The data is in the page rather
+ * than a fetched index because the CSP's connect-src does not allow 'self', and
+ * at this size a fetch would buy nothing anyway.
+ *
+ * Without JavaScript the page is the full alphabetical list, which is a fair
+ * fallback for a form that has already been submitted. It is noindex and out of
+ * the sitemap, so it never becomes the fifty-row /tools wall in search results.
+ */
+const all = [...tools].sort((a, b) => a.name.localeCompare(b.name));
+const shelves = populatedCategories();
+---
+
+<Base
+  title="Search — devtool.fyi"
+  description="Search every tool in the directory by name, what it does, its stack or its shelf."
+  noindex
+>
+  <SiteHeader />
+
+  <main id="main">
+    <header class="head">
+      <div class="container container--reading">
+        <h1 class="head__title">Search</h1>
+
+        <form class="search" action="/search/" method="get" role="search">
+          <label class="sr-only" for="search-q">Search tools</label>
+          <input
+            class="search__input"
+            id="search-q"
+            type="search"
+            name="q"
+            placeholder="Postgres, self-hosted, Stripe…"
+            autocomplete="off"
+            spellcheck="false"
+            data-search-input
+          />
+          <button class="search__submit" type="submit">Search</button>
+        </form>
+
+        <p class="head__count" aria-live="polite" data-search-status>
+          {all.length} tools
+        </p>
+      </div>
+    </header>
+
+    <section class="list-section">
+      <div class="container container--reading">
+        <ul class="list" data-search-list>
+          {all.map((tool) => <ToolRow tool={tool} searchText={searchText(tool)} />)}
+        </ul>
+
+        <div class="empty" data-search-empty hidden>
+          <p class="empty__text">Or browse a shelf:</p>
+          <ul class="shelves">
+            {
+              shelves.map((shelf) => (
+                <li>
+                  <a class="shelves__link" href={categoryHref(shelf.id)}>
+                    {shelf.name}
+                    <span class="shelves__count">{shelf.count}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+</Base>
+
+<style>
+  .head {
+    padding-block: 3rem 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .head__title {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2-lh);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .search {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .search__input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 0.75rem 1.25rem;
+    font: inherit;
+    font-size: 1rem;
+    transition: border-color 150ms ease;
+  }
+
+  .search__input:hover,
+  .search__input:focus {
+    border-color: var(--border-strong);
+  }
+
+  .search__input::placeholder {
+    color: var(--text-faint);
+  }
+
+  .search__submit {
+    border: 0;
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--bg);
+    padding: 0.75rem 1.25rem;
+    font: inherit;
+    font-size: var(--text-ui);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+  }
+
+  .search__submit:hover {
+    background: var(--fill-hover);
+  }
+
+  /* With JavaScript the list filters as you type, so the button is redundant;
+     without it, the button is how the form gets submitted at all. */
+  :global(.js-search) .search__submit {
+    display: none;
+  }
+
+  .head__count {
+    margin-top: 1.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-faint);
+  }
+
+  .list-section {
+    padding-block: 1rem 5rem;
+  }
+
+  .empty {
+    padding-top: 1rem;
+  }
+
+  .empty__text {
+    color: var(--text-muted);
+  }
+
+  .shelves {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+  }
+
+  .shelves__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    padding: 0.5rem 1rem;
+    font-size: var(--text-ui);
+    font-weight: 500;
+    transition: border-color 150ms ease;
+  }
+
+  .shelves__link:hover {
+    border-color: var(--text);
+  }
+
+  .shelves__count {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+  const list = document.querySelector<HTMLUListElement>('[data-search-list]');
+  const status = document.querySelector<HTMLElement>('[data-search-status]');
+  const empty = document.querySelector<HTMLElement>('[data-search-empty]');
+
+  if (input && list && status && empty) {
+    document.documentElement.classList.add('js-search');
+
+    // Rows that do not match are taken out of the list rather than hidden, so
+    // the row component's `.row + .row` divider never lands on the first result.
+    const rows = [...list.querySelectorAll<HTMLLIElement>('li[data-search]')].map((row) => ({
+      row,
+      text: row.dataset.search ?? '',
+      name: row.querySelector('.row__name')?.textContent?.toLowerCase() ?? '',
+    }));
+
+    function render(raw: string) {
+      const query = raw.trim().toLowerCase();
+      const terms = query.split(/\s+/).filter(Boolean);
+
+      if (terms.length === 0) {
+        list!.replaceChildren();
+        status!.textContent = `${rows.length} tools — type to narrow them down`;
+        empty!.hidden = false;
+        return;
+      }
+
+      // Every term has to appear somewhere. Name matches go first, so typing a
+      // tool's name finds that tool before the entries that mention it; within
+      // each group the order stays alphabetical, as it is on the shelves.
+      const matches = rows.filter(({ text }) => terms.every((term) => text.includes(term)));
+      const byName = matches.filter(({ name }) => name.includes(query));
+      const rest = matches.filter(({ name }) => !name.includes(query));
+
+      list!.replaceChildren(...[...byName, ...rest].map(({ row }) => row));
+      status!.textContent =
+        matches.length === 0
+          ? `Nothing matches “${raw.trim()}”`
+          : `${matches.length} ${matches.length === 1 ? 'tool' : 'tools'} matching “${raw.trim()}”`;
+      empty!.hidden = matches.length > 0;
+    }
+
+    // Keep the query in the URL, so a result can be shared and Back returns to it.
+    function syncUrl(value: string) {
+      const url = new URL(window.location.href);
+      if (value.trim()) url.searchParams.set('q', value.trim());
+      else url.searchParams.delete('q');
+      history.replaceState(null, '', url);
+    }
+
+    input.value = new URLSearchParams(window.location.search).get('q') ?? '';
+    render(input.value);
+
+    input.addEventListener('input', () => {
+      render(input.value);
+      syncUrl(input.value);
+    });
+
+    // Submitting would only reload the page into the state it is already in.
+    input.form?.addEventListener('submit', (event) => event.preventDefault());
+
+    if (!input.value) input.focus();
+  }
+</script>

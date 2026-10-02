@@ -21,7 +21,7 @@ complete-looking one. Full guide: CONTRIBUTING.md
 
 ## Changing the site
 
-- [ ] No client-side JavaScript beyond the theme toggle, or the PR explains why this is
+- [ ] No client-side JavaScript beyond the theme toggle and search, or the PR explains why this is
       the exception
 - [ ] Colours come from the tokens in `src/styles/global.css`, and both themes were
       looked at

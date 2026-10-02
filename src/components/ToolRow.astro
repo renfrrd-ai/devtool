@@ -9,9 +9,11 @@ interface Props {
   tool: Tool;
   /** Hide the stack tags where the row is already carrying enough. */
   compact?: boolean;
+  /** Stamped on the row as data-search, for the search page to match against. */
+  searchText?: string;
 }
 
-const { tool, compact = false } = Astro.props;
+const { tool, compact = false, searchText } = Astro.props;
 const monogram = tool.name.charAt(0).toUpperCase();
 
 /*
@@ -49,7 +51,7 @@ const stack = (tool.stack ?? []).slice(0, 3);
 const overflow = (tool.stack?.length ?? 0) - stack.length;
 ---
 
-<li class="row">
+<li class="row" data-search={searchText}>
   <a class="row__link" href={toolHref(tool.id)}>
     <span class:list={['row__mark', logo && 'row__mark--logo']} aria-hidden="true">
       {

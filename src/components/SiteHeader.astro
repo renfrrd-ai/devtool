@@ -6,6 +6,8 @@ import ThemeToggle from './ThemeToggle.astro';
  * to it — a nav link that silently does nothing is worse than one that navigates.
  */
 const onHome = Astro.url.pathname === '/';
+// The search page has its own, larger field; a second one in the header is noise.
+const onSearch = Astro.url.pathname.startsWith('/search');
 const base = onHome ? '' : '/';
 
 // Contribute is a route rather than an anchor, so it is the same link
@@ -29,6 +31,39 @@ const links = [
     </nav>
 
     <div class="header__actions">
+      {
+        !onSearch && (
+          <>
+            {/* A plain GET form, so it works before and without JavaScript. */}
+            <form class="header__search" action="/search/" method="get" role="search">
+              <label class="sr-only" for="header-q">
+                Search tools
+              </label>
+              <input
+                class="header__search-input"
+                id="header-q"
+                type="search"
+                name="q"
+                placeholder="Search tools"
+                autocomplete="off"
+              />
+            </form>
+            <a class="header__search-link" href="/search/" aria-label="Search tools">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+            </a>
+          </>
+        )
+      }
       <ThemeToggle />
       <a class="header__cta" href={`${base}#categories`}>Browse</a>
     </div>
@@ -105,6 +140,59 @@ const links = [
     background: var(--fill-hover);
   }
 
+  .header__search {
+    display: none;
+  }
+
+  .header__search-input {
+    width: 11rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    font: inherit;
+    font-size: var(--text-ui);
+    line-height: 1.2;
+    transition: border-color 150ms ease;
+  }
+
+  .header__search-input:hover,
+  .header__search-input:focus {
+    border-color: var(--border-strong);
+  }
+
+  .header__search-input::placeholder {
+    color: var(--text-faint);
+  }
+
+  /* Below the nav breakpoint the field would crowd the wordmark, so it becomes
+     an icon that goes to the search page — styled to sit beside the toggle. */
+  .header__search-link {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-muted);
+    transition:
+      color 150ms ease,
+      border-color 150ms ease;
+  }
+
+  .header__search-link:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+  }
+
+  .header__search-link svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
   /* The CTA is a scroll shortcut, not the only way down — drop it before the
      toggle and wordmark start competing for space. */
   @media (max-width: 420px) {
@@ -116,6 +204,18 @@ const links = [
   @media (min-width: 768px) {
     .header__nav {
       display: flex;
+    }
+  }
+
+  /* Four nav links, a field, the toggle and the CTA only fit together from
+     here; between 768px and this the icon stands in for the field. */
+  @media (min-width: 1080px) {
+    .header__search {
+      display: block;
+    }
+
+    .header__search-link {
+      display: none;
     }
   }
 </style>

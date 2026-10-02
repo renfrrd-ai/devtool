@@ -139,12 +139,13 @@ Bug fixes, accessibility fixes, build fixes and performance work are all welcome
 you build a feature, though, the site has a shape it is defending, and several obvious
 improvements have already been considered and turned down:
 
-- **No search, no filtering.** Nine shelves is browsable, the facts you would filter on
-  are already on every row, and both cost client-side JavaScript the site does not
-  otherwise ship. Search earns its place somewhere north of twenty categories.
+- **No filtering.** The facts you would filter on are already on every row, and
+  [search](src/pages/search.astro) covers the rest. Search itself was on this list until
+  it was asked for; [D14](docs/decisions.md#d14--there-is-search-there-is-still-no-filtering-reverses-an-earlier-call)
+  says how it stays within the constraints below.
 - **No `/tools` index page.** It would be the fifty-row wall the three-page structure
   exists to avoid.
-- **No client-side JavaScript beyond the theme toggle.** The reporting form posts plain
+- **No client-side JavaScript beyond the theme toggle and search.** The reporting form posts plain
   HTML to one Pages Function; the `/go/` click counters are redirect stubs. If a feature
   needs a framework runtime on the page, the answer is usually that the feature is wrong
   for this site rather than that the constraint is.

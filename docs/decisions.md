@@ -49,8 +49,9 @@ a runtime we'd never use.
 Full reasoning in [architecture.md](architecture.md#stack).
 
 Relaxed by [D9](#d9--there-is-a-theme-toggle-reverses-an-earlier-call): the page now
-ships two small scripts for the theme toggle. Still no framework runtime, still no
-hydration.
+ships two small scripts for the theme toggle. Relaxed again by
+[D14](#d14--there-is-search-there-is-still-no-filtering-reverses-an-earlier-call): `/search/`
+ships one more. Still no framework runtime, still no hydration.
 
 ### D2 — One data file is the source of truth
 
@@ -375,11 +376,30 @@ Any other order implies a ranking this directory has not earned. Alphabetical is
 arbitrary, which is the honest signal to a reader. Built here is the one exception, sorted
 by status, because there it is answering "what can I use right now."
 
-### D14 — No search, no filtering
+### D14 — There is search; there is still no filtering *(reverses an earlier call)*
 
-Nine shelves is browsable, and the facts you would filter on are already on the row.
-Search earns its place somewhere north of twenty categories; until then it costs
-client-side JavaScript the site does not otherwise ship, for a problem nobody has.
+The original call was no search at all: nine shelves is browsable, and search would cost
+client-side JavaScript the site did not otherwise ship. Renfred asked for it, so it's in.
+
+It is built to give up as little of the original argument as it can:
+
+- **One page, `/search/`, and a plain GET form in the header.** The form works without
+  JavaScript — it submits, and the page arrives with the query in the URL.
+- **The index is the page.** Every row is prerendered with its search text in a
+  `data-search` attribute, and a small script takes out the rows that do not match. No
+  fetch (the CSP's `connect-src` would refuse one anyway), no library, no framework
+  runtime. Matching is substring, every term required, name matches first, alphabetical
+  within each group — ordering by "matched the name" is not a ranking.
+- **It is not the `/tools` wall.** With JavaScript, an empty query shows the shelves
+  rather than fifty rows. Without it, the page does show every row — a fair fallback for
+  a form someone has already submitted — and it is `noindex` and out of the sitemap, so
+  it never becomes that wall in a search engine.
+
+Filtering by pricing or licence is still out: the facts are on the row, and typing
+`self-hosted` or `MIT` into search now covers most of what a filter would.
+
+This relaxes [D1](#d1--astro-static-output-no-client-js) a second time — one more small
+script, on one page.
 
 ### D15 — `pricing` and `openSource` are separate fields
 

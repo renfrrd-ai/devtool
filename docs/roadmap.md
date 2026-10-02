@@ -70,7 +70,9 @@
 - [ ] Consider a tenth shelf once three entries exist for it — CI/CD and background jobs are
       the two that submissions will most likely ask for
 
-**Deliberately not doing** — search, pricing filters, a `/tools` index page. Reasoning in
+- [x] Search — `/search/`, from a form in the header ([D14](decisions.md#d14--there-is-search-there-is-still-no-filtering-reverses-an-earlier-call))
+
+**Deliberately not doing** — pricing filters, a `/tools` index page. Reasoning in
 [information architecture](information-architecture.md#where-it-stops).
 
 ## v1 — the portfolio *(shipped, superseded)*
