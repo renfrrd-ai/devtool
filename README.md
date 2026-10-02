@@ -42,8 +42,8 @@ views puts it in front of a moderator — it never hides anything on its own.
 Astro building to fully static output, plus one Cloudflare Pages Function — `/api/report`,
 the only thing on the site that accepts a write ([why](docs/decisions.md#d23--reporting-gets-one-dynamic-endpoint-and-d17-gives-way-for-it)).
 No framework runtime, no server, no database, no tracking. Each page ships HTML, one shared stylesheet, self-hosted font subsets, and two
-small scripts for the theme toggle (plus a third on `/search/`) — 26 KB of HTML for the
-home page, 17 KB for a tool page.
+small scripts for the theme toggle, plus one for search — 38 KB of HTML for the home page
+(9 KB gzipped), about 13 KB of which is the tool list behind the search suggestions.
 
 ## Getting started
 

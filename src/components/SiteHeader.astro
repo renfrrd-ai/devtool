@@ -1,5 +1,8 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import { tools } from '../data/tools';
+import { searchFacets } from '../lib/directory';
+import { logoFor } from '../lib/logos';
 
 /*
  * Anchors only work on the home page, so on every other route they point back
@@ -8,6 +11,24 @@ import ThemeToggle from './ThemeToggle.astro';
 const onHome = Astro.url.pathname === '/';
 // The search page has its own, larger field; a second one in the header is noise.
 const onSearch = Astro.url.pathname.startsWith('/search');
+
+/*
+ * What the suggestions search, embedded as JSON because the CSP's connect-src
+ * refuses a fetch. Alphabetical, so match() keeps shelf order within a tier.
+ * Kept lean because every page carries it: no descriptions (see searchFacets),
+ * the name and tagline sent once, and the href rebuilt from the id.
+ */
+const suggestions = onSearch
+  ? []
+  : [...tools]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((tool) => ({
+        id: tool.id,
+        name: tool.name,
+        tagline: tool.tagline,
+        facets: searchFacets(tool),
+        logo: logoFor(tool) ?? null,
+      }));
 const base = onHome ? '' : '/';
 
 // Contribute is a route rather than an anchor, so it is the same link
@@ -35,7 +56,18 @@ const links = [
         !onSearch && (
           <>
             {/* A plain GET form, so it works before and without JavaScript. */}
-            <form class="header__search" action="/search/" method="get" role="search">
+            {/*
+              The suggestions are progressive: without JavaScript the list never
+              opens and Enter submits to /search/ as before. With it, the input
+              is an ARIA combobox and the list a listbox it points at.
+            */}
+            <form
+              class="header__search"
+              action="/search/"
+              method="get"
+              role="search"
+              data-suggest
+            >
               <label class="sr-only" for="header-q">
                 Search tools
               </label>
@@ -46,6 +78,18 @@ const links = [
                 name="q"
                 placeholder="Search tools"
                 autocomplete="off"
+                spellcheck="false"
+                role="combobox"
+                aria-expanded="false"
+                aria-controls="header-suggest"
+                aria-autocomplete="list"
+              />
+              <ul class="suggest" id="header-suggest" role="listbox" aria-label="Matching tools" hidden></ul>
+              <script
+                is:inline
+                type="application/json"
+                data-suggest-data
+                set:html={JSON.stringify(suggestions).replace(/</g, '\\u003c')}
               />
             </form>
             <a class="header__search-link" href="/search/" aria-label="Search tools">
@@ -142,6 +186,105 @@ const links = [
 
   .header__search {
     display: none;
+    position: relative;
+  }
+
+  .suggest {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 24rem;
+    max-width: calc(100vw - 2rem);
+    padding: 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.25);
+  }
+
+  /* Rows are built by the script below, so they are outside this component's
+     scope and need :global. */
+  .suggest :global(.suggest__option) {
+    display: grid;
+    grid-template-columns: 1.75rem 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.625rem;
+    border-radius: calc(var(--radius-sm) - 0.125rem);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .suggest :global(.suggest__option[aria-selected='true']),
+  .suggest :global(.suggest__option:hover) {
+    background: var(--bg-subtle);
+  }
+
+  .suggest :global(.suggest__mark) {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.4375rem;
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-faint);
+  }
+
+  .suggest :global(.suggest__mark--logo) {
+    border-color: transparent;
+  }
+
+  .suggest :global(.suggest__mark img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .suggest :global(.suggest__body) {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .suggest :global(.suggest__name) {
+    font-weight: 600;
+    font-size: var(--text-ui);
+  }
+
+  .suggest :global(.suggest__tagline) {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+
+  .suggest :global(.suggest__all) {
+    display: block;
+    margin-top: 0.25rem;
+    padding: 0.625rem;
+    border-top: 1px solid var(--border);
+    border-radius: 0 0 calc(var(--radius-sm) - 0.125rem) calc(var(--radius-sm) - 0.125rem);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .suggest :global(.suggest__all[aria-selected='true']),
+  .suggest :global(.suggest__all:hover) {
+    background: var(--bg-subtle);
+    color: var(--text);
+  }
+
+  .suggest :global(.suggest__none) {
+    padding: 0.625rem;
+    font-size: var(--text-ui);
+    color: var(--text-muted);
   }
 
   .header__search-input {
@@ -219,3 +362,173 @@ const links = [
     }
   }
 </style>
+
+<script>
+  import { match } from '../lib/match';
+
+  interface Suggestion {
+    id: string;
+    name: string;
+    tagline: string;
+    facets: string;
+    logo: string | null;
+  }
+
+  // Five fits under the header without scrolling; the rest are on /search/.
+  const LIMIT = 5;
+
+  const form = document.querySelector<HTMLFormElement>('[data-suggest]');
+  const input = form?.querySelector<HTMLInputElement>('input[name="q"]');
+  const list = form?.querySelector<HTMLUListElement>('[role="listbox"]');
+  const data = form?.querySelector<HTMLScriptElement>('[data-suggest-data]');
+
+  if (form && input && list && data) {
+    // Same href as toolHref() in lib/directory.ts, and the same text the search
+    // page matches on, minus the descriptions.
+    const items = (JSON.parse(data.textContent ?? '[]') as Suggestion[]).map((item) => ({
+      ...item,
+      href: `/tools/${item.id}/`,
+      text: `${item.name} ${item.tagline} ${item.facets}`.toLowerCase(),
+    }));
+
+    let options: HTMLLIElement[] = [];
+    let active = -1;
+
+    function open(isOpen: boolean) {
+      list!.hidden = !isOpen;
+      input!.setAttribute('aria-expanded', String(isOpen));
+      if (!isOpen) setActive(-1);
+    }
+
+    function setActive(index: number) {
+      options.forEach((option, i) => option.setAttribute('aria-selected', String(i === index)));
+      active = index;
+      if (index >= 0) {
+        input!.setAttribute('aria-activedescendant', options[index].id);
+        options[index].scrollIntoView({ block: 'nearest' });
+      } else {
+        input!.removeAttribute('aria-activedescendant');
+      }
+    }
+
+    function option(id: string, className: string, href: string): HTMLLIElement {
+      const li = document.createElement('li');
+      li.id = id;
+      li.className = className;
+      li.setAttribute('role', 'option');
+      li.setAttribute('aria-selected', 'false');
+      li.dataset.href = href;
+      return li;
+    }
+
+    function render() {
+      const query = input!.value.trim();
+      if (!query) {
+        options = [];
+        list!.replaceChildren();
+        open(false);
+        return;
+      }
+
+      const matches = match(items, query);
+      const shown = matches.slice(0, LIMIT);
+      const searchHref = `/search/?q=${encodeURIComponent(query)}`;
+
+      options = shown.map((item, i) => {
+        const li = option(`header-suggest-${i}`, 'suggest__option', item.href);
+
+        const mark = document.createElement('span');
+        mark.className = item.logo ? 'suggest__mark suggest__mark--logo' : 'suggest__mark';
+        mark.setAttribute('aria-hidden', 'true');
+        if (item.logo) {
+          const img = document.createElement('img');
+          img.src = item.logo;
+          img.alt = '';
+          mark.append(img);
+        } else {
+          mark.textContent = item.name.charAt(0).toUpperCase();
+        }
+
+        const body = document.createElement('span');
+        body.className = 'suggest__body';
+        const name = document.createElement('span');
+        name.className = 'suggest__name';
+        name.textContent = item.name;
+        const tagline = document.createElement('span');
+        tagline.className = 'suggest__tagline';
+        tagline.textContent = item.tagline;
+        body.append(name, tagline);
+
+        li.append(mark, body);
+        return li;
+      });
+
+      // Always offered, because the suggestions skip descriptions and stop at
+      // five: the search page may well find more than the dropdown does.
+      const all = option('header-suggest-all', 'suggest__all', searchHref);
+      all.textContent =
+        matches.length === 0
+          ? `Search descriptions for “${query}” →`
+          : `See all results for “${query}” →`;
+      options.push(all);
+
+      const children: HTMLElement[] = [...options];
+      if (matches.length === 0) {
+        const none = document.createElement('li');
+        none.className = 'suggest__none';
+        none.setAttribute('role', 'presentation');
+        none.textContent = 'No tool names or taglines match.';
+        children.unshift(none);
+      }
+
+      list!.replaceChildren(...children);
+      setActive(-1);
+      open(true);
+    }
+
+    function go(index: number) {
+      const href = options[index]?.dataset.href;
+      if (href) window.location.href = href;
+    }
+
+    input.addEventListener('input', render);
+    input.addEventListener('focus', () => {
+      if (input.value.trim()) render();
+    });
+
+    input.addEventListener('keydown', (event) => {
+      if (list.hidden) {
+        if (event.key === 'ArrowDown' && input.value.trim()) {
+          render();
+          event.preventDefault();
+        }
+        return;
+      }
+
+      if (event.key === 'ArrowDown') {
+        setActive((active + 1) % options.length);
+        event.preventDefault();
+      } else if (event.key === 'ArrowUp') {
+        setActive(active <= 0 ? options.length - 1 : active - 1);
+        event.preventDefault();
+      } else if (event.key === 'Escape') {
+        open(false);
+        event.preventDefault();
+      } else if (event.key === 'Enter' && active >= 0) {
+        // With nothing highlighted, Enter falls through and submits to /search/.
+        go(active);
+        event.preventDefault();
+      }
+    });
+
+    // mousedown, not click: a click lands after the input's blur has closed the list.
+    list.addEventListener('mousedown', (event) => {
+      const target = (event.target as HTMLElement).closest<HTMLLIElement>('[role="option"]');
+      if (!target) return;
+      event.preventDefault();
+      go(options.indexOf(target));
+    });
+
+    input.addEventListener('blur', () => open(false));
+  }
+</script>

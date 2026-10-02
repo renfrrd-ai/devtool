@@ -197,6 +197,8 @@ const shelves = populatedCategories();
 </style>
 
 <script>
+  import { match, terms } from '../lib/match';
+
   const input = document.querySelector<HTMLInputElement>('[data-search-input]');
   const list = document.querySelector<HTMLUListElement>('[data-search-list]');
   const status = document.querySelector<HTMLElement>('[data-search-status]');
@@ -214,24 +216,17 @@ const shelves = populatedCategories();
     }));
 
     function render(raw: string) {
-      const query = raw.trim().toLowerCase();
-      const terms = query.split(/\s+/).filter(Boolean);
-
-      if (terms.length === 0) {
+      if (terms(raw).length === 0) {
         list!.replaceChildren();
         status!.textContent = `${rows.length} tools — type to narrow them down`;
         empty!.hidden = false;
         return;
       }
 
-      // Every term has to appear somewhere. Name matches go first, so typing a
-      // tool's name finds that tool before the entries that mention it; within
-      // each group the order stays alphabetical, as it is on the shelves.
-      const matches = rows.filter(({ text }) => terms.every((term) => text.includes(term)));
-      const byName = matches.filter(({ name }) => name.includes(query));
-      const rest = matches.filter(({ name }) => !name.includes(query));
+      // The ordering rules live in lib/match.ts, shared with the header.
+      const matches = match(rows, raw);
 
-      list!.replaceChildren(...[...byName, ...rest].map(({ row }) => row));
+      list!.replaceChildren(...matches.map(({ row }) => row));
       status!.textContent =
         matches.length === 0
           ? `Nothing matches “${raw.trim()}”`

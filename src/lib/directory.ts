@@ -93,19 +93,29 @@ export function sortedMadeHere(): Tool[] {
  * Everything a reader might type to find a tool, lowercased into one string.
  * The search page stamps it on each row; matching is plain substring, so this
  * is the whole of the index.
+ *
  */
 export function searchText(tool: Tool): string {
+  return [tool.name, tool.tagline, tool.description, searchFacets(tool)].join(' ').toLowerCase();
+}
+
+/**
+ * The searchable facts that are not prose: domain, shelves, stack, pricing,
+ * licence. The header's suggestions send this alongside the name and tagline
+ * rather than the whole of searchText(), because they ship on every page and
+ * the description is most of the bytes. Anything found only through a
+ * description is still one Enter away, on the search page.
+ */
+export function searchFacets(tool: Tool): string {
   return [
-    tool.name,
     tool.domain,
-    tool.tagline,
-    tool.description,
     ...categoriesOf(tool).map((category) => category.name),
     ...(tool.stack ?? []),
     tool.pricing,
     tool.openSource ? `open source ${tool.licence ?? ''}` : '',
     tool.madeHere ? 'built here' : '',
   ]
+    .filter(Boolean)
     .join(' ')
     .toLowerCase();
 }

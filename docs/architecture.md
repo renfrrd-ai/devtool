@@ -96,8 +96,9 @@ No page template imports `tools.ts` to filter it inline. Everything goes through
 
 - **Almost no client-side JavaScript.** Every page ships two small scripts and no
   framework runtime: a blocking inline snippet in `<head>` that applies a stored theme
-  before first paint, and the theme toggle's own handler. `/search/` adds a third, which
-  filters rows already in the page. Nothing else. If a feature
+  before first paint, and the theme toggle's own handler. Search adds a third: on every
+  page it offers suggestions under the header field from a tool list embedded in the
+  HTML, and on `/search/` it filters rows already in the page. Nothing else. If a feature
   needs more than that, it belongs in a later version rather than being a reason to
   start hydrating components.
 - **One route.** The PRD's v1 is a single page. Adding `/about` or per-tool detail pages

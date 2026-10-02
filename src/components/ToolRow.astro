@@ -1,9 +1,8 @@
 ---
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 import type { Tool } from '../data/tools';
 import Tag from './Tag.astro';
 import { toolHref } from '../lib/directory';
+import { logoFor } from '../lib/logos';
 
 interface Props {
   tool: Tool;
@@ -16,22 +15,7 @@ interface Props {
 const { tool, compact = false, searchText } = Astro.props;
 const monogram = tool.name.charAt(0).toUpperCase();
 
-/*
- * An explicit `logo` wins; otherwise we pick up whatever `npm run logos`
- * vendored. Resolved at build time against the project root — import.meta.url
- * points into the Vite output here, not at this source file.
- */
-function resolveLogo(): string | undefined {
-  if (tool.logo) return tool.logo;
-  for (const ext of ['svg', 'png']) {
-    if (existsSync(join(process.cwd(), 'public', 'logos', `${tool.id}.${ext}`))) {
-      return `/logos/${tool.id}.${ext}`;
-    }
-  }
-  return undefined;
-}
-
-const logo = resolveLogo();
+const logo = logoFor(tool);
 
 const STATUS_LABELS: Record<string, string> = {
   live: 'Live',
