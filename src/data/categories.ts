@@ -206,6 +206,7 @@ export const categories: Category[] = [
         openai: ['Model provider', 'Hosted', 'Per token', 'One provider'],
         openrouter: ['Router', 'Hosted', 'Per token, plus margin', 'One gateway'],
         replicate: ['Model host', 'Hosted', 'Per second of compute', 'One host'],
+        stashbase: ['Agent access layer', 'Not involved', 'Per seat', 'Its secrets store'],
         'vercel-ai-sdk': ['SDK', 'Whichever you point it at', 'Free', 'Nothing'],
       },
     },

@@ -924,4 +924,19 @@ export const tools: Tool[] = [
     alternatives: ['ollama', 'openrouter'],
     addedAt: '2026-09-17',
   },
+  {
+    id: 'stashbase',
+    name: 'Stashbase',
+    url: 'https://stashbase.dev',
+    domain: 'stashbase.dev',
+    tagline: 'Scoped secrets and API access for coding agents, without handing them the keys',
+    description:
+      'Sits between an agent like Claude Code or Codex and your credentials: the agent calls APIs through a proxy that holds the secrets and enforces a policy, so a key never lands in its context or a log. The CLI and local proxy are open source and free; hosted secret projects and the remote proxy are billed per seat. It is young, with a fixed list of integrations, so check yours is on it before building a workflow around it.',
+    categories: ['ai'],
+    pricing: 'freemium',
+    openSource: true,
+    licence: 'Apache-2.0',
+    stack: ['Rust CLI', 'Docker', 'MCP'],
+    addedAt: '2026-10-02',
+  },
 ];
