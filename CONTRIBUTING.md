@@ -161,7 +161,12 @@ is to open an issue arguing with it before writing the code.
 
 ## Local setup
 
-Node 20 or newer.
+Node 22.18 or newer — the version in [`.node-version`](.node-version) is the one CI and
+Cloudflare build with. The scripts import `src/data/*.ts` directly, which relies on Node
+stripping TypeScript types by default; older versions fail with
+`ERR_UNKNOWN_FILE_EXTENSION`. Some distro-packaged Node builds leave that support out
+entirely, and fail with `ERR_NO_TYPESCRIPT` — use a build from nodejs.org, or run a script
+through `npx tsx`.
 
 ```bash
 git clone https://github.com/renfrrd-ai/devtool.git

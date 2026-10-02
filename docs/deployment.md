@@ -22,7 +22,13 @@ need it. Pages just runs the build and serves `dist/` off its CDN.
 | Build command | `npm run build` |
 | Output directory | `dist` |
 | Root directory | `/` |
-| Node version | 20 or newer — set `NODE_VERSION` in the environment variables if the default is older |
+| Node version | Read from [`.node-version`](../.node-version) — leave `NODE_VERSION` unset, since it would override the file |
+
+**Why the Node version is pinned.** The build's first step, `check:entries`, imports
+`src/data/tools.ts` straight from a `.mjs` script, which only works on Node 22.18 or newer,
+where type stripping is on by default. Pages' default image shipped 22.16, and the first
+Pages build failed on exactly that with `ERR_UNKNOWN_FILE_EXTENSION`. `.node-version` fixes
+the version for Pages and for every GitHub workflow, so the two cannot drift apart again.
 
 The build runs `astro check` before `astro build`, so a type error fails the deploy
 rather than shipping.
