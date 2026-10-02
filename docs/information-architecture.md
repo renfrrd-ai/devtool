@@ -118,9 +118,12 @@ producing a page that says "0 tools" — which is the directory equivalent of a 
 
 Deliberately absent, and the reason each stays absent:
 
-- **Search.** Nine shelves is browsable. Search earns its place somewhere north of twenty
-  categories, and it costs client-side JavaScript this site does not otherwise ship.
-- **Filtering by pricing or licence.** Same argument, and the facts are already on the row.
+- **Filtering by pricing or licence.** The facts are already on the row, and search
+  covers most of what a filter would.
+
+Search used to head this list. It exists now, as `/search/` — a noindex page outside the
+three-page structure, reached from a form in the header. How it avoids becoming the
+`/tools` wall below is in [D14](decisions.md#d14--there-is-search-there-is-still-no-filtering-reverses-an-earlier-call).
 - **A `/tools` index page.** It would be the fifty-row wall this structure exists to avoid.
 - **Per-tool pages for things not in a category** — trueluk has a page, but no shelf lists
   it. That is correct: it is real, it just is not a recommendation yet.

@@ -22,7 +22,11 @@ export default defineConfig({
       //
       // The /report/ pages are forms, one per entry. Also noindex, also not
       // content, and a crawler working through them achieves nothing.
-      filter: (page) => !page.includes('/go/') && !page.includes('/report/'),
+      //
+      // /search/ is a noindex results page; without a query it is the whole
+      // directory as one list, which is exactly the page we decided not to have.
+      filter: (page) =>
+        !page.includes('/go/') && !page.includes('/report/') && !page.includes('/search/'),
       changefreq: 'monthly',
       priority: 1.0,
       lastmod: new Date(),

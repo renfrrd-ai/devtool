@@ -89,6 +89,27 @@ export function sortedMadeHere(): Tool[] {
   });
 }
 
+/**
+ * Everything a reader might type to find a tool, lowercased into one string.
+ * The search page stamps it on each row; matching is plain substring, so this
+ * is the whole of the index.
+ */
+export function searchText(tool: Tool): string {
+  return [
+    tool.name,
+    tool.domain,
+    tool.tagline,
+    tool.description,
+    ...categoriesOf(tool).map((category) => category.name),
+    ...(tool.stack ?? []),
+    tool.pricing,
+    tool.openSource ? `open source ${tool.licence ?? ''}` : '',
+    tool.madeHere ? 'built here' : '',
+  ]
+    .join(' ')
+    .toLowerCase();
+}
+
 /** Categories that actually have something on them, with their counts. */
 export function populatedCategories(): Array<Category & { count: number }> {
   return categories
