@@ -398,8 +398,15 @@ It is built to give up as little of the original argument as it can:
 Filtering by pricing or licence is still out: the facts are on the row, and typing
 `self-hosted` or `MIT` into search now covers most of what a filter would.
 
-This relaxes [D1](#d1--astro-static-output-no-client-js) a second time — one more small
-script, on one page.
+This relaxes [D1](#d1--astro-static-output-no-client-js) a second time.
+
+**Then the header field grew suggestions,** because a field that does nothing until Enter
+reads as broken next to one that answers as you type. That moves search onto every page:
+a 2.6 KB script, cached, and the tool list embedded as JSON — names, taglines and the
+short facts, not descriptions — which costs about 3.7 KB gzipped per page. The dropdown
+offers five tools and a link to `/search/`, which still matches descriptions too. Both
+match through one module, `src/lib/match.ts`, so they never disagree about what a query
+means. Without JavaScript the field is the plain form it was.
 
 ### D15 — `pricing` and `openSource` are separate fields
 
