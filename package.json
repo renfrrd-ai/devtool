@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "description": "The front door for developer tools built and maintained by Renfred Alonge",
+  "engines": {
+    "node": ">=22.18"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
